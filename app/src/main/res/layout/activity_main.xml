@@ -173,7 +173,7 @@
                         android:id="@+id/tvEnvironmentSummary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="✅ 系统无风险"
+                        android:text="✅正常设备"
                         android:textColor="#1E5AA8"
                         android:textAppearance="@style/Widget.IOS.Body"
                         android:textStyle="bold" />
