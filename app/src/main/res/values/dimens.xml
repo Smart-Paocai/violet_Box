@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="ios_card_corner">14dp</dimen>
+    <dimen name="ios_card_padding">16dp</dimen>
+    <dimen name="ios_screen_edge">16dp</dimen>
+    <dimen name="ios_section_gap">10dp</dimen>
+    <dimen name="ios_row_spacing">10dp</dimen>
+</resources>

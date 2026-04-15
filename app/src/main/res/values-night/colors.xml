@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ios_background_grouped">#000000</color>
+    <color name="ios_background_elevated">#1C1C1E</color>
+    <color name="ios_card">#1C1C1E</color>
+    <color name="ios_text_primary">#F2F2F7</color>
+    <color name="ios_text_secondary">#8E8E93</color>
+    <color name="ios_separator">#38383A</color>
+    <color name="ios_accent">#9897FF</color>
+    <color name="ios_semantic_positive">#32D74B</color>
+    <color name="ios_semantic_negative">#FF453A</color>
+</resources>

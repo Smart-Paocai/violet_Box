@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- iOS-like grouped UI (light) -->
+    <color name="ios_background_grouped">#F2F2F7</color>
+    <color name="ios_background_elevated">#FFFFFF</color>
+    <color name="ios_card">#FFFFFF</color>
+    <color name="ios_text_primary">#1C1C1E</color>
+    <color name="ios_text_secondary">#8E8E93</color>
+    <color name="ios_separator">#C6C6C8</color>
+    <color name="ios_accent">#5E5CE6</color>
+    <color name="ios_semantic_positive">#34C759</color>
+    <color name="ios_semantic_negative">#FF3B30</color>
+</resources>
