@@ -33,10 +33,12 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/contentHome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:overScrollMode="never"
+        android:paddingBottom="88dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -64,13 +66,11 @@
                 app:cardCornerRadius="@dimen/ios_card_corner"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="@dimen/ios_card_padding">
-
                     <TextView
                         android:id="@+id/tvDeviceName"
                         android:layout_width="match_parent"
@@ -78,13 +78,11 @@
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="设备名称: 加载中..." />
-
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:background="@color/ios_separator" />
-
                     <TextView
                         android:id="@+id/tvDeviceCode"
                         android:layout_width="match_parent"
@@ -92,13 +90,11 @@
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="设备代号: 加载中..." />
-
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:background="@color/ios_separator" />
-
                     <TextView
                         android:id="@+id/tvAndroidVersion"
                         android:layout_width="match_parent"
@@ -106,13 +102,11 @@
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="安卓版本: 加载中..." />
-
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:background="@color/ios_separator" />
-
                     <TextView
                         android:id="@+id/tvKernelVersion"
                         android:layout_width="match_parent"
@@ -120,13 +114,11 @@
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="内核版本: 加载中..." />
-
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:background="@color/ios_separator" />
-
                     <TextView
                         android:id="@+id/tvSelinuxStatus"
                         android:layout_width="match_parent"
@@ -134,20 +126,17 @@
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="SELinux状态: 加载中..." />
-
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:background="@color/ios_separator" />
-
                     <TextView
                         android:id="@+id/tvBootSlot"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="启动槽位: 加载中..." />
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -157,18 +146,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/ios_section_gap"
                 android:layout_marginHorizontal="2dp"
-                app:cardBackgroundColor="#EAF4FF"
-                app:cardCornerRadius="18dp"
+                app:cardBackgroundColor="@color/ios_glass_surface"
+                app:cardCornerRadius="22dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#B9D7F5"
-                app:strokeWidth="1dp">
-
+                app:strokeColor="@color/ios_glass_stroke"
+                app:strokeWidth="1dp"
+                app:cardUseCompatPadding="true"
+                app:cardPreventCornerOverlap="true">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="18dp">
-
                     <TextView
                         android:id="@+id/tvEnvironmentSummary"
                         android:layout_width="match_parent"
@@ -177,11 +166,9 @@
                         android:textColor="#1E5AA8"
                         android:textAppearance="@style/Widget.IOS.Body"
                         android:textStyle="bold" />
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Root 与安全 -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -198,20 +185,17 @@
                 app:cardCornerRadius="@dimen/ios_card_corner"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="@dimen/ios_card_padding">
-
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
                         android:text="风险检测总览"
                         android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
-
                     <TextView
                         android:id="@+id/tvRiskApps"
                         android:layout_width="match_parent"
@@ -219,20 +203,17 @@
                         android:layout_marginBottom="16dp"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="风险应用: 加载中..." />
-
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginBottom="14dp"
                         android:background="@color/ios_separator" />
-
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
                         android:text="检测明细"
                         android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
-
                     <TextView
                         android:id="@+id/tvRootOverall"
                         android:layout_width="match_parent"
@@ -241,21 +222,18 @@
                         android:textAppearance="@style/Widget.IOS.Body"
                         android:textStyle="bold"
                         tools:text="综合状态: 加载中..." />
-
                     <LinearLayout
                         android:id="@+id/layoutRootDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginBottom="16dp" />
-
                     <LinearLayout
                         android:id="@+id/layoutAdvancedDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginBottom="16dp" />
-
                     <TextView
                         android:id="@+id/tvBootloader"
                         android:layout_width="match_parent"
@@ -263,24 +241,55 @@
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="Bootloader锁: 加载中..." />
-
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:background="@color/ios_separator" />
-
                     <TextView
                         android:id="@+id/tvUsbDebug"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="USB调试: 加载中..." />
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/fragmentSettingsPlaceholder"
+        layout="@layout/fragment_settings_placeholder"
+        android:visibility="gone" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="12dp"
+        app:cardBackgroundColor="@color/ios_glass_surface"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/ios_glass_stroke"
+        app:strokeWidth="1dp"
+        app:cardUseCompatPadding="true"
+        app:cardPreventCornerOverlap="true">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:itemBackground="@drawable/bottom_nav_item_bg"
+            app:itemIconTint="@android:color/transparent"
+            app:itemTextAppearanceActive="@style/Widget.IOS.Body"
+            app:itemTextAppearanceInactive="@style/Widget.IOS.Body"
+            app:itemTextColor="@color/ios_bottom_nav_tint_selector"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav_menu"
+            app:backgroundTint="@android:color/transparent"
+            app:elevation="0dp" />
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

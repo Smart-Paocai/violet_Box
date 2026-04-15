@@ -1,66 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:background="@android:color/white">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="检测日志"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="#111827"
-        android:paddingBottom="8dp" />
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tvLogPath"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:textColor="#2563EB"
-        android:paddingBottom="12dp" />
+        android:text="日志路径"
+        android:textSize="14sp"
+        android:textColor="@color/ios_text_secondary"
+        android:layout_marginBottom="8dp" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="340dp"
-        android:fillViewport="true"
-        android:background="#F8FAFC"
-        android:padding="12dp"
-        android:scrollbars="vertical">
+        android:layout_height="300dp"
+        android:layout_marginBottom="16dp">
 
         <TextView
             android:id="@+id/tvLogContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textIsSelectable="true"
-            android:textSize="13sp"
-            android:typeface="monospace"
-            android:textColor="#111827" />
+            android:text="日志内容"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:textColor="@color/ios_text_primary" />
+
     </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
-        android:paddingTop="14dp">
+        android:gravity="end">
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/btnCopyLog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="复制到剪贴板" />
+            android:text="复制"
+            android:layout_marginEnd="8dp"
+            style="@style/Widget.Material3.Button.TextButton" />
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/btnOpenLog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="打开日志位置" />
+            android:text="打开位置"
+            style="@style/Widget.Material3.Button.TextButton" />
 
     </LinearLayout>
 

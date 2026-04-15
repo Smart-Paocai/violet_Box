@@ -38,6 +38,7 @@ import com.scottyab.rootbeer.RootBeer;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -68,6 +69,31 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.inflateMenu(R.menu.toolbar_menu);
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        if (bottomNav != null) {
+            bottomNav.setOnItemSelectedListener(item -> {
+                if (item.getItemId() == R.id.nav_home) {
+                    findViewById(R.id.contentHome).setVisibility(android.view.View.VISIBLE);
+                    findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(android.view.View.GONE);
+                    return true;
+                } else if (item.getItemId() == R.id.nav_device) {
+                    findViewById(R.id.contentHome).setVisibility(android.view.View.GONE);
+                    findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(android.view.View.VISIBLE);
+                    return true;
+                } else if (item.getItemId() == R.id.nav_explore) {
+                    findViewById(R.id.contentHome).setVisibility(android.view.View.GONE);
+                    findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(android.view.View.VISIBLE);
+                    return true;
+                } else if (item.getItemId() == R.id.nav_settings) {
+                    findViewById(R.id.contentHome).setVisibility(android.view.View.GONE);
+                    findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(android.view.View.VISIBLE);
+                    return true;
+                }
+                return false;
+            });
+            bottomNav.setSelectedItemId(R.id.nav_home);
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -176,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showLogsDialog() {
         String logs = readSelinuxRawLogFile();
-        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
                 .setView(R.layout.dialog_logs)
                 .setPositiveButton("关闭", null)
                 .create();
