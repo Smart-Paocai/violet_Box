@@ -118,7 +118,7 @@ public class MainActivityWithNav extends AppCompatActivity {
     }
 
     private void resetAllTabs() {
-        int grayColor = ContextCompat.getColor(this, android.R.color.darker_gray);
+        int grayColor = ContextCompat.getColor(this, R.color.ios_text_secondary);
         
         iconHome.setColorFilter(grayColor);
         iconDevice.setColorFilter(grayColor);

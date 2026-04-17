@@ -18,6 +18,7 @@ import android.widget.Toast;
 import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructStat;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -60,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
         return ContextCompat.getColor(this, R.color.ios_semantic_negative);
     }
 
+    private int currentTab = 0;
+    private LinearLayout navHome, navDevice, navExplore, navSettings;
+    private ImageView iconHome, iconDevice, iconExplore, iconSettings;
+    private TextView textHome, textDevice, textExplore, textSettings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,29 +76,28 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.inflateMenu(R.menu.toolbar_menu);
 
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-        if (bottomNav != null) {
-            bottomNav.setOnItemSelectedListener(item -> {
-                if (item.getItemId() == R.id.nav_home) {
-                    findViewById(R.id.contentHome).setVisibility(android.view.View.VISIBLE);
-                    findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(android.view.View.GONE);
-                    return true;
-                } else if (item.getItemId() == R.id.nav_device) {
-                    findViewById(R.id.contentHome).setVisibility(android.view.View.GONE);
-                    findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(android.view.View.VISIBLE);
-                    return true;
-                } else if (item.getItemId() == R.id.nav_explore) {
-                    findViewById(R.id.contentHome).setVisibility(android.view.View.GONE);
-                    findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(android.view.View.VISIBLE);
-                    return true;
-                } else if (item.getItemId() == R.id.nav_settings) {
-                    findViewById(R.id.contentHome).setVisibility(android.view.View.GONE);
-                    findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(android.view.View.VISIBLE);
-                    return true;
-                }
-                return false;
-            });
-            bottomNav.setSelectedItemId(R.id.nav_home);
+        // 初始化导航栏
+        navHome = findViewById(R.id.nav_home);
+        navDevice = findViewById(R.id.nav_device);
+        navExplore = findViewById(R.id.nav_explore);
+        navSettings = findViewById(R.id.nav_settings);
+        
+        iconHome = findViewById(R.id.nav_home_icon);
+        iconDevice = findViewById(R.id.nav_device_icon);
+        iconExplore = findViewById(R.id.nav_explore_icon);
+        iconSettings = findViewById(R.id.nav_settings_icon);
+        
+        textHome = findViewById(R.id.nav_home_text);
+        textDevice = findViewById(R.id.nav_device_text);
+        textExplore = findViewById(R.id.nav_explore_text);
+        textSettings = findViewById(R.id.nav_settings_text);
+
+        if (navHome != null) {
+            navHome.setOnClickListener(v -> selectTab(0));
+            navDevice.setOnClickListener(v -> selectTab(1));
+            navExplore.setOnClickListener(v -> selectTab(2));
+            navSettings.setOnClickListener(v -> selectTab(3));
+            selectTab(0);
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -103,6 +108,62 @@ public class MainActivity extends AppCompatActivity {
 
         clearLog();
         setupDeviceInfo();
+    }
+
+    private void selectTab(int tab) {
+        if (iconHome == null) return; // Views not initialized
+        currentTab = tab;
+        resetAllTabs();
+
+        switch (tab) {
+            case 0:
+                iconHome.setColorFilter(ContextCompat.getColor(this, R.color.purple_700));
+                textHome.setTextColor(ContextCompat.getColor(this, R.color.purple_700));
+                navHome.setBackgroundResource(R.drawable.nav_item_selected);
+                findViewById(R.id.contentHome).setVisibility(View.VISIBLE);
+                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
+                break;
+            case 1:
+                iconDevice.setColorFilter(ContextCompat.getColor(this, R.color.purple_700));
+                textDevice.setTextColor(ContextCompat.getColor(this, R.color.purple_700));
+                navDevice.setBackgroundResource(R.drawable.nav_item_selected);
+                findViewById(R.id.contentHome).setVisibility(View.GONE);
+                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                iconExplore.setColorFilter(ContextCompat.getColor(this, R.color.purple_700));
+                textExplore.setTextColor(ContextCompat.getColor(this, R.color.purple_700));
+                navExplore.setBackgroundResource(R.drawable.nav_item_selected);
+                findViewById(R.id.contentHome).setVisibility(View.GONE);
+                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
+                break;
+            case 3:
+                iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.purple_700));
+                textSettings.setTextColor(ContextCompat.getColor(this, R.color.purple_700));
+                navSettings.setBackgroundResource(R.drawable.nav_item_selected);
+                findViewById(R.id.contentHome).setVisibility(View.GONE);
+                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    private void resetAllTabs() {
+        int grayColor = ContextCompat.getColor(this, R.color.ios_text_secondary);
+        
+        iconHome.setColorFilter(grayColor);
+        iconDevice.setColorFilter(grayColor);
+        iconExplore.setColorFilter(grayColor);
+        iconSettings.setColorFilter(grayColor);
+        
+        textHome.setTextColor(grayColor);
+        textDevice.setTextColor(grayColor);
+        textExplore.setTextColor(grayColor);
+        textSettings.setTextColor(grayColor);
+        
+        navHome.setBackgroundResource(android.R.color.transparent);
+        navDevice.setBackgroundResource(android.R.color.transparent);
+        navExplore.setBackgroundResource(android.R.color.transparent);
+        navSettings.setBackgroundResource(android.R.color.transparent);
     }
 
     @Override

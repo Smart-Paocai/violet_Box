@@ -262,34 +262,166 @@
         layout="@layout/fragment_settings_placeholder"
         android:visibility="gone" />
 
+    <!-- iOS风格底部导航栏 (Custom Style) -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottom_nav_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
         android:layout_gravity="bottom"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="16dp"
         app:cardBackgroundColor="@color/ios_glass_surface"
-        app:cardCornerRadius="28dp"
+        app:cardCornerRadius="32dp"
         app:cardElevation="0dp"
         app:strokeColor="@color/ios_glass_stroke"
         app:strokeWidth="1dp"
         app:cardUseCompatPadding="true"
         app:cardPreventCornerOverlap="true">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNav"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:itemBackground="@drawable/bottom_nav_item_bg"
-            app:itemIconTint="@android:color/transparent"
-            app:itemTextAppearanceActive="@style/Widget.IOS.Body"
-            app:itemTextAppearanceInactive="@style/Widget.IOS.Body"
-            app:itemTextColor="@color/ios_bottom_nav_tint_selector"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_nav_menu"
-            app:backgroundTint="@android:color/transparent"
-            app:elevation="0dp" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:gravity="center">
+
+            <!-- 首页页面 -->
+            <LinearLayout
+                android:id="@+id/nav_home"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="2dp"
+                android:background="@drawable/nav_item_selector"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/nav_home_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_home"
+                    app:tint="#4A148C" />
+
+                <TextView
+                    android:id="@+id/nav_home_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="首页"
+                    android:textSize="10sp"
+                    android:textColor="#4A148C"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium" />
+
+            </LinearLayout>
+
+            <!-- 设备信息页面 -->
+            <LinearLayout
+                android:id="@+id/nav_device"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="2dp"
+                android:background="@drawable/nav_item_selector"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/nav_device_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_device_info"
+                    app:tint="@color/ios_text_secondary" />
+
+                <TextView
+                    android:id="@+id/nav_device_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设备"
+                    android:textSize="10sp"
+                    android:textColor="@color/ios_text_secondary"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium" />
+
+            </LinearLayout>
+
+            <!-- 玩机页面 -->
+            <LinearLayout
+                android:id="@+id/nav_explore"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="2dp"
+                android:background="@drawable/nav_item_selector"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/nav_explore_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_explore"
+                    app:tint="@color/ios_text_secondary" />
+
+                <TextView
+                    android:id="@+id/nav_explore_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="玩机"
+                    android:textSize="10sp"
+                    android:textColor="@color/ios_text_secondary"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium" />
+
+            </LinearLayout>
+
+            <!-- 设置页面 -->
+            <LinearLayout
+                android:id="@+id/nav_settings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="2dp"
+                android:background="@drawable/nav_item_selector"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/nav_settings_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="@color/ios_text_secondary" />
+
+                <TextView
+                    android:id="@+id/nav_settings_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="设置"
+                    android:textSize="10sp"
+                    android:textColor="@color/ios_text_secondary"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
