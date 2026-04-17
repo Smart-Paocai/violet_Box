@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.Settings;
+import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int environmentRiskCount = 0;
     private int totalDetectionRiskCount = 0;
+    private int riskAppsDetectionPoint = 0;
 
     private int colorSemanticSafe() {
         return ContextCompat.getColor(this, R.color.ios_semantic_positive);
@@ -436,12 +438,12 @@ public class MainActivity extends AppCompatActivity {
     private void setupRootDetection() {
         totalDetectionRiskCount = 0;
         environmentRiskCount = 0;
+        riskAppsDetectionPoint = 0;
 
         clearLog();
         checkRiskApps();
         appendLog("开始执行 Root 与安全检测");
         
-        TextView tvRootOverall = findViewById(R.id.tvRootOverall);
         android.widget.LinearLayout layoutRootDetails = findViewById(R.id.layoutRootDetails);
         layoutRootDetails.removeAllViews();
         android.widget.LinearLayout layoutAdvancedDetails = findViewById(R.id.layoutAdvancedDetails);
@@ -489,89 +491,76 @@ public class MainActivity extends AppCompatActivity {
 
         appendLog("总异常项 = " + totalDetectionRiskCount);
 
-        // 4. 综合状态
-        if (rootBeer.isRooted()) {
-            tvRootOverall.setText("综合状态: 危险 (检测到 Root 痕迹)");
-            tvRootOverall.setTextColor(colorSemanticDanger());
-        } else {
-            tvRootOverall.setText("综合状态: 安全 (未 Root)");
-            tvRootOverall.setTextColor(colorSemanticSafe());
-        }
-
-        environmentRiskCount = 0;
-        if (rootBeer.isRooted()) environmentRiskCount += 1;
-
         // 40. Bootloader 锁检测
         String bootloaderStatus = getBootloaderStatus();
         tvBootloader.setText("40. Bootloader锁: " + bootloaderStatus);
+        boolean hasBootloaderRisk = false;
         if (bootloaderStatus.contains("已解锁")) {
-            tvBootloader.setTextColor(colorSemanticDanger());
-            environmentRiskCount += 1;
+            tvBootloader.setVisibility(View.VISIBLE);
+            styleInlineRiskItem(tvBootloader);
+            hasBootloaderRisk = true;
         } else if (bootloaderStatus.contains("已上锁")) {
-            tvBootloader.setTextColor(colorSemanticSafe());
+            tvBootloader.setVisibility(View.GONE);
+        } else {
+            tvBootloader.setVisibility(View.GONE);
         }
         appendLog("Bootloader = " + bootloaderStatus);
 
         // 41. USB 调试检测
         boolean isUsbDebugEnabled = Settings.Global.getInt(getContentResolver(), Settings.Global.ADB_ENABLED, 0) == 1;
         if (isUsbDebugEnabled) {
+            tvUsbDebug.setVisibility(View.VISIBLE);
             tvUsbDebug.setText("41. USB调试: 可疑（已开启）");
-            tvUsbDebug.setTextColor(colorSemanticDanger());
-            environmentRiskCount += 1;
+            styleInlineWarningItem(tvUsbDebug);
             appendLog("USB调试 = 可疑（已开启）");
         } else {
-            tvUsbDebug.setText("41. USB调试: 正常（未开启）");
-            tvUsbDebug.setTextColor(colorSemanticSafe());
+            tvUsbDebug.setVisibility(View.GONE);
             appendLog("USB调试 = 正常（未开启）");
         }
+
+        // 总览统计口径：明细风险点 + 风险应用模块 + Bootloader 风险（不计 USB 调试）
+        environmentRiskCount = totalDetectionRiskCount + riskAppsDetectionPoint + (hasBootloaderRisk ? 1 : 0);
 
         updateEnvironmentSummary();
     }
 
     private void addRootCheckItem(android.widget.LinearLayout parent, String label, boolean isDetected) {
+        if (!isDetected) {
+            return;
+        }
         TextView tv = new TextView(this);
         tv.setLayoutParams(new android.widget.LinearLayout.LayoutParams(
                 android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
-        tv.setPadding(0, 0, 0, 16);
         tv.setTextSize(14);
         
-        if (isDetected) {
-            tv.setText("⚠️ " + label + ": 发现异常痕迹");
-            tv.setTextColor(colorSemanticDanger());
-            appendLog("RAW " + label + " -> 异常");
-        } else {
-            tv.setText("✅ " + label + ": 未发现异常");
-            tv.setTextColor(colorSemanticSafe());
-            appendLog("RAW " + label + " -> 正常");
-        }
-        parent.addView(tv);
+        tv.setText(label + ": 发现异常痕迹");
+        tv.setTextColor(ContextCompat.getColor(this, R.color.ios_text_primary));
+        appendLog("RAW " + label + " -> 异常");
+        addRiskItemContainer(parent, tv);
     }
 
     private void addAdvancedRootCheckItem(android.widget.LinearLayout parent, String label, java.util.List<String> detectedItems) {
+        if (detectedItems == null || detectedItems.isEmpty()) {
+            appendLog(label + " = 正常");
+            return;
+        }
         TextView tv = new TextView(this);
         tv.setLayoutParams(new android.widget.LinearLayout.LayoutParams(
                 android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
-        tv.setPadding(0, 0, 0, 16);
         tv.setTextSize(14);
 
-        if (detectedItems != null && !detectedItems.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("⚠️ ").append(label).append(": 发现 ").append(detectedItems.size()).append(" 处异常");
-            for (String item : detectedItems) {
-                sb.append("\n   - ").append(item);
-                appendLog(label + " => " + item);
-            }
-            tv.setText(sb.toString());
-            tv.setTextColor(colorSemanticDanger());
-            appendLog(label + " = 异常(" + detectedItems.size() + ")");
-        } else {
-            tv.setText("✅ " + label + ": 未发现异常");
-            tv.setTextColor(colorSemanticSafe());
-            appendLog(label + " = 正常");
+        StringBuilder sb = new StringBuilder();
+        sb.append(label).append(": 发现 ").append(detectedItems.size()).append(" 处异常");
+        for (String item : detectedItems) {
+            sb.append("\n   - ").append(item);
+            appendLog(label + " => " + item);
         }
-        parent.addView(tv);
+        tv.setText(sb.toString());
+        tv.setTextColor(ContextCompat.getColor(this, R.color.ios_text_primary));
+        appendLog(label + " = 异常(" + detectedItems.size() + ")");
+        addRiskItemContainer(parent, tv);
     }
 
     private void checkAdvancedEnvironment(android.widget.LinearLayout parent) {
@@ -757,14 +746,71 @@ public class MainActivity extends AppCompatActivity {
         int count = 0;
         for (int i = 0; i < parent.getChildCount(); i++) {
             android.view.View child = parent.getChildAt(i);
-            if (child instanceof TextView) {
-                CharSequence text = ((TextView) child).getText();
-                if (text != null && text.toString().startsWith("⚠️")) {
-                    count++;
-                }
+            Object tag = child.getTag();
+            if (tag instanceof String && "risk_item".equals(tag)) {
+                count++;
             }
         }
         return count;
+    }
+
+    private void addRiskItemContainer(android.widget.LinearLayout parent, TextView contentView) {
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setTag("risk_item");
+        container.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
+
+        android.widget.LinearLayout.LayoutParams containerParams = new android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+        containerParams.topMargin = dpToPx(6);
+        containerParams.bottomMargin = dpToPx(10);
+        container.setLayoutParams(containerParams);
+
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0x14FF4D4F);
+        bg.setCornerRadius(dpToPx(12));
+        bg.setStroke(dpToPx(1), 0x33FF4D4F);
+        container.setBackground(bg);
+
+        container.addView(contentView);
+        parent.addView(container);
+    }
+
+    private void styleInlineRiskItem(TextView tv) {
+        tv.setTextColor(ContextCompat.getColor(this, R.color.ios_text_primary));
+        tv.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
+
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tv.getLayoutParams();
+        lp.topMargin = dpToPx(6);
+        lp.bottomMargin = dpToPx(10);
+        tv.setLayoutParams(lp);
+
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0x14FF4D4F);
+        bg.setCornerRadius(dpToPx(12));
+        bg.setStroke(dpToPx(1), 0x33FF4D4F);
+        tv.setBackground(bg);
+    }
+
+    private void styleInlineWarningItem(TextView tv) {
+        tv.setTextColor(ContextCompat.getColor(this, R.color.ios_text_primary));
+        tv.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
+
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tv.getLayoutParams();
+        lp.topMargin = dpToPx(6);
+        lp.bottomMargin = dpToPx(10);
+        tv.setLayoutParams(lp);
+
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0x14FFB74D);
+        bg.setCornerRadius(dpToPx(12));
+        bg.setStroke(dpToPx(1), 0x33FF9800);
+        tv.setBackground(bg);
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
     }
 
     private void updateEnvironmentSummary() {
@@ -773,8 +819,6 @@ public class MainActivity extends AppCompatActivity {
         ImageView ivEnvironmentIcon = findViewById(R.id.ivEnvironmentIcon);
         
         if (tvEnvironmentSummary == null) return;
-
-        environmentRiskCount = totalDetectionRiskCount;
 
         if (environmentRiskCount == 0) {
             tvEnvironmentSummary.setText("设备安全");
@@ -825,7 +869,8 @@ public class MainActivity extends AppCompatActivity {
             "com.android.vending.billing.InAppBillingService.COIN",
             "com.dimonvideo.luckypatcher",
             "com.chelpus.luckypatcher",
-            "com.github.kyuubiran.ezxhelper"
+            "com.github.kyuubiran.ezxhelper",
+            "com.sukisu.ultra"
         };
 
         PackageManager pm = getPackageManager();
@@ -841,10 +886,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (foundApps.isEmpty()) {
-            tvRiskApps.setText("风险应用: 未发现");
-            tvRiskApps.setTextColor(colorSemanticSafe());
+            riskAppsDetectionPoint = 0;
+            tvRiskApps.setVisibility(View.GONE);
             appendLog("风险应用: 未发现");
         } else {
+            riskAppsDetectionPoint = 1;
+            tvRiskApps.setVisibility(View.VISIBLE);
             StringBuilder sb = new StringBuilder("发现以下风险应用：\n");
             for (String app : foundApps) {
                 sb.append("- ").append(app).append("\n");

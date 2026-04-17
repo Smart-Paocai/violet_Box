@@ -127,37 +127,16 @@
                         android:layout_marginBottom="16dp"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="风险应用: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="14dp"
-                        android:background="@color/ios_separator" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:text="检测明细"
-                        android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
-                    <TextView
-                        android:id="@+id/tvRootOverall"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        android:textStyle="bold"
-                        tools:text="综合状态: 加载中..." />
                     <LinearLayout
                         android:id="@+id/layoutRootDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp" />
+                        android:orientation="vertical" />
                     <LinearLayout
                         android:id="@+id/layoutAdvancedDetails"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp" />
+                        android:orientation="vertical" />
                     <TextView
                         android:id="@+id/tvBootloader"
                         android:layout_width="match_parent"
@@ -165,11 +144,6 @@
                         android:layout_marginBottom="@dimen/ios_row_spacing"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="Bootloader锁: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:background="@color/ios_separator" />
                     <TextView
                         android:id="@+id/tvUsbDebug"
                         android:layout_width="match_parent"
