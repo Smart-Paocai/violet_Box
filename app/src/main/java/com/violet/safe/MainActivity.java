@@ -2,6 +2,10 @@ package com.violet.safe;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
@@ -20,6 +24,8 @@ import android.system.OsConstants;
 import android.system.StructStat;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -63,8 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
     private int currentTab = 0;
     private LinearLayout navHome, navDevice, navExplore, navSettings;
+    private LinearLayout navRow;
     private ImageView iconHome, iconDevice, iconExplore, iconSettings;
     private TextView textHome, textDevice, textExplore, textSettings;
+    private View navLiquidIndicator;
+    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
         navDevice = findViewById(R.id.nav_device);
         navExplore = findViewById(R.id.nav_explore);
         navSettings = findViewById(R.id.nav_settings);
+        navRow = findViewById(R.id.nav_row);
+        navLiquidIndicator = findViewById(R.id.nav_liquid_indicator);
         
         iconHome = findViewById(R.id.nav_home_icon);
         iconDevice = findViewById(R.id.nav_device_icon);
@@ -93,11 +104,11 @@ public class MainActivity extends AppCompatActivity {
         textSettings = findViewById(R.id.nav_settings_text);
 
         if (navHome != null) {
-            navHome.setOnClickListener(v -> selectTab(0));
-            navDevice.setOnClickListener(v -> selectTab(1));
-            navExplore.setOnClickListener(v -> selectTab(2));
-            navSettings.setOnClickListener(v -> selectTab(3));
-            selectTab(0);
+            navHome.setOnClickListener(v -> selectTab(0, true));
+            navDevice.setOnClickListener(v -> selectTab(1, true));
+            navExplore.setOnClickListener(v -> selectTab(2, true));
+            navSettings.setOnClickListener(v -> selectTab(3, true));
+            selectTab(0, false);
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -111,36 +122,63 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectTab(int tab) {
+        selectTab(tab, true);
+    }
+
+    private void selectTab(int tab, boolean animate) {
         if (iconHome == null) return; // Views not initialized
         currentTab = tab;
         resetAllTabs();
         int selectedColor = ContextCompat.getColor(this, R.color.purple_200);
+        int defaultColor = ContextCompat.getColor(this, R.color.ios_text_primary);
+        LinearLayout selectedNav = null;
+        ImageView selectedIcon = null;
+        TextView selectedText = null;
 
         switch (tab) {
             case 0:
-                iconHome.setColorFilter(selectedColor);
-                textHome.setTextColor(selectedColor);
+                selectedNav = navHome;
+                selectedIcon = iconHome;
+                selectedText = textHome;
                 findViewById(R.id.contentHome).setVisibility(View.VISIBLE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
             case 1:
-                iconDevice.setColorFilter(selectedColor);
-                textDevice.setTextColor(selectedColor);
+                selectedNav = navDevice;
+                selectedIcon = iconDevice;
+                selectedText = textDevice;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
             case 2:
-                iconExplore.setColorFilter(selectedColor);
-                textExplore.setTextColor(selectedColor);
+                selectedNav = navExplore;
+                selectedIcon = iconExplore;
+                selectedText = textExplore;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
             case 3:
-                iconSettings.setColorFilter(selectedColor);
-                textSettings.setTextColor(selectedColor);
+                selectedNav = navSettings;
+                selectedIcon = iconSettings;
+                selectedText = textSettings;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
+        }
+
+        if (selectedIcon != null && selectedText != null) {
+            if (animate) {
+                animateColorTransition(selectedIcon, selectedText, defaultColor, selectedColor);
+            } else {
+                selectedIcon.setColorFilter(selectedColor);
+                selectedText.setTextColor(selectedColor);
+            }
+        }
+
+        moveLiquidIndicator(selectedNav, animate);
+
+        if (animate) {
+            animateNavScale(selectedNav);
         }
     }
 
@@ -156,11 +194,76 @@ public class MainActivity extends AppCompatActivity {
         textDevice.setTextColor(defaultColor);
         textExplore.setTextColor(defaultColor);
         textSettings.setTextColor(defaultColor);
-        
-        navHome.setBackgroundResource(android.R.color.transparent);
-        navDevice.setBackgroundResource(android.R.color.transparent);
-        navExplore.setBackgroundResource(android.R.color.transparent);
-        navSettings.setBackgroundResource(android.R.color.transparent);
+
+        navHome.animate().scaleX(1f).scaleY(1f).setDuration(120).start();
+        navDevice.animate().scaleX(1f).scaleY(1f).setDuration(120).start();
+        navExplore.animate().scaleX(1f).scaleY(1f).setDuration(120).start();
+        navSettings.animate().scaleX(1f).scaleY(1f).setDuration(120).start();
+    }
+
+    private void animateColorTransition(ImageView icon, TextView text, int fromColor, int toColor) {
+        ValueAnimator animator = ValueAnimator.ofObject(argbEvaluator, fromColor, toColor);
+        animator.setDuration(220);
+        animator.addUpdateListener(animation -> {
+            int animatedColor = (int) animation.getAnimatedValue();
+            icon.setColorFilter(animatedColor);
+            text.setTextColor(animatedColor);
+        });
+        animator.start();
+    }
+
+    private void animateNavScale(LinearLayout targetNav) {
+        if (targetNav == null) return;
+        targetNav.setScaleX(0.94f);
+        targetNav.setScaleY(0.94f);
+        targetNav.animate()
+                .scaleX(1.06f)
+                .scaleY(1.06f)
+                .setDuration(140)
+                .setInterpolator(new OvershootInterpolator(1.15f))
+                .withEndAction(() -> targetNav.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(120)
+                        .start())
+                .start();
+    }
+
+    private void moveLiquidIndicator(LinearLayout targetNav, boolean animate) {
+        if (targetNav == null || navLiquidIndicator == null || navRow == null) return;
+        targetNav.post(() -> {
+            int targetWidth = targetNav.getWidth();
+            if (targetWidth <= 0) return;
+
+            float targetX = targetNav.getX();
+            android.view.ViewGroup.LayoutParams params = navLiquidIndicator.getLayoutParams();
+            if (params.width != targetWidth) {
+                params.width = targetWidth;
+                navLiquidIndicator.setLayoutParams(params);
+            }
+
+            if (!animate) {
+                navLiquidIndicator.setTranslationX(targetX);
+                navLiquidIndicator.setScaleX(1f);
+                return;
+            }
+
+            float currentX = navLiquidIndicator.getTranslationX();
+            float distance = Math.abs(targetX - currentX);
+            float stretchScale = Math.min(1.28f, 1f + distance / 300f);
+
+            ObjectAnimator stretch = ObjectAnimator.ofFloat(navLiquidIndicator, View.SCALE_X, 1f, stretchScale, 1f);
+            stretch.setDuration(360);
+            stretch.setInterpolator(new DecelerateInterpolator());
+
+            ObjectAnimator slide = ObjectAnimator.ofFloat(navLiquidIndicator, View.TRANSLATION_X, currentX, targetX);
+            slide.setDuration(360);
+            slide.setInterpolator(new DecelerateInterpolator());
+
+            AnimatorSet liquidSet = new AnimatorSet();
+            liquidSet.playTogether(stretch, slide);
+            liquidSet.start();
+        });
     }
 
     @Override

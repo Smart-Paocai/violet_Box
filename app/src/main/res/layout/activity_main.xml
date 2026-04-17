@@ -278,15 +278,29 @@
         app:cardUseCompatPadding="true"
         app:cardPreventCornerOverlap="true">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
+            android:paddingStart="0.5dp"
+            android:paddingEnd="0.5dp"
             android:gravity="center">
+
+            <View
+                android:id="@+id/nav_liquid_indicator"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_gravity="start|center_vertical"
+                android:background="@drawable/nav_item_active_wrap" />
+
+            <LinearLayout
+                android:id="@+id/nav_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:gravity="center">
 
             <!-- 首页页面 -->
             <LinearLayout
@@ -416,7 +430,8 @@
 
             </LinearLayout>
 
-        </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
 
     </com.google.android.material.card.MaterialCardView>
 
