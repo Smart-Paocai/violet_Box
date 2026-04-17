@@ -114,33 +114,30 @@ public class MainActivity extends AppCompatActivity {
         if (iconHome == null) return; // Views not initialized
         currentTab = tab;
         resetAllTabs();
+        int selectedColor = ContextCompat.getColor(this, R.color.purple_200);
 
         switch (tab) {
             case 0:
-                iconHome.setColorFilter(ContextCompat.getColor(this, R.color.purple_700));
-                textHome.setTextColor(ContextCompat.getColor(this, R.color.purple_700));
-                navHome.setBackgroundResource(R.drawable.nav_item_selected);
+                iconHome.setColorFilter(selectedColor);
+                textHome.setTextColor(selectedColor);
                 findViewById(R.id.contentHome).setVisibility(View.VISIBLE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
             case 1:
-                iconDevice.setColorFilter(ContextCompat.getColor(this, R.color.purple_700));
-                textDevice.setTextColor(ContextCompat.getColor(this, R.color.purple_700));
-                navDevice.setBackgroundResource(R.drawable.nav_item_selected);
+                iconDevice.setColorFilter(selectedColor);
+                textDevice.setTextColor(selectedColor);
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
             case 2:
-                iconExplore.setColorFilter(ContextCompat.getColor(this, R.color.purple_700));
-                textExplore.setTextColor(ContextCompat.getColor(this, R.color.purple_700));
-                navExplore.setBackgroundResource(R.drawable.nav_item_selected);
+                iconExplore.setColorFilter(selectedColor);
+                textExplore.setTextColor(selectedColor);
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
             case 3:
-                iconSettings.setColorFilter(ContextCompat.getColor(this, R.color.purple_700));
-                textSettings.setTextColor(ContextCompat.getColor(this, R.color.purple_700));
-                navSettings.setBackgroundResource(R.drawable.nav_item_selected);
+                iconSettings.setColorFilter(selectedColor);
+                textSettings.setTextColor(selectedColor);
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
@@ -148,17 +145,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetAllTabs() {
-        int grayColor = ContextCompat.getColor(this, R.color.ios_text_secondary);
+        int defaultColor = ContextCompat.getColor(this, R.color.ios_text_primary);
         
-        iconHome.setColorFilter(grayColor);
-        iconDevice.setColorFilter(grayColor);
-        iconExplore.setColorFilter(grayColor);
-        iconSettings.setColorFilter(grayColor);
+        iconHome.setColorFilter(defaultColor);
+        iconDevice.setColorFilter(defaultColor);
+        iconExplore.setColorFilter(defaultColor);
+        iconSettings.setColorFilter(defaultColor);
         
-        textHome.setTextColor(grayColor);
-        textDevice.setTextColor(grayColor);
-        textExplore.setTextColor(grayColor);
-        textSettings.setTextColor(grayColor);
+        textHome.setTextColor(defaultColor);
+        textDevice.setTextColor(defaultColor);
+        textExplore.setTextColor(defaultColor);
+        textSettings.setTextColor(defaultColor);
         
         navHome.setBackgroundResource(android.R.color.transparent);
         navDevice.setBackgroundResource(android.R.color.transparent);
