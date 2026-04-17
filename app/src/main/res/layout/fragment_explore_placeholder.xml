@@ -9,32 +9,39 @@
     android:paddingTop="?attr/actionBarSize"
     android:paddingBottom="88dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/ios_card"
-        app:cardCornerRadius="@dimen/ios_card_corner"
-        app:cardElevation="0dp"
-        app:strokeWidth="0dp">
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/ios_card_padding">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSelinuxManager"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:text="SELinux管理"
+            android:textAllCaps="false"
+            android:textColor="@color/ios_text_primary"
+            app:backgroundTint="@color/ios_background_elevated"
+            app:cornerRadius="14dp"
+            app:strokeColor="@color/ios_separator"
+            app:strokeWidth="1dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSelinuxManager"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="SElinux管理"
-                android:textAllCaps="false"
-                android:textColor="@color/ios_text_primary"
-                app:backgroundTint="@color/ios_background_elevated"
-                app:cornerRadius="14dp"
-                app:strokeColor="@color/ios_separator"
-                app:strokeWidth="1dp" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPartitionManager"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:text="分区管理"
+            android:textAllCaps="false"
+            android:textColor="@color/ios_text_primary"
+            app:backgroundTint="@color/ios_background_elevated"
+            app:cornerRadius="14dp"
+            app:strokeColor="@color/ios_separator"
+            app:strokeWidth="1dp" />
+    </LinearLayout>
 
 </LinearLayout>

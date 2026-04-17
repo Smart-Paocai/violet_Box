@@ -113,6 +113,11 @@ public class MainActivity extends AppCompatActivity {
             btnSelinuxManager.setOnClickListener(v ->
                     startActivity(new Intent(this, SelinuxManagerActivity.class)));
         }
+        View btnPartitionManager = findViewById(R.id.btnPartitionManager);
+        if (btnPartitionManager != null) {
+            btnPartitionManager.setOnClickListener(v ->
+                    startActivity(new Intent(this, PartitionManagerActivity.class)));
+        }
 
         if (navHome != null) {
             navHome.setOnClickListener(v -> selectTab(0, true));

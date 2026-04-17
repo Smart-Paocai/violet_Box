@@ -31,6 +31,9 @@
         <activity
             android:name=".SelinuxManagerActivity"
             android:exported="false" />
+        <activity
+            android:name=".PartitionManagerActivity"
+            android:exported="false" />
 
         <receiver
             android:name=".BootCompletedReceiver"
