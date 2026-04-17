@@ -841,6 +841,55 @@ public class MainActivity extends AppCompatActivity {
             }
             appendLog("设备总览 = 风险设备");
         }
+
+        updateSystemPropsPlaceholder(true);
+    }
+
+    private void updateSystemPropsPlaceholder(boolean shouldShow) {
+        View card = findViewById(R.id.cardSystemPropsPlaceholder);
+        TextView tvProps = findViewById(R.id.tvSystemPropsPlaceholder);
+        if (card == null || tvProps == null) {
+            return;
+        }
+        if (!shouldShow) {
+            card.setVisibility(View.GONE);
+            return;
+        }
+
+        card.setVisibility(View.VISIBLE);
+        tvProps.setText(buildFullSystemPropsText());
+    }
+
+    private String buildFullSystemPropsText() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("品牌: ").append(Build.BRAND).append("\n");
+        sb.append("厂商: ").append(Build.MANUFACTURER).append("\n");
+        sb.append("型号: ").append(Build.MODEL).append("\n");
+        sb.append("设备代号: ").append(Build.DEVICE).append("\n");
+        sb.append("产品名称: ").append(Build.PRODUCT).append("\n");
+        sb.append("系统版本: Android ").append(Build.VERSION.RELEASE)
+                .append(" (API ").append(Build.VERSION.SDK_INT).append(")\n");
+        sb.append("构建类型: ").append(Build.TYPE).append("\n");
+        sb.append("构建标签: ").append(Build.TAGS).append("\n");
+        sb.append("构建指纹: ").append(Build.FINGERPRINT).append("\n");
+        sb.append("内核: ").append(System.getProperty("os.version", "unknown")).append("\n");
+        sb.append("ro.secure: ").append(readSystemProp("ro.secure", "unknown")).append("\n");
+        sb.append("ro.debuggable: ").append(readSystemProp("ro.debuggable", "unknown")).append("\n");
+        sb.append("ro.boot.flash.locked: ").append(readSystemProp("ro.boot.flash.locked", "unknown")).append("\n");
+        sb.append("ro.boot.verifiedbootstate: ").append(readSystemProp("ro.boot.verifiedbootstate", "unknown")).append("\n");
+        sb.append("ro.boot.vbmeta.device_state: ").append(readSystemProp("ro.boot.vbmeta.device_state", "unknown")).append("\n");
+        sb.append("ro.boot.slot_suffix: ").append(readSystemProp("ro.boot.slot_suffix", "unknown"));
+        return sb.toString();
+    }
+
+    private String readSystemProp(String key, String fallback) {
+        try {
+            Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class, String.class);
+            return (String) get.invoke(null, key, fallback);
+        } catch (Exception ignored) {
+            return fallback;
+        }
     }
 
     private void checkRiskApps() {
@@ -897,7 +946,7 @@ public class MainActivity extends AppCompatActivity {
                 sb.append("- ").append(app).append("\n");
             }
             tvRiskApps.setText(sb.toString().trim());
-            tvRiskApps.setTextColor(colorSemanticDanger());
+            styleInlineRiskItem(tvRiskApps);
             appendLog("风险应用: 发现 " + foundApps.size() + " 项");
             for (String app : foundApps) {
                 appendLog("风险应用项 = " + app);
