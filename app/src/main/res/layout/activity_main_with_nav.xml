@@ -38,12 +38,12 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottom_nav_card"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         app:cardBackgroundColor="@color/ios_glass_surface"
-        app:cardCornerRadius="32dp"
+        app:cardCornerRadius="28dp"
         app:cardElevation="0dp"
         app:strokeColor="@color/ios_glass_stroke"
         app:strokeWidth="1dp"
@@ -52,12 +52,12 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:gravity="center">
 
             <!-- 首页页面 -->
@@ -68,8 +68,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="2dp"
+                android:padding="8dp"
                 android:background="@drawable/nav_item_selector"
                 android:clickable="true"
                 android:focusable="true">
@@ -101,8 +100,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="2dp"
+                android:padding="8dp"
                 android:background="@drawable/nav_item_selector"
                 android:clickable="true"
                 android:focusable="true">
@@ -134,8 +132,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="2dp"
+                android:padding="8dp"
                 android:background="@drawable/nav_item_selector"
                 android:clickable="true"
                 android:focusable="true">
@@ -167,8 +164,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="2dp"
+                android:padding="8dp"
                 android:background="@drawable/nav_item_selector"
                 android:clickable="true"
                 android:focusable="true">
