@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ios_background_grouped"
+    android:fitsSystemWindows="true">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/ios_background_elevated"
+        android:fitsSystemWindows="true"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarSelinux"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:title="SELinux管理"
+            app:titleTextColor="@color/ios_text_primary" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/ios_separator" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/ios_screen_edge"
+            android:paddingTop="12dp"
+            android:paddingBottom="24dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/ios_card"
+                app:cardCornerRadius="@dimen/ios_card_corner"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/ios_card_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="当前SELinux模式"
+                        android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
+
+                    <TextView
+                        android:id="@+id/tvSelinuxModeValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="读取中..."
+                        android:textAppearance="@style/Widget.IOS.Body" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnToggleSelinux"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="切换模式"
+                        android:textAllCaps="false"
+                        android:textColor="@color/ios_text_primary"
+                        app:backgroundTint="@color/ios_background_elevated"
+                        app:cornerRadius="14dp"
+                        app:strokeColor="@color/ios_separator"
+                        app:strokeWidth="1dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ios_section_gap"
+                app:cardBackgroundColor="@color/ios_card"
+                app:cardCornerRadius="@dimen/ios_card_corner"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/ios_card_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="开机自动切换"
+                        android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchAutoSelinux"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="启用开机自动切换"
+                        android:textAppearance="@style/Widget.IOS.Body" />
+
+                    <RadioGroup
+                        android:id="@+id/radioSelinuxTarget"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="vertical">
+
+                        <RadioButton
+                            android:id="@+id/radioEnforcing"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="开机后切换到 严格模式（推荐）" />
+
+                        <RadioButton
+                            android:id="@+id/radioPermissive"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="开机后切换到 宽容模式" />
+                    </RadioGroup>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSaveAutoSelinux"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="保存开机自动切换设置"
+                        android:textAllCaps="false"
+                        android:textColor="@color/ios_text_primary"
+                        app:backgroundTint="@color/ios_background_elevated"
+                        app:cornerRadius="14dp"
+                        app:strokeColor="@color/ios_separator"
+                        app:strokeWidth="1dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.inflateMenu(R.menu.toolbar_menu);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("紫罗兰Box");
+        }
 
         // 初始化导航栏
         navHome = findViewById(R.id.nav_home);
@@ -104,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
         textDevice = findViewById(R.id.nav_device_text);
         textExplore = findViewById(R.id.nav_explore_text);
         textSettings = findViewById(R.id.nav_settings_text);
+
+        View btnSelinuxManager = findViewById(R.id.btnSelinuxManager);
+        if (btnSelinuxManager != null) {
+            btnSelinuxManager.setOnClickListener(v ->
+                    startActivity(new Intent(this, SelinuxManagerActivity.class)));
+        }
 
         if (navHome != null) {
             navHome.setOnClickListener(v -> selectTab(0, true));
@@ -130,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
     private void selectTab(int tab, boolean animate) {
         if (iconHome == null) return; // Views not initialized
         currentTab = tab;
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("紫罗兰Box");
+        }
         resetAllTabs();
         int selectedColor = ContextCompat.getColor(this, R.color.purple_200);
         int defaultColor = ContextCompat.getColor(this, R.color.ios_text_primary);
@@ -144,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedText = textHome;
                 findViewById(R.id.contentHome).setVisibility(View.VISIBLE);
                 findViewById(R.id.contentDevice).setVisibility(View.GONE);
+                findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
             case 1:
@@ -152,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedText = textDevice;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.contentDevice).setVisibility(View.VISIBLE);
+                findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
             case 2:
@@ -160,7 +174,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedText = textExplore;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.contentDevice).setVisibility(View.GONE);
-                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
+                findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.VISIBLE);
+                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
             case 3:
                 selectedNav = navSettings;
@@ -168,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedText = textSettings;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
                 findViewById(R.id.contentDevice).setVisibility(View.GONE);
+                findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
         }

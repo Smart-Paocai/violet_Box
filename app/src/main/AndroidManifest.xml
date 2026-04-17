@@ -4,6 +4,7 @@
 
     <!-- 获取读取应用列表权限 -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".VioletApplication"
@@ -27,6 +28,20 @@
         <activity
             android:name=".MainActivityWithNav"
             android:exported="false" />
+        <activity
+            android:name=".SelinuxManagerActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".BootCompletedReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

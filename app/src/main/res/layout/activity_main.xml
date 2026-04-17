@@ -302,9 +302,18 @@
     </androidx.core.widget.NestedScrollView>
 
     <include
+        android:id="@+id/fragmentExplorePlaceholder"
+        layout="@layout/fragment_explore_placeholder"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <include
         android:id="@+id/fragmentSettingsPlaceholder"
         layout="@layout/fragment_settings_placeholder"
-        android:visibility="gone" />
+        android:layout_marginTop="?attr/actionBarSize"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <!-- 底部导航栏  -->
     <com.google.android.material.card.MaterialCardView
