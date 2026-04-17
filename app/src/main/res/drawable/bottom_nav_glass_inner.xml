@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 主体：雾化玻璃底 -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="90"
+                android:startColor="#52FFFFFF"
+                android:centerColor="#3CFFFFFF"
+                android:endColor="#30FFFFFF" />
+            <corners android:radius="34dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#99D5DCE6" />
+        </shape>
+    </item>
+
+    <!-- 内层高光描边：增强边缘通透感 -->
+    <item
+        android:left="1dp"
+        android:top="1dp"
+        android:right="1dp"
+        android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="33dp" />
+            <stroke
+                android:width="0.6dp"
+                android:color="#66FFFFFF" />
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</layer-list>

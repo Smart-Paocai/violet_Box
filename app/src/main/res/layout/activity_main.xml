@@ -262,16 +262,16 @@
         layout="@layout/fragment_settings_placeholder"
         android:visibility="gone" />
 
-    <!-- iOS风格底部导航栏 (Custom Style) -->
+    <!-- 底部导航栏  -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottom_nav_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginHorizontal="4dp"
+        android:layout_marginBottom="0dp"
         app:cardBackgroundColor="@color/ios_glass_surface"
-        app:cardCornerRadius="28dp"
+        app:cardCornerRadius="35dp"
         app:cardElevation="0dp"
         app:strokeColor="@color/ios_glass_stroke"
         app:strokeWidth="1dp"
