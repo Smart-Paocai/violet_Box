@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedIcon = iconHome;
                 selectedText = textHome;
                 findViewById(R.id.contentHome).setVisibility(View.VISIBLE);
+                findViewById(R.id.contentDevice).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
             case 1:
@@ -148,13 +149,15 @@ public class MainActivity extends AppCompatActivity {
                 selectedIcon = iconDevice;
                 selectedText = textDevice;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
-                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
+                findViewById(R.id.contentDevice).setVisibility(View.VISIBLE);
+                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
             case 2:
                 selectedNav = navExplore;
                 selectedIcon = iconExplore;
                 selectedText = textExplore;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
+                findViewById(R.id.contentDevice).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
             case 3:
@@ -162,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedIcon = iconSettings;
                 selectedText = textSettings;
                 findViewById(R.id.contentHome).setVisibility(View.GONE);
+                findViewById(R.id.contentDevice).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
                 break;
         }
@@ -765,17 +769,32 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateEnvironmentSummary() {
         TextView tvEnvironmentSummary = findViewById(R.id.tvEnvironmentSummary);
+        TextView tvEnvironmentDetail = findViewById(R.id.tvEnvironmentDetail);
+        ImageView ivEnvironmentIcon = findViewById(R.id.ivEnvironmentIcon);
+        
         if (tvEnvironmentSummary == null) return;
 
         environmentRiskCount = totalDetectionRiskCount;
 
         if (environmentRiskCount == 0) {
-            tvEnvironmentSummary.setText("✅ 正常设备");
+            tvEnvironmentSummary.setText("设备安全");
             tvEnvironmentSummary.setTextColor(colorSemanticSafe());
+            if (tvEnvironmentDetail != null) {
+                tvEnvironmentDetail.setText("未检测到安全风险");
+            }
+            if (ivEnvironmentIcon != null) {
+                ivEnvironmentIcon.setImageResource(R.drawable.ic_safe);
+            }
             appendLog("设备总览 = 正常设备");
         } else {
-            tvEnvironmentSummary.setText("⚠️ 风险设备");
+            tvEnvironmentSummary.setText("检测到风险");
             tvEnvironmentSummary.setTextColor(colorSemanticDanger());
+            if (tvEnvironmentDetail != null) {
+                tvEnvironmentDetail.setText("发现 " + environmentRiskCount + " 个安全问题");
+            }
+            if (ivEnvironmentIcon != null) {
+                ivEnvironmentIcon.setImageResource(R.drawable.ic_risk);
+            }
             appendLog("设备总览 = 风险设备");
         }
     }

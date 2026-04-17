@@ -49,7 +49,156 @@
             android:paddingTop="8dp"
             android:paddingBottom="28dp">
 
-            <!-- 设备信息 -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardEnvironmentSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/ios_section_gap"
+                app:cardBackgroundColor="@color/ios_glass_surface"
+                app:cardCornerRadius="@dimen/ios_card_corner"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/ios_glass_stroke"
+                app:strokeWidth="1dp"
+                app:cardUseCompatPadding="false"
+                app:cardPreventCornerOverlap="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="25dp">
+
+                    <!-- 状态图标 -->
+                    <ImageView
+                        android:id="@+id/ivEnvironmentIcon"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:layout_marginEnd="16dp"
+                        android:src="@drawable/ic_safe" />
+
+                    <!-- 状态文字 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvEnvironmentSummary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="设备安全"
+                            android:textColor="@color/ios_semantic_positive"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvEnvironmentDetail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="未检测到安全风险"
+                            android:textColor="@color/ios_text_secondary"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRootInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/ios_card"
+                app:cardCornerRadius="@dimen/ios_card_corner"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/ios_card_padding">
+                    <TextView
+                        android:id="@+id/tvRiskApps"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:textAppearance="@style/Widget.IOS.Body"
+                        tools:text="风险应用: 加载中..." />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_marginBottom="14dp"
+                        android:background="@color/ios_separator" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="检测明细"
+                        android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
+                    <TextView
+                        android:id="@+id/tvRootOverall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:textAppearance="@style/Widget.IOS.Body"
+                        android:textStyle="bold"
+                        tools:text="综合状态: 加载中..." />
+                    <LinearLayout
+                        android:id="@+id/layoutRootDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp" />
+                    <LinearLayout
+                        android:id="@+id/layoutAdvancedDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="16dp" />
+                    <TextView
+                        android:id="@+id/tvBootloader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/ios_row_spacing"
+                        android:textAppearance="@style/Widget.IOS.Body"
+                        tools:text="Bootloader锁: 加载中..." />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_marginBottom="@dimen/ios_row_spacing"
+                        android:background="@color/ios_separator" />
+                    <TextView
+                        android:id="@+id/tvUsbDebug"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/Widget.IOS.Body"
+                        tools:text="USB调试: 加载中..." />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/contentDevice"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="88dp"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/ios_screen_edge"
+            android:paddingTop="8dp"
+            android:paddingBottom="28dp">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -66,11 +215,13 @@
                 app:cardCornerRadius="@dimen/ios_card_corner"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="@dimen/ios_card_padding">
+
                     <TextView
                         android:id="@+id/tvDeviceName"
                         android:layout_width="match_parent"
@@ -137,121 +288,6 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/Widget.IOS.Body"
                         tools:text="启动槽位: 加载中..." />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardEnvironmentSummary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/ios_section_gap"
-                android:layout_marginHorizontal="2dp"
-                app:cardBackgroundColor="@color/ios_glass_surface"
-                app:cardCornerRadius="22dp"
-                app:cardElevation="0dp"
-                app:strokeColor="@color/ios_glass_stroke"
-                app:strokeWidth="1dp"
-                app:cardUseCompatPadding="true"
-                app:cardPreventCornerOverlap="true">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp">
-                    <TextView
-                        android:id="@+id/tvEnvironmentSummary"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="✅正常设备"
-                        android:textColor="#1E5AA8"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="Root 与安全检测"
-                android:textAppearance="@style/Widget.IOS.SectionLabel" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardRootInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/ios_card"
-                app:cardCornerRadius="@dimen/ios_card_corner"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/ios_card_padding">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:text="风险检测总览"
-                        android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
-                    <TextView
-                        android:id="@+id/tvRiskApps"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="风险应用: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="14dp"
-                        android:background="@color/ios_separator" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:text="检测明细"
-                        android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
-                    <TextView
-                        android:id="@+id/tvRootOverall"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        android:textStyle="bold"
-                        tools:text="综合状态: 加载中..." />
-                    <LinearLayout
-                        android:id="@+id/layoutRootDetails"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp" />
-                    <LinearLayout
-                        android:id="@+id/layoutAdvancedDetails"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="16dp" />
-                    <TextView
-                        android:id="@+id/tvBootloader"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="Bootloader锁: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:background="@color/ios_separator" />
-                    <TextView
-                        android:id="@+id/tvUsbDebug"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="USB调试: 加载中..." />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
