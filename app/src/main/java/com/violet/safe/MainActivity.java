@@ -123,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
             btnFontLibraryBackup.setOnClickListener(v ->
                     startActivity(new Intent(this, FontLibraryBackupActivity.class)));
         }
+        View btnModuleManager = findViewById(R.id.btnModuleManager);
+        if (btnModuleManager != null) {
+            btnModuleManager.setOnClickListener(v ->
+                    startActivity(new Intent(this, ModuleManagerActivity.class)));
+        }
 
         if (navHome != null) {
             navHome.setOnClickListener(v -> selectTab(0, true));

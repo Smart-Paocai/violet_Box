@@ -37,6 +37,9 @@
         <activity
             android:name=".FontLibraryBackupActivity"
             android:exported="false" />
+        <activity
+            android:name=".ModuleManagerActivity"
+            android:exported="false" />
 
         <receiver
             android:name=".BootCompletedReceiver"

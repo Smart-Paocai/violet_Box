@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ios_background_grouped"
+    android:fitsSystemWindows="true">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/ios_background_elevated"
+        android:fitsSystemWindows="true"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarModuleManager"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:title="模块管理"
+            app:titleTextColor="@color/ios_text_primary" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/ios_separator" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/ios_screen_edge"
+            android:paddingTop="12dp"
+            android:paddingBottom="24dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/ios_card"
+                app:cardCornerRadius="@dimen/ios_card_corner"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/ios_card_padding">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="模块刷入"
+                        android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="支持一次选择多个 zip 模块，并按目标平台依次安装，安装过程中请勿退出页面"
+                        android:textAppearance="@style/Widget.IOS.Body" />
+
+                    <RadioGroup
+                        android:id="@+id/rgModuleTarget"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/rbMagisk"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:checked="true"
+                            android:text="Magisk" />
+
+                        <RadioButton
+                            android:id="@+id/rbKsu"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="KernelSU" />
+
+                        <RadioButton
+                            android:id="@+id/rbApatch"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="APatch" />
+                    </RadioGroup>
+
+                    <TextView
+                        android:id="@+id/tvModuleSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="已选择 0 个模块"
+                        android:textAppearance="@style/Widget.IOS.Caption" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnPickModules"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="6dp"
+                            android:text="选择模块"
+                            android:textAllCaps="false"
+                            android:textColor="@color/ios_text_primary"
+                            app:backgroundTint="@color/ios_background_elevated"
+                            app:cornerRadius="14dp"
+                            app:strokeColor="@color/ios_separator"
+                            app:strokeWidth="1dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnInstallModules"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="6dp"
+                            android:text="开始刷入"
+                            android:textAllCaps="false"
+                            android:textColor="@color/ios_text_primary"
+                            app:backgroundTint="@color/ios_background_elevated"
+                            app:cornerRadius="14dp"
+                            app:strokeColor="@color/ios_separator"
+                            app:strokeWidth="1dp" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/progressModuleInstall"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="12dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvModuleProgress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="end"
+                        android:text="进度：0%"
+                        android:textAppearance="@style/Widget.IOS.Caption"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvModuleLog"
+                        android:layout_width="match_parent"
+                        android:layout_height="352dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@color/ios_background_grouped"
+                        android:gravity="top|start"
+                        android:padding="10dp"
+                        android:scrollbars="vertical"
+                        android:text="日志"
+                        android:textAppearance="@style/Widget.IOS.Caption"
+                        android:typeface="monospace" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRebootNow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="立即重启设备"
+                        android:textAllCaps="false"
+                        android:textColor="@color/ios_text_primary"
+                        android:visibility="gone"
+                        app:backgroundTint="@color/ios_background_elevated"
+                        app:cornerRadius="14dp"
+                        app:strokeColor="@color/ios_separator"
+                        app:strokeWidth="1dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

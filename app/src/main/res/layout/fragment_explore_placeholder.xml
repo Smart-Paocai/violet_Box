@@ -44,17 +44,39 @@
             app:strokeWidth="1dp" />
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnFontLibraryBackup"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="字库备份"
-        android:textAllCaps="false"
-        android:textColor="@color/ios_text_primary"
-        app:backgroundTint="@color/ios_background_elevated"
-        app:cornerRadius="14dp"
-        app:strokeColor="@color/ios_separator"
-        app:strokeWidth="1dp" />
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnModuleManager"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:text="模块管理"
+            android:textAllCaps="false"
+            android:textColor="@color/ios_text_primary"
+            app:backgroundTint="@color/ios_background_elevated"
+            app:cornerRadius="14dp"
+            app:strokeColor="@color/ios_separator"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFontLibraryBackup"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:text="字库备份"
+            android:textAllCaps="false"
+            android:textColor="@color/ios_text_primary"
+            app:backgroundTint="@color/ios_background_elevated"
+            app:cornerRadius="14dp"
+            app:strokeColor="@color/ios_separator"
+            app:strokeWidth="1dp" />
+    </LinearLayout>
 
 </LinearLayout>
