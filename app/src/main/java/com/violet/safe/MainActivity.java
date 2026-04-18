@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.os.SystemClock;
 import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.Settings;
 import android.graphics.drawable.GradientDrawable;
+import android.content.res.ColorStateList;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
@@ -40,6 +42,7 @@ import java.util.Locale;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.scottyab.rootbeer.RootBeer;
 
@@ -47,6 +50,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -132,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
             btnModuleManager.setOnClickListener(v ->
                     startActivity(new Intent(this, ModuleManagerActivity.class)));
         }
+        setupQuickRebootButtons();
 
         if (navHome != null) {
             navHome.setOnClickListener(v -> selectTab(0, true));
@@ -149,6 +154,16 @@ public class MainActivity extends AppCompatActivity {
 
         clearLog();
         setupDeviceInfo();
+        updateExploreRootStatus();
+        updateExploreUptime();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 返回前台后刷新首页 Explore 的 ROOT 实时状态
+        updateExploreRootStatus();
+        updateExploreUptime();
     }
 
     private void selectTab(int tab) {
@@ -174,8 +189,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedNav = navHome;
                 selectedIcon = iconHome;
                 selectedText = textHome;
-                findViewById(R.id.contentHome).setVisibility(View.VISIBLE);
-                findViewById(R.id.contentDevice).setVisibility(View.GONE);
+                findViewById(R.id.contentHome).setVisibility(View.GONE);
+                findViewById(R.id.contentDevice).setVisibility(View.VISIBLE);
                 findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
@@ -183,8 +198,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedNav = navDevice;
                 selectedIcon = iconDevice;
                 selectedText = textDevice;
-                findViewById(R.id.contentHome).setVisibility(View.GONE);
-                findViewById(R.id.contentDevice).setVisibility(View.VISIBLE);
+                findViewById(R.id.contentHome).setVisibility(View.VISIBLE);
+                findViewById(R.id.contentDevice).setVisibility(View.GONE);
                 findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.GONE);
                 findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
                 break;
@@ -229,6 +244,64 @@ public class MainActivity extends AppCompatActivity {
             appBarLayout.setVisibility(View.VISIBLE);
             appBarLayout.bringToFront();
         }
+    }
+
+    private void setupQuickRebootButtons() {
+        bindQuickRebootButton(R.id.btnQuickRebootSystem, "重启系统", "reboot");
+        bindQuickRebootButton(R.id.btnQuickRebootBootloader, "重启到 Bootloader", "reboot bootloader");
+        bindQuickRebootButton(R.id.btnQuickRebootFastbootd, "重启到 FastbootD", "reboot fastboot");
+        bindQuickRebootButton(R.id.btnQuickRebootRecovery, "重启到 Recovery", "reboot recovery");
+        bindQuickRebootButton(R.id.btnQuickRebootEdl, "重启到 EDL", "reboot edl");
+        bindQuickRebootButton(R.id.btnQuickRebootSafeMode, "重启到安全模式", "setprop persist.sys.safemode 1; reboot");
+    }
+
+    private void bindQuickRebootButton(int viewId, String title, String command) {
+        View button = findViewById(viewId);
+        if (button == null) {
+            return;
+        }
+        button.setOnClickListener(v -> showQuickRebootConfirmDialog(title, command));
+    }
+
+    private void showQuickRebootConfirmDialog(String title, String command) {
+        if (!canExecuteSuAsRoot()) {
+            Toast.makeText(this, "请先授予应用ROOT权限", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new androidx.appcompat.app.AlertDialog.Builder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                .setTitle(title)
+                .setMessage("即将执行重启操作，是否继续？")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("继续", (dialog, which) -> executeQuickRebootCommand(command))
+                .show();
+    }
+
+    private void executeQuickRebootCommand(String command) {
+        Thread t = new Thread(() -> {
+            String[] suBins = new String[]{"su", "/system/bin/su", "/system/xbin/su"};
+            boolean success = false;
+            for (String suBin : suBins) {
+                Process process = null;
+                try {
+                    process = new ProcessBuilder(suBin, "-c", command).redirectErrorStream(true).start();
+                    boolean finished = process.waitFor(1500, TimeUnit.MILLISECONDS);
+                    if (finished && process.exitValue() == 0) {
+                        success = true;
+                        break;
+                    }
+                } catch (Exception ignored) {
+                } finally {
+                    if (process != null) {
+                        process.destroy();
+                    }
+                }
+            }
+            if (!success) {
+                runOnUiThread(() -> Toast.makeText(this, "执行失败：请检查ROOT权限或设备支持情况", Toast.LENGTH_SHORT).show());
+            }
+        });
+        t.start();
     }
 
     private void resetAllTabs() {
@@ -513,6 +586,139 @@ public class MainActivity extends AppCompatActivity {
         appendLog("启动槽位 = " + bootSlot);
 
         setupRootDetection();
+        updateExploreRootStatus();
+    }
+
+    private void updateExploreRootStatus() {
+        TextView tvExploreRootStatus = findViewById(R.id.tvExploreRootStatus);
+        TextView tvExploreRootManager = findViewById(R.id.tvExploreRootManager);
+        ImageView ivExploreRootStatusIcon = findViewById(R.id.ivExploreRootStatusIcon);
+        MaterialCardView cardExploreRootStatusIconBg = findViewById(R.id.cardExploreRootStatusIconBg);
+        if (tvExploreRootStatus == null || tvExploreRootManager == null || ivExploreRootStatusIcon == null || cardExploreRootStatusIconBg == null) {
+            return;
+        }
+
+        RootBeer rootBeer = new RootBeer(this);
+        com.violet.safe.detector.RootDetector advancedDetector = new com.violet.safe.detector.RootDetector(this);
+        boolean hasRootArtifacts = rootBeer.isRooted() || advancedDetector.isDeviceRooted();
+        boolean rootGranted = hasRootArtifacts && canExecuteSuAsRoot();
+        if (rootGranted) {
+            String manager = detectGrantedRootManagerByAdbFeatures();
+            tvExploreRootStatus.setText("已授予ROOT");
+            tvExploreRootStatus.setTextColor(colorSemanticSafe());
+            tvExploreRootManager.setText("Root Manager：" + manager);
+            ivExploreRootStatusIcon.setImageResource(R.drawable.ic_ms_verified_user);
+            ivExploreRootStatusIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.explore_emerald_600)));
+            cardExploreRootStatusIconBg.setCardBackgroundColor(ContextCompat.getColor(this, R.color.explore_emerald_100));
+        } else {
+            tvExploreRootStatus.setText("未授予ROOT");
+            tvExploreRootStatus.setTextColor(ContextCompat.getColor(this, R.color.ios_semantic_negative));
+            tvExploreRootManager.setText("请授予应用ROOT权限，否则部分功能无法使用");
+            ivExploreRootStatusIcon.setImageResource(R.drawable.ic_ms_root_not_granted);
+            ivExploreRootStatusIcon.setImageTintList(null);
+            cardExploreRootStatusIconBg.setCardBackgroundColor(ContextCompat.getColor(this, R.color.explore_rose_100));
+        }
+        tvExploreRootManager.setTextColor(ContextCompat.getColor(this, R.color.explore_slate_500));
+    }
+
+    private void updateExploreUptime() {
+        TextView tvExploreUptimeValue = findViewById(R.id.tvExploreUptimeValue);
+        if (tvExploreUptimeValue == null) {
+            return;
+        }
+        long elapsed = SystemClock.elapsedRealtime();
+        long totalMinutes = elapsed / (60 * 1000);
+        long days = totalMinutes / (24 * 60);
+        long hours = (totalMinutes % (24 * 60)) / 60;
+        long minutes = totalMinutes % 60;
+
+        String uptimeText;
+        if (days > 0) {
+            uptimeText = days + "d " + hours + "h";
+        } else if (hours > 0) {
+            uptimeText = hours + "h " + minutes + "m";
+        } else {
+            uptimeText = minutes + "m";
+        }
+        tvExploreUptimeValue.setText(uptimeText);
+    }
+
+    private boolean canExecuteSuAsRoot() {
+        String[][] commands = new String[][]{
+                {"su", "-c", "id"},
+                {"/system/bin/su", "-c", "id"},
+                {"/system/xbin/su", "-c", "id"}
+        };
+        for (String[] command : commands) {
+            Process process = null;
+            try {
+                process = new ProcessBuilder(command).redirectErrorStream(true).start();
+                boolean finished = process.waitFor(1200, TimeUnit.MILLISECONDS);
+                if (!finished) {
+                    process.destroy();
+                    continue;
+                }
+                if (process.exitValue() != 0) {
+                    continue;
+                }
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line = reader.readLine();
+                    if (line != null && line.contains("uid=0")) {
+                        return true;
+                    }
+                }
+            } catch (Exception ignored) {
+            } finally {
+                if (process != null) {
+                    process.destroy();
+                }
+            }
+        }
+        return false;
+    }
+
+    private String detectGrantedRootManagerByAdbFeatures() {
+        boolean hasKernelSu = existsPathViaSu("/data/adb/ksud") || existsPathViaSu("/data/adb/ksd");
+        boolean hasAPatch = existsPathViaSu("/data/adb/apd");
+        boolean hasMagisk = existsPathViaSu("/data/adb/magisk.db");
+
+        List<String> managers = new ArrayList<>();
+        if (hasKernelSu) {
+            managers.add("KernelSU");
+        }
+        if (hasAPatch) {
+            managers.add("APatch");
+        }
+        if (hasMagisk) {
+            managers.add("Magisk");
+        }
+
+        if (managers.isEmpty()) {
+            return "未知（未匹配到 /data/adb 特征）";
+        }
+        return String.join(" & ", managers);
+    }
+
+    private boolean existsPathViaSu(String absolutePath) {
+        String[] suBins = new String[]{"su", "/system/bin/su", "/system/xbin/su"};
+        for (String suBin : suBins) {
+            Process process = null;
+            try {
+                process = new ProcessBuilder(suBin, "-c", "[ -e \"" + absolutePath + "\" ]")
+                        .redirectErrorStream(true)
+                        .start();
+                boolean finished = process.waitFor(1200, TimeUnit.MILLISECONDS);
+                if (finished && process.exitValue() == 0) {
+                    return true;
+                }
+            } catch (Exception ignored) {
+            } finally {
+                if (process != null) {
+                    process.destroy();
+                }
+            }
+        }
+        return false;
     }
 
     private void setupRootDetection() {

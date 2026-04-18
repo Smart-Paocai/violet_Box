@@ -33,6 +33,7 @@
                 android:padding="16dp">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardExploreRootStatusIconBg"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     app:cardBackgroundColor="@color/explore_emerald_100"
@@ -41,6 +42,7 @@
                     app:strokeWidth="0dp">
 
                     <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ivExploreRootStatusIcon"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
@@ -57,6 +59,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvExploreRootStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
@@ -65,6 +68,7 @@
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/tvExploreRootManager"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -80,6 +84,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvExploreUptimeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
@@ -88,6 +93,7 @@
                         android:textSize="12sp" />
 
                     <TextView
+                        android:id="@+id/tvExploreUptimeValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -333,14 +339,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp">
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp">
 
                     <!-- 系统 -->
                     <LinearLayout
-                        android:layout_width="100dp"
+                        android:id="@+id/btnQuickRebootSystem"
+                        android:layout_width="84dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
+                        android:layout_marginEnd="6dp"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
@@ -371,10 +378,13 @@
                     </LinearLayout>
 
                     <!-- Bootloader -->
+
+                    <!-- FastbootD -->
                     <LinearLayout
-                        android:layout_width="100dp"
+                        android:id="@+id/btnQuickRebootBootloader"
+                        android:layout_width="84dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
+                        android:layout_marginEnd="6dp"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
@@ -404,11 +414,11 @@
                             android:textAppearance="@style/Widget.IOS.ExploreQuickLabel" />
                     </LinearLayout>
 
-                    <!-- FastbootD -->
                     <LinearLayout
-                        android:layout_width="100dp"
+                        android:id="@+id/btnQuickRebootFastbootd"
+                        android:layout_width="84dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
+                        android:layout_marginEnd="6dp"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
@@ -440,9 +450,10 @@
 
                     <!-- Recovery -->
                     <LinearLayout
-                        android:layout_width="100dp"
+                        android:id="@+id/btnQuickRebootRecovery"
+                        android:layout_width="84dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
+                        android:layout_marginEnd="6dp"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
@@ -474,9 +485,10 @@
 
                     <!-- EDL -->
                     <LinearLayout
-                        android:layout_width="100dp"
+                        android:id="@+id/btnQuickRebootEdl"
+                        android:layout_width="84dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
+                        android:layout_marginEnd="6dp"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
@@ -508,7 +520,8 @@
 
                     <!-- 安全模式 -->
                     <LinearLayout
-                        android:layout_width="100dp"
+                        android:id="@+id/btnQuickRebootSafeMode"
+                        android:layout_width="84dp"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">

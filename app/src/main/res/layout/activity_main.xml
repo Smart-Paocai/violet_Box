@@ -374,14 +374,14 @@
                     android:id="@+id/nav_home_icon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_home"
+                    android:src="@drawable/ic_device_info"
                     app:tint="@color/ios_text_primary" />
 
                 <TextView
                     android:id="@+id/nav_home_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="首页"
+                    android:text="设备"
                     android:textSize="9sp"
                     android:textColor="@color/ios_text_primary"
                     android:layout_marginTop="2dp"
@@ -406,14 +406,14 @@
                     android:id="@+id/nav_device_icon"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_device_info"
+                    android:src="@drawable/ic_ms_selinux"
                     app:tint="@color/ios_text_primary" />
 
                 <TextView
                     android:id="@+id/nav_device_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="设备"
+                    android:text="安全"
                     android:textSize="9sp"
                     android:textColor="@color/ios_text_primary"
                     android:layout_marginTop="2dp"
