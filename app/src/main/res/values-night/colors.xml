@@ -9,4 +9,15 @@
     <color name="ios_accent">#9897FF</color>
     <color name="ios_semantic_positive">#32D74B</color>
     <color name="ios_semantic_negative">#FF453A</color>
+    <!-- 玩机页文字在深色卡片上的对比度 -->
+    <color name="explore_slate_500">#94a3b8</color>
+    <color name="explore_slate_600">#cbd5e1</color>
+    <color name="explore_slate_700">#e2e8f0</color>
+    <color name="explore_slate_800">#e2e8f0</color>
+    <color name="explore_slate_900">#f8fafc</color>
+    <color name="explore_slate_200">#475569</color>
+    <color name="explore_slate_100">#334155</color>
+    <color name="explore_page_background">#0F0F12</color>
+    <color name="explore_muted_blue_grey">#9CA8B8</color>
+    <color name="nav_tab_active_pill">#3D2A45</color>
 </resources>

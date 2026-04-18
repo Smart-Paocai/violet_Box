@@ -6,4 +6,8 @@
     <dimen name="ios_screen_edge">16dp</dimen>
     <dimen name="ios_section_gap">16dp</dimen>
     <dimen name="ios_card_corner">12dp</dimen>
+    <!-- stitch code.html rounded-2xl ≈ 16dp -->
+    <dimen name="explore_card_radius">16dp</dimen>
+    <dimen name="explore_card_elevation">2dp</dimen>
+    <dimen name="explore_tool_icon_radius">12dp</dimen>
 </resources>

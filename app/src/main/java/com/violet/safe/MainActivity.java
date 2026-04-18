@@ -46,6 +46,7 @@ import com.scottyab.rootbeer.RootBeer;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView iconHome, iconDevice, iconExplore, iconSettings;
     private TextView textHome, textDevice, textExplore, textSettings;
     private View navLiquidIndicator;
+    private AppBarLayout appBarLayout;
     private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     @Override
@@ -84,11 +86,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         
         Toolbar toolbar = findViewById(R.id.toolbar);
+        appBarLayout = findViewById(R.id.appBarLayout);
         setSupportActionBar(toolbar);
         toolbar.inflateMenu(R.menu.toolbar_menu);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("紫罗兰Box");
         }
+        ensureToolbarVisible();
 
         // 初始化导航栏
         navHome = findViewById(R.id.nav_home);
@@ -154,11 +158,12 @@ public class MainActivity extends AppCompatActivity {
     private void selectTab(int tab, boolean animate) {
         if (iconHome == null) return; // Views not initialized
         currentTab = tab;
+        ensureToolbarVisible();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("紫罗兰Box");
         }
         resetAllTabs();
-        int selectedColor = ContextCompat.getColor(this, R.color.purple_200);
+        int selectedColor = ContextCompat.getColor(this, R.color.purple_500);
         int defaultColor = ContextCompat.getColor(this, R.color.ios_text_primary);
         LinearLayout selectedNav = null;
         ImageView selectedIcon = null;
@@ -216,6 +221,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (animate) {
             animateNavScale(selectedNav);
+        }
+    }
+
+    private void ensureToolbarVisible() {
+        if (appBarLayout != null) {
+            appBarLayout.setVisibility(View.VISIBLE);
+            appBarLayout.bringToFront();
         }
     }
 

@@ -13,13 +13,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/ios_background_elevated"
-        app:elevation="0dp">
+        android:elevation="8dp"
+        android:translationZ="8dp"
+        app:elevation="8dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
+            android:background="@color/ios_background_elevated"
             app:menu="@menu/toolbar_menu"
             app:title="紫罗兰Box"
             app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"

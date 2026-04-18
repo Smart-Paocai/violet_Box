@@ -35,4 +35,21 @@
         <item name="android:textColor">@color/ios_text_secondary</item>
         <item name="android:textSize">12sp</item>
     </style>
+
+    <!-- 玩机页（stitch code.html） -->
+    <!-- stitch_fluent_root_system/code.html：section 标题 slate-500、uppercase -->
+    <style name="Widget.IOS.ExploreSectionTitle" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textColor">@color/explore_slate_500</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.06</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- code.html 快捷重启标签 text-slate-600 -->
+    <style name="Widget.IOS.ExploreQuickLabel" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textColor">@color/explore_slate_600</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
 </resources>
