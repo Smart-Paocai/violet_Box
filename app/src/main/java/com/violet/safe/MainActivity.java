@@ -288,17 +288,54 @@ public class MainActivity extends AppCompatActivity {
             float currentX = navLiquidIndicator.getTranslationX();
             float distance = Math.abs(targetX - currentX);
             float stretchScale = Math.min(1.28f, 1f + distance / 300f);
+            boolean edgeCollision = targetNav == navHome || targetNav == navSettings;
+            float direction = targetX >= currentX ? 1f : -1f;
+            float overshootPx = edgeCollision ? Math.min(18f, Math.max(6f, distance * 0.08f)) : 0f;
+            float collideX = edgeCollision ? (targetX + direction * overshootPx) : targetX;
 
             ObjectAnimator stretch = ObjectAnimator.ofFloat(navLiquidIndicator, View.SCALE_X, 1f, stretchScale, 1f);
             stretch.setDuration(360);
             stretch.setInterpolator(new DecelerateInterpolator());
+            float squashScale = Math.max(0.82f, 1f - (stretchScale - 1f) * 0.65f);
+            ObjectAnimator squash = ObjectAnimator.ofFloat(navLiquidIndicator, View.SCALE_Y, 1f, squashScale, 1.06f, 1f);
+            squash.setDuration(420);
+            squash.setInterpolator(new OvershootInterpolator(1.05f));
 
-            ObjectAnimator slide = ObjectAnimator.ofFloat(navLiquidIndicator, View.TRANSLATION_X, currentX, targetX);
-            slide.setDuration(360);
+            ObjectAnimator slide = ObjectAnimator.ofFloat(navLiquidIndicator, View.TRANSLATION_X, currentX, collideX, targetX);
+            slide.setDuration(420);
             slide.setInterpolator(new DecelerateInterpolator());
+            ObjectAnimator collideSquash = ObjectAnimator.ofFloat(navLiquidIndicator, View.SCALE_X, 1f, 1f);
+            if (edgeCollision) {
+                collideSquash = ObjectAnimator.ofFloat(
+                        navLiquidIndicator,
+                        View.SCALE_X,
+                        1f,
+                        Math.max(0.92f, 1f - overshootPx / 120f),
+                        1f
+                );
+                collideSquash.setDuration(220);
+                collideSquash.setStartDelay(210);
+                collideSquash.setInterpolator(new OvershootInterpolator(1.2f));
+            }
 
             AnimatorSet liquidSet = new AnimatorSet();
-            liquidSet.playTogether(stretch, slide);
+            liquidSet.playTogether(stretch, squash, slide, collideSquash);
+            liquidSet.addListener(new android.animation.AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(android.animation.Animator animation) {
+                    navLiquidIndicator.animate()
+                            .scaleX(0.97f)
+                            .scaleY(1.03f)
+                            .setDuration(90)
+                            .withEndAction(() -> navLiquidIndicator.animate()
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                                    .setDuration(110)
+                                    .setInterpolator(new OvershootInterpolator(1.1f))
+                                    .start())
+                            .start();
+                }
+            });
             liquidSet.start();
         });
     }
