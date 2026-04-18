@@ -40,12 +40,12 @@
                     app:cardElevation="0dp"
                     app:strokeWidth="0dp">
 
-                    <ImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
                         android:importantForAccessibility="no"
-                        android:src="@drawable/ic_ms_verified_user"
+                        app:srcCompat="@drawable/ic_ms_verified_user"
                         app:tint="@color/explore_emerald_600" />
                 </com.google.android.material.card.MaterialCardView>
 
@@ -100,6 +100,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- code.html space-y-5：与下一区块间距 20dp -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -145,13 +146,13 @@
                             app:cardElevation="0dp"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_security"
-                                app:tint="@color/explore_blue_600" />
+                                app:srcCompat="@drawable/ic_ms_selinux"
+                                app:tint="@null" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -187,13 +188,13 @@
                             app:cardElevation="0dp"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_data_usage"
-                                app:tint="@color/explore_purple_600" />
+                                app:srcCompat="@drawable/ic_ms_partition_manager"
+                                app:tint="@null" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -235,13 +236,13 @@
                             app:cardElevation="0dp"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_extension"
-                                app:tint="@color/explore_amber_600" />
+                                app:srcCompat="@drawable/ic_ms_module_manager"
+                                app:tint="@null" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -277,13 +278,13 @@
                             app:cardElevation="0dp"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_font_download"
-                                app:tint="@color/explore_rose_600" />
+                                app:srcCompat="@drawable/ic_ms_font_backup_qualified"
+                                app:tint="@null" />
                         </com.google.android.material.card.MaterialCardView>
 
                         <TextView
@@ -351,12 +352,12 @@
                             app:cardElevation="@dimen/explore_card_elevation"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_restart_alt"
+                                app:srcCompat="@drawable/ic_ms_restart_alt"
                                 app:tint="@color/explore_slate_700" />
                         </com.google.android.material.card.MaterialCardView>
 
@@ -385,12 +386,12 @@
                             app:cardElevation="@dimen/explore_card_elevation"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_developer_board"
+                                app:srcCompat="@drawable/ic_ms_developer_board"
                                 app:tint="@color/explore_slate_700" />
                         </com.google.android.material.card.MaterialCardView>
 
@@ -419,12 +420,12 @@
                             app:cardElevation="@dimen/explore_card_elevation"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_bolt"
+                                app:srcCompat="@drawable/ic_ms_bolt"
                                 app:tint="@color/explore_slate_700" />
                         </com.google.android.material.card.MaterialCardView>
 
@@ -453,12 +454,12 @@
                             app:cardElevation="@dimen/explore_card_elevation"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_build"
+                                app:srcCompat="@drawable/ic_ms_build"
                                 app:tint="@color/explore_slate_700" />
                         </com.google.android.material.card.MaterialCardView>
 
@@ -487,12 +488,12 @@
                             app:cardElevation="@dimen/explore_card_elevation"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_cable"
+                                app:srcCompat="@drawable/ic_ms_cable"
                                 app:tint="@color/explore_slate_700" />
                         </com.google.android.material.card.MaterialCardView>
 
@@ -520,12 +521,12 @@
                             app:cardElevation="@dimen/explore_card_elevation"
                             app:strokeWidth="0dp">
 
-                            <ImageView
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:layout_gravity="center"
                                 android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ms_security"
+                                app:srcCompat="@drawable/ic_ms_security"
                                 app:tint="@color/explore_slate_700" />
                         </com.google.android.material.card.MaterialCardView>
 
