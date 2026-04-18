@@ -118,6 +118,11 @@ public class MainActivity extends AppCompatActivity {
             btnPartitionManager.setOnClickListener(v ->
                     startActivity(new Intent(this, PartitionManagerActivity.class)));
         }
+        View btnFontLibraryBackup = findViewById(R.id.btnFontLibraryBackup);
+        if (btnFontLibraryBackup != null) {
+            btnFontLibraryBackup.setOnClickListener(v ->
+                    startActivity(new Intent(this, FontLibraryBackupActivity.class)));
+        }
 
         if (navHome != null) {
             navHome.setOnClickListener(v -> selectTab(0, true));

@@ -34,6 +34,9 @@
         <activity
             android:name=".PartitionManagerActivity"
             android:exported="false" />
+        <activity
+            android:name=".FontLibraryBackupActivity"
+            android:exported="false" />
 
         <receiver
             android:name=".BootCompletedReceiver"
