@@ -3,9 +3,19 @@ package com.violet.safe;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
+import android.provider.OpenableColumns;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -47,6 +58,8 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
     ));
 
     private TextView tvFontBackupStatus;
+    private TextView tvFontBackupProgress;
+    private ProgressBar progressFontBackup;
     private MaterialButton btnFontBackupExport;
     private SwitchMaterial switchExcludeSuper;
     private SwitchMaterial switchCompressPack;
@@ -68,6 +81,9 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> finish());
 
         tvFontBackupStatus = findViewById(R.id.tvFontBackupStatus);
+        tvFontBackupStatus.setMovementMethod(LinkMovementMethod.getInstance());
+        tvFontBackupProgress = findViewById(R.id.tvFontBackupProgress);
+        progressFontBackup = findViewById(R.id.progressFontBackup);
         btnFontBackupExport = findViewById(R.id.btnFontBackupExport);
         switchExcludeSuper = findViewById(R.id.switchExcludeSuper);
         switchCompressPack = findViewById(R.id.switchCompressPack);
@@ -175,8 +191,10 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
                 for (int i = 0; i < n; i++) {
                     PartitionItem p = targets.get(i);
                     int step = i + 1;
+                    int exportProgress = Math.min(90, (step * 90) / n);
                     runOnUiThread(() -> tvFontBackupStatus.setText(
                             "状态：正在导出 " + p.name + " (" + step + "/" + n + ")…"));
+                    updateProgress(exportProgress);
 
                     File outImg = new File(staging, safeImageFileName(p.name));
                     ShellResult dd = runSuCommand(
@@ -199,6 +217,7 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
                         return;
                     }
                     runOnUiThread(() -> tvFontBackupStatus.setText("状态：正在压缩打包…"));
+                    updateProgress(95);
                     ShellResult tar = runSuCommand(
                             "tar -czf " + shellEscape(bundle.getAbsolutePath()) + " -C "
                                     + shellEscape(staging.getAbsolutePath()) + " ."
@@ -219,7 +238,14 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
                     //noinspection ResultOfMethodCallIgnored
                     bundle.delete();
                     runOnUiThread(() -> {
-                        setBusy(false, ok ? "状态：已写入所选位置" : "状态：写入失败");
+                        if (ok) {
+                            updateProgress(100);
+                        }
+                        if (ok && archiveUri != null) {
+                            setBusy(false, "状态：已写入所选位置", archiveUri);
+                        } else {
+                            setBusy(false, ok ? "状态：已写入所选位置" : "状态：写入失败");
+                        }
                         Toast.makeText(this, ok ? "字库备份完成" : "导出失败", Toast.LENGTH_SHORT).show();
                     });
                 } else {
@@ -229,12 +255,21 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
                         return;
                     }
                     runOnUiThread(() -> tvFontBackupStatus.setText("状态：正在写入所选文件夹…"));
-                    boolean ok = copyStagingImgsToTree(staging, treeUri);
+                    updateProgress(95);
+                    Uri writtenDirUri = copyStagingImgsToTree(staging, treeUri);
+                    boolean ok = writtenDirUri != null;
                     wipeStaging(staging);
                     //noinspection ResultOfMethodCallIgnored
                     bundle.delete();
                     runOnUiThread(() -> {
-                        setBusy(false, ok ? "状态：已写入所选文件夹" : "状态：写入失败");
+                        if (ok) {
+                            updateProgress(100);
+                        }
+                        if (ok && writtenDirUri != null) {
+                            setBusy(false, "状态：已写入所选文件夹", writtenDirUri);
+                        } else {
+                            setBusy(false, ok ? "状态：已写入所选文件夹" : "状态：写入失败");
+                        }
                         Toast.makeText(this, ok ? "字库导出完成" : "写入文件夹失败", Toast.LENGTH_SHORT).show();
                     });
                 }
@@ -250,14 +285,19 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
         }).start();
     }
 
-    /** 在目录树中新建时间戳子文件夹，并将 staging 内各 .img 写入。 */
-    private boolean copyStagingImgsToTree(File stagingDir, Uri treeUri) {
+    /**
+     * 在目录树中新建时间戳子文件夹，并将 staging 内各 .img 写入。
+     *
+     * @return 实际写入目录的 URI（时间戳子文件夹，若创建失败则为所选树根），失败返回 null
+     */
+    @Nullable
+    private Uri copyStagingImgsToTree(File stagingDir, Uri treeUri) {
         try {
             ContentResolver resolver = getContentResolver();
             String treeId = DocumentsContract.getTreeDocumentId(treeUri);
             Uri parentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, treeId);
 
-            String folderName = "violet_font_library_"
+            String folderName = "violetBox_Backup"
                     + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
             Uri dirUri;
             try {
@@ -272,7 +312,7 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
 
             File[] files = stagingDir.listFiles();
             if (files == null || files.length == 0) {
-                return false;
+                return null;
             }
             for (File f : files) {
                 if (!f.isFile()) {
@@ -281,15 +321,15 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
                 Uri out = DocumentsContract.createDocument(
                         resolver, dirUri, "application/octet-stream", f.getName());
                 if (out == null) {
-                    return false;
+                    return null;
                 }
                 if (!copyFileToUri(f, out)) {
-                    return false;
+                    return null;
                 }
             }
-            return true;
+            return dirUri;
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 
@@ -345,13 +385,142 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
     }
 
     private void setBusy(boolean value, @Nullable String statusText) {
+        setBusy(value, statusText, null);
+    }
+
+    private void setBusy(boolean value, @Nullable String statusText, @Nullable Uri statusLocationUri) {
         busy = value;
+        progressFontBackup.setVisibility(value ? View.VISIBLE : View.GONE);
+        tvFontBackupProgress.setVisibility(value ? View.VISIBLE : View.GONE);
+        if (value) {
+            progressFontBackup.setProgress(0);
+            tvFontBackupProgress.setText("进度：0%");
+        }
         btnFontBackupExport.setEnabled(!value);
         switchExcludeSuper.setEnabled(!value);
         switchCompressPack.setEnabled(!value);
         if (statusText != null) {
-            tvFontBackupStatus.setText(statusText);
+            applyStatusText(statusText, statusLocationUri);
         }
+    }
+
+    /** 成功写入且提供 {@code locationUri} 时，在状态下方展示可点击路径，用于在文件管理器等中打开该位置。 */
+    private void applyStatusText(String statusText, @Nullable Uri locationUri) {
+        if (locationUri == null) {
+            tvFontBackupStatus.setText(statusText);
+            return;
+        }
+        String pathReadable = formatUriForDisplay(locationUri);
+        String pathLabel = "路径：";
+        String full = statusText + "\n" + pathLabel + pathReadable;
+        SpannableString ss = new SpannableString(full);
+        int pathStart = statusText.length() + 1 + pathLabel.length();
+        int pathEnd = full.length();
+        int accent = ContextCompat.getColor(this, R.color.ios_accent);
+        ClickableSpan span = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                openExportLocation(locationUri);
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(true);
+                ds.setFakeBoldText(false);
+            }
+        };
+        ss.setSpan(span, pathStart, pathEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(new ForegroundColorSpan(accent), pathStart, pathEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvFontBackupStatus.setText(ss);
+    }
+
+    /**
+     * 展示用路径：优先 Openable 显示名（真实文件名/目录名）。
+     * 部分 SAF 的 documentId 为 {@code primary:44} 等形式，冒号后只是提供方内部 id，不能当路径用。
+     */
+    private String formatUriForDisplay(Uri uri) {
+        if (uri == null) {
+            return "";
+        }
+        String displayName = queryOpenableDisplayName(uri);
+
+        String pathFromDocId = null;
+        try {
+            String id = DocumentsContract.isTreeUri(uri)
+                    ? DocumentsContract.getTreeDocumentId(uri)
+                    : DocumentsContract.getDocumentId(uri);
+            if (id != null && !id.isEmpty()) {
+                int colon = id.indexOf(':');
+                String tail = (colon >= 0 && colon < id.length() - 1 ? id.substring(colon + 1) : id).trim();
+                if (!isOpaqueDocumentIdTail(tail)) {
+                    pathFromDocId = tail;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        if (pathFromDocId != null && pathFromDocId.contains("/")) {
+            return pathFromDocId;
+        }
+        if (displayName != null && !displayName.isEmpty()) {
+            return displayName;
+        }
+        if (pathFromDocId != null && !pathFromDocId.isEmpty()) {
+            return pathFromDocId;
+        }
+        return uri.toString();
+    }
+
+    /** documentId 冒号后若为纯数字等，多为内部序号，勿当路径展示 */
+    private static boolean isOpaqueDocumentIdTail(String tail) {
+        if (tail == null || tail.isEmpty()) {
+            return true;
+        }
+        for (int i = 0; i < tail.length(); i++) {
+            if (!Character.isDigit(tail.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Nullable
+    private String queryOpenableDisplayName(Uri uri) {
+        try (Cursor c = getContentResolver().query(
+                uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+            if (c != null && c.moveToFirst()) {
+                int idx = c.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (idx >= 0) {
+                    String name = c.getString(idx);
+                    if (name != null && !name.isEmpty()) {
+                        return name;
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    private void openExportLocation(Uri uri) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(uri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            startActivity(Intent.createChooser(intent, "打开位置"));
+        } catch (Exception e) {
+            Toast.makeText(this, "无法打开此位置", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateProgress(int progress) {
+        runOnUiThread(() -> {
+            int safe = Math.max(0, Math.min(progress, 100));
+            progressFontBackup.setProgress(safe);
+            tvFontBackupProgress.setText("进度：" + safe + "%");
+        });
     }
 
     private boolean copyFileToUri(File src, Uri dst) {

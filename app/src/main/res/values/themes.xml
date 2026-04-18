@@ -30,4 +30,9 @@
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+
+    <style name="Widget.IOS.Caption" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textColor">@color/ios_text_secondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

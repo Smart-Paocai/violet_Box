@@ -74,7 +74,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:checked="true"
-                        android:text="排除super（耗时长）"
+                        android:text="排除super"
                         android:textAppearance="@style/Widget.IOS.Body" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -83,7 +83,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:checked="true"
-                        android:text="备份完后压缩（耗时长）"
+                        android:text="备份完后压缩（耗时长，体积小）"
                         android:textAppearance="@style/Widget.IOS.Body" />
 
                     <TextView
@@ -93,6 +93,26 @@
                         android:layout_marginTop="10dp"
                         android:text="状态：就绪"
                         android:textAppearance="@style/Widget.IOS.Body" />
+
+                    <ProgressBar
+                        android:id="@+id/progressFontBackup"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="10dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tvFontBackupProgress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="end"
+                        android:text="进度：0%"
+                        android:textAppearance="@style/Widget.IOS.Caption"
+                        android:visibility="gone" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnFontBackupExport"
