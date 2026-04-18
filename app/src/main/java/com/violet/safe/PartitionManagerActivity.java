@@ -77,7 +77,7 @@ public class PartitionManagerActivity extends AppCompatActivity {
         updateTopHint();
 
         registerActivityLaunchers();
-        showLoadingState(true, "正在刷新分区表...");
+        showLoadingState(true, "刷新分区表...");
         refreshPartitionList();
     }
 
@@ -148,8 +148,8 @@ public class PartitionManagerActivity extends AppCompatActivity {
                 setBusy(false, null);
                 if (names.isEmpty()) {
                     showLoadingState(false, null);
-                    tvPartitionOpStatus.setText("状态：读取分区失败，请确认 Root 权限");
-                    tvPartitionInfo.setText("分区信息: 未选择");
+                    tvPartitionOpStatus.setText("状态：读取分区失败，未授予ROOT");
+                    tvPartitionInfo.setText("分区信息: 无");
                     Toast.makeText(this, "未读取到分区列表", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -338,7 +338,7 @@ public class PartitionManagerActivity extends AppCompatActivity {
             if (!dumpResult.success) {
                 runOnUiThread(() -> {
                     setBusy(false, null);
-                    tvPartitionOpStatus.setText("状态：提取失败（dd 执行失败）");
+                    tvPartitionOpStatus.setText("状态：提取失败");
                     Toast.makeText(this, "提取失败，请检查 Root 权限", Toast.LENGTH_SHORT).show();
                 });
                 return;
@@ -438,7 +438,7 @@ public class PartitionManagerActivity extends AppCompatActivity {
                 setBusy(false, null);
                 if (result.success) {
                     tvPartitionOpStatus.setText("状态：刷入完成");
-                    Toast.makeText(this, "分区刷入成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "分区刷入成功（重启设备生效）", Toast.LENGTH_SHORT).show();
                 } else {
                     tvPartitionOpStatus.setText("状态：刷入失败");
                     Toast.makeText(this, "刷入失败，请检查 Root 权限", Toast.LENGTH_SHORT).show();

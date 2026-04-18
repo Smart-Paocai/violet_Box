@@ -92,7 +92,7 @@ public class SelinuxManagerActivity extends AppCompatActivity {
             ShellResult result = runSuCommand("getenforce");
             runOnUiThread(() -> {
                 if (!result.success) {
-                    tvSelinuxModeValue.setText("读取失败（请确认已授予Root权限）");
+                    tvSelinuxModeValue.setText("未授予ROOT");
                     btnToggleSelinux.setEnabled(false);
                     btnToggleSelinux.setText("切换模式");
                     return;
