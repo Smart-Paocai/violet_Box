@@ -555,7 +555,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 电池深度数据 -->
+        <!-- 电池状态：广播摘要 + 容量/电流等 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -592,17 +592,28 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:letterSpacing="0.06"
-                        android:text="电池深度数据"
+                        android:text="电池状态"
                         android:textAllCaps="true"
                         android:textColor="@color/fluent_on_surface_variant"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/tvBatteryStatusSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:lineSpacingExtra="2dp"
+                    android:text="—"
+                    android:textColor="@color/fluent_on_surface"
+                    android:textSize="13sp"
+                    tools:text="充电中 · USB 供电 · 良好" />
+
                 <GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="12dp"
                     android:columnCount="2">
 
                     <LinearLayout
@@ -628,6 +639,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
+                            android:text="—"
                             android:textColor="@color/fluent_green_600"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -656,6 +668,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
+                            android:text="—"
                             android:textColor="@color/fluent_on_surface"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -686,6 +699,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:fontFamily="monospace"
+                            android:text="—"
                             android:textColor="@color/fluent_on_surface"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -715,6 +729,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:fontFamily="monospace"
+                            android:text="—"
                             android:textColor="@color/fluent_orange"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -750,6 +765,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:fontFamily="monospace"
+                                android:text="—"
                                 android:textColor="@color/fluent_primary"
                                 android:textSize="14sp"
                                 android:textStyle="bold"
@@ -776,6 +792,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:fontFamily="monospace"
+                                android:text="—"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="14sp"
                                 android:textStyle="bold"
