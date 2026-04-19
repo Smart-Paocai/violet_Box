@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/ios_screen_edge"
+    android:layout_marginBottom="8dp"
+    app:cardBackgroundColor="@color/ios_card"
+    app:cardCornerRadius="@dimen/ios_card_corner"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/ios_separator"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/ivAppIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            tools:src="@mipmap/ic_launcher" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvAppLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/ios_text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="紫罗兰检测" />
+
+            <TextView
+                android:id="@+id/tvAppPackage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:fontFamily="monospace"
+                android:maxLines="2"
+                android:textColor="@color/ios_text_secondary"
+                android:textSize="11sp"
+                tools:text="com.violet.safe" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnAppActions"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="更多操作"
+            app:srcCompat="@drawable/ic_ms_more_vert"
+            app:tint="@color/ios_text_secondary" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

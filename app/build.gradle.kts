@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
     
     // 引入 Rootbeer 进行 Root 检测
     implementation("com.scottyab:rootbeer-lib:0.1.0")

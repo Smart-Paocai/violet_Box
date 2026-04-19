@@ -257,18 +257,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** 跳转系统「应用管理 / 全部应用」设置页（各厂商界面可能不同）。 */
+    /** 打开内置应用管理（列表、提取 APK、卸载、Root 冻结与备份等）。 */
     private void openSystemAppManagement() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
-        try {
-            startActivity(intent);
-        } catch (Exception ignored) {
-            try {
-                startActivity(new Intent(Settings.ACTION_APPLICATION_SETTINGS));
-            } catch (Exception ignored2) {
-                Toast.makeText(this, "无法打开应用管理", Toast.LENGTH_SHORT).show();
-            }
-        }
+        startActivity(new Intent(this, AppManagerActivity.class));
     }
 
     private void setupQuickRebootButtons() {
