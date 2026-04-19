@@ -27,9 +27,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivityWithNav"
-            android:exported="false" />
-        <activity
             android:name=".SelinuxManagerActivity"
             android:exported="false" />
         <activity

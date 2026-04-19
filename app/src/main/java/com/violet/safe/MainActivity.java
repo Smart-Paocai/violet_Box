@@ -138,6 +138,15 @@ public class MainActivity extends AppCompatActivity {
             btnModuleManager.setOnClickListener(v ->
                     startActivity(new Intent(this, ModuleManagerActivity.class)));
         }
+        View btnAppManager = findViewById(R.id.btnAppManager);
+        if (btnAppManager != null) {
+            btnAppManager.setOnClickListener(v -> openSystemAppManagement());
+        }
+        View btnPayload = findViewById(R.id.btnPayload);
+        if (btnPayload != null) {
+            btnPayload.setOnClickListener(v ->
+                    Toast.makeText(this, "Payload 功能开发中", Toast.LENGTH_SHORT).show());
+        }
         setupQuickRebootButtons();
 
         if (navHome != null) {
@@ -245,6 +254,20 @@ public class MainActivity extends AppCompatActivity {
         if (appBarLayout != null) {
             appBarLayout.setVisibility(View.VISIBLE);
             appBarLayout.bringToFront();
+        }
+    }
+
+    /** 跳转系统「应用管理 / 全部应用」设置页（各厂商界面可能不同）。 */
+    private void openSystemAppManagement() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+        try {
+            startActivity(intent);
+        } catch (Exception ignored) {
+            try {
+                startActivity(new Intent(Settings.ACTION_APPLICATION_SETTINGS));
+            } catch (Exception ignored2) {
+                Toast.makeText(this, "无法打开应用管理", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
