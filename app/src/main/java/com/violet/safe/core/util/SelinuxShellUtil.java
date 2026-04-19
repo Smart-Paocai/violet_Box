@@ -1,4 +1,4 @@
-package com.violet.safe.util;
+package com.violet.safe.core.util;
 
 import android.os.Build;
 
@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 与 {@link com.violet.safe.SelinuxManagerActivity} 一致：通过 {@code su -c} 执行命令，
+ * 与 {@link com.violet.safe.ui.selinux.SelinuxManagerActivity} 一致：通过 {@code su -c} 执行命令，
  * 用于读取内核真实 {@code getenforce} 结果（部分环境下 Java API 与 sysfs 不可靠）。
  */
 public final class SelinuxShellUtil {
@@ -59,7 +59,7 @@ public final class SelinuxShellUtil {
         }
     }
 
-    /** 与 SelinuxManagerActivity.normalizeMode 一致：解析 getenforce 单行输出 */
+    /** 与 {@link com.violet.safe.ui.selinux.SelinuxManagerActivity} 内解析逻辑一致：解析 getenforce 单行输出 */
     public static String normalizeGetenforceOutput(String modeRaw) {
         if (modeRaw == null) {
             return "";

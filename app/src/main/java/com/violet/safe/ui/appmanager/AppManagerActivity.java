@@ -1,4 +1,4 @@
-package com.violet.safe;
+package com.violet.safe.ui.appmanager;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -32,8 +32,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 import com.scottyab.rootbeer.RootBeer;
-import com.violet.safe.model.InstalledAppRow;
-import com.violet.safe.util.SelinuxShellUtil;
+import com.violet.safe.R;
+import com.violet.safe.core.util.SelinuxShellUtil;
+import com.violet.safe.data.model.InstalledAppRow;
 
 import java.io.File;
 import java.io.FileInputStream;

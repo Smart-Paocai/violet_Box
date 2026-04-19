@@ -1,4 +1,4 @@
-package com.violet.safe.fragment;
+package com.violet.safe.ui.device;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -34,11 +34,11 @@ import androidx.fragment.app.Fragment;
 
 import com.scottyab.rootbeer.RootBeer;
 import com.violet.safe.R;
-import com.violet.safe.util.BatterySysFiles;
-import com.violet.safe.util.CpuSysFiles;
-import com.violet.safe.util.GpuInfoQuery;
-import com.violet.safe.util.SelinuxStatusReader;
-import com.violet.safe.widget.CpuRingGaugeView;
+import com.violet.safe.core.util.BatterySysFiles;
+import com.violet.safe.core.util.CpuSysFiles;
+import com.violet.safe.core.util.GpuInfoQuery;
+import com.violet.safe.core.util.SelinuxStatusReader;
+import com.violet.safe.ui.widget.CpuRingGaugeView;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

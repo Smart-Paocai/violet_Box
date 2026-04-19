@@ -1,4 +1,4 @@
-package com.violet.safe;
+package com.violet.safe.ui.module;
 
 import android.content.ClipData;
 import android.content.ContentResolver;
@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
+import com.violet.safe.R;
 
 import java.io.BufferedReader;
 import java.io.File;

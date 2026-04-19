@@ -1,4 +1,4 @@
-package com.violet.safe.widget;
+package com.violet.safe.ui.widget;
 
 import android.animation.ValueAnimator;
 import android.content.Context;

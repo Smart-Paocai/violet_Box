@@ -1,4 +1,4 @@
-package com.violet.safe.util;
+package com.violet.safe.core.util;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

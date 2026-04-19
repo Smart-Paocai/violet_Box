@@ -1,4 +1,4 @@
-package com.violet.safe;
+package com.violet.safe.ui.font;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.violet.safe.R;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,7 +53,7 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
     private static final String KEY_EXCLUDE_SUPER = "exclude_super";
     private static final String KEY_COMPRESS_PACK = "compress_pack";
 
-    /** 与 {@link PartitionManagerActivity} 中展示的分区枚举方式一致，下列分区名不参与字库备份 */
+    /** 与 {@link com.violet.safe.ui.partition.PartitionManagerActivity} 中展示的分区枚举方式一致，下列分区名不参与字库备份 */
     private static final Set<String> FONT_LIBRARY_EXCLUDED_NAMES = new HashSet<>(Arrays.asList(
             "sda", "sdb", "sdc", "sdd", "sde", "sdf", "userdata"
     ));
@@ -334,7 +335,7 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
     }
 
     /**
-     * 与 {@link PartitionManagerActivity#refreshPartitionList} 一致：ls /dev/block/by-name + readlink。
+     * 与 {@link com.violet.safe.ui.partition.PartitionManagerActivity#refreshPartitionList} 一致：ls /dev/block/by-name + readlink。
      */
     private List<PartitionItem> fetchPartitionTableLikePartitionManager() {
         List<PartitionItem> result = new ArrayList<>();

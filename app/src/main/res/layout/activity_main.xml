@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ios_background_grouped"
-    tools:context=".MainActivity">
+    tools:context="com.violet.safe.ui.main.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -201,7 +201,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/device_fragment_container"
-            android:name="com.violet.safe.fragment.DeviceFragment"
+            android:name="com.violet.safe.ui.device.DeviceFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

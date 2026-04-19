@@ -1,4 +1,4 @@
-package com.violet.safe.fragment;
+package com.violet.safe.ui.detect;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

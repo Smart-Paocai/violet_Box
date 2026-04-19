@@ -1,4 +1,4 @@
-package com.violet.safe;
+package com.violet.safe.ui.main;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -46,7 +46,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.scottyab.rootbeer.RootBeer;
-import com.violet.safe.util.SelinuxStatusReader;
+import com.violet.safe.core.util.SelinuxStatusReader;
+import com.violet.safe.data.detector.RootDetector;
+import com.violet.safe.ui.appmanager.AppManagerActivity;
+import com.violet.safe.ui.font.FontLibraryBackupActivity;
+import com.violet.safe.ui.module.ModuleManagerActivity;
+import com.violet.safe.ui.partition.PartitionManagerActivity;
+import com.violet.safe.ui.selinux.SelinuxManagerActivity;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,6 +64,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.violet.safe.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -594,7 +602,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         RootBeer rootBeer = new RootBeer(this);
-        com.violet.safe.detector.RootDetector advancedDetector = new com.violet.safe.detector.RootDetector(this);
+        RootDetector advancedDetector = new RootDetector(this);
         boolean hasRootArtifacts = rootBeer.isRooted() || advancedDetector.isDeviceRooted();
         boolean rootGranted = hasRootArtifacts && canExecuteSuAsRoot();
         if (rootGranted) {
@@ -770,7 +778,7 @@ public class MainActivity extends AppCompatActivity {
         addRootCheckItem(layoutRootDetails, "10. 危险系统属性", rootBeer.checkForDangerousProps());
         addRootCheckItem(layoutRootDetails, "11. Native层 Root 检测", rootBeer.checkForRootNative());
 
-        com.violet.safe.detector.RootDetector advancedDetector = new com.violet.safe.detector.RootDetector(this);
+        RootDetector advancedDetector = new RootDetector(this);
         addAdvancedRootCheckItem(layoutRootDetails, "12. SU 痕迹检测", advancedDetector.checkSuBinaries());
         addAdvancedRootCheckItem(layoutRootDetails, "14. Root 权限包检测", advancedDetector.checkRootPackages());
         addAdvancedRootCheckItem(layoutRootDetails, "15. Magisk 核心路径", advancedDetector.checkMagiskPaths());

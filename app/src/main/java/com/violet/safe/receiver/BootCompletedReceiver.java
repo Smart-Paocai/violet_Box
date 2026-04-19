@@ -1,8 +1,10 @@
-package com.violet.safe;
+package com.violet.safe.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import com.violet.safe.ui.selinux.SelinuxManagerActivity;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
     @Override

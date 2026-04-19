@@ -1,4 +1,4 @@
-package com.violet.safe.util;
+package com.violet.safe.core.util;
 
 import android.os.Build;
 

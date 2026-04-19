@@ -1,4 +1,4 @@
-package com.violet.safe;
+package com.violet.safe.ui.appmanager;
 
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -12,7 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.violet.safe.model.InstalledAppRow;
+import com.violet.safe.R;
+import com.violet.safe.data.model.InstalledAppRow;
 
 import java.util.ArrayList;
 import java.util.List;

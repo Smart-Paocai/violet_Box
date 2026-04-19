@@ -1,4 +1,4 @@
-package com.violet.safe.model;
+package com.violet.safe.data.model;
 
 import android.content.pm.ApplicationInfo;
 

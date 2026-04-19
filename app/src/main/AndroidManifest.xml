@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name=".VioletApplication"
+        android:name="com.violet.safe.VioletApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.紫罗兰检测">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,19 +30,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SelinuxManagerActivity"
+            android:name=".ui.selinux.SelinuxManagerActivity"
             android:exported="false" />
         <activity
-            android:name=".PartitionManagerActivity"
+            android:name=".ui.partition.PartitionManagerActivity"
             android:exported="false" />
         <activity
-            android:name=".FontLibraryBackupActivity"
+            android:name=".ui.font.FontLibraryBackupActivity"
             android:exported="false" />
         <activity
-            android:name=".ModuleManagerActivity"
+            android:name=".ui.module.ModuleManagerActivity"
             android:exported="false" />
         <activity
-            android:name=".AppManagerActivity"
+            android:name=".ui.appmanager.AppManagerActivity"
             android:exported="false" />
 
         <provider
@@ -56,7 +56,7 @@
         </provider>
 
         <receiver
-            android:name=".BootCompletedReceiver"
+            android:name=".receiver.BootCompletedReceiver"
             android:enabled="true"
             android:exported="false"
             android:directBootAware="true">

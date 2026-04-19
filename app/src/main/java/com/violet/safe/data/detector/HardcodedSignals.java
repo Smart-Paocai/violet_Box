@@ -1,4 +1,4 @@
-package com.violet.safe.detector;
+package com.violet.safe.data.detector;
 
 import java.util.Arrays;
 import java.util.Base64;

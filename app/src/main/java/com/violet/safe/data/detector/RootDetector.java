@@ -1,4 +1,4 @@
-package com.violet.safe.detector;
+package com.violet.safe.data.detector;
 
 import android.content.Context;
 import android.content.pm.PackageManager;

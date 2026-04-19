@@ -1,4 +1,4 @@
-package com.violet.safe;
+package com.violet.safe.ui.partition;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
+import com.violet.safe.R;
 
 import java.io.BufferedReader;
 import java.io.File;

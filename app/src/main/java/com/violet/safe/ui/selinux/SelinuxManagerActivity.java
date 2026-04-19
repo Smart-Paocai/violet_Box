@@ -1,4 +1,4 @@
-package com.violet.safe;
+package com.violet.safe.ui.selinux;
 
 import android.os.Bundle;
 import android.widget.RadioButton;
@@ -12,7 +12,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
-import com.violet.safe.util.SelinuxShellUtil;
+import com.violet.safe.R;
+import com.violet.safe.core.util.SelinuxShellUtil;
 
 public class SelinuxManagerActivity extends AppCompatActivity {
 
