@@ -39,4 +39,21 @@
     <color name="explore_page_background">#F3F4F9</color>
     <color name="explore_muted_blue_grey">#7A869A</color>
     <color name="nav_tab_active_pill">#F3E5F5</color>
+    <!-- stitch_fluent_root_system / code.html tokens（实心表面 + 描边，避免半透明叠阴影发脏） -->
+    <color name="fluent_background">#f3f4f8</color>
+    <color name="fluent_glass_card">#FFFFFFFF</color>
+    <color name="fluent_card_stroke">#E6E7EF</color>
+    <color name="fluent_cell_stroke">#EBECF2</color>
+    <color name="fluent_primary">#652fe7</color>
+    <color name="fluent_secondary">#00618f</color>
+    <color name="fluent_on_surface">#2d2f32</color>
+    <color name="fluent_on_surface_variant">#5a5b5f</color>
+    <color name="fluent_surface_container_low">#f0f0f5</color>
+    <color name="fluent_surface_container">#e7e8ed</color>
+    <color name="fluent_primary_container">#a98fff</color>
+    <color name="fluent_android_green">#3DDC84</color>
+    <color name="fluent_root_badge_bg">#80DCFCE7</color>
+    <color name="fluent_root_badge_text">#15803d</color>
+    <color name="fluent_orange">#f97316</color>
+    <color name="fluent_green_600">#16a34a</color>
 </resources>

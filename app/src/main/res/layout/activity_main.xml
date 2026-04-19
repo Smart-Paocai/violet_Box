@@ -191,117 +191,20 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <androidx.core.widget.NestedScrollView
+    <!-- “设备”导航：使用 DeviceFragment 加载 fragment_device.xml -->
+    <FrameLayout
         android:id="@+id/contentDevice"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:paddingBottom="88dp"
         android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/device_fragment_container"
+            android:name="com.violet.safe.fragment.DeviceFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/ios_screen_edge"
-            android:paddingTop="8dp"
-            android:paddingBottom="28dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="6dp"
-                android:text="设备信息"
-                android:textAppearance="@style/Widget.IOS.SectionLabel" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardDeviceInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/ios_section_gap"
-                app:cardBackgroundColor="@color/ios_card"
-                app:cardCornerRadius="@dimen/ios_card_corner"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/ios_card_padding">
-
-                    <TextView
-                        android:id="@+id/tvDeviceName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="设备名称: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:background="@color/ios_separator" />
-                    <TextView
-                        android:id="@+id/tvDeviceCode"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="设备代号: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:background="@color/ios_separator" />
-                    <TextView
-                        android:id="@+id/tvAndroidVersion"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="安卓版本: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:background="@color/ios_separator" />
-                    <TextView
-                        android:id="@+id/tvKernelVersion"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="内核版本: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:background="@color/ios_separator" />
-                    <TextView
-                        android:id="@+id/tvSelinuxStatus"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="SELinux状态: 加载中..." />
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginBottom="@dimen/ios_row_spacing"
-                        android:background="@color/ios_separator" />
-                    <TextView
-                        android:id="@+id/tvBootSlot"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/Widget.IOS.Body"
-                        tools:text="启动槽位: 加载中..." />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
     <include
         android:id="@+id/fragmentExplorePlaceholder"

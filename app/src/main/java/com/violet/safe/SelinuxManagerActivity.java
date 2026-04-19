@@ -12,9 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import com.violet.safe.util.SelinuxShellUtil;
 
 public class SelinuxManagerActivity extends AppCompatActivity {
 
@@ -89,7 +87,7 @@ public class SelinuxManagerActivity extends AppCompatActivity {
         btnToggleSelinux.setEnabled(false);
 
         new Thread(() -> {
-            ShellResult result = runSuCommand("getenforce");
+            SelinuxShellUtil.ShellResult result = SelinuxShellUtil.runSu("getenforce", 60_000L);
             runOnUiThread(() -> {
                 if (!result.success) {
                     tvSelinuxModeValue.setText("未授予ROOT");
@@ -99,7 +97,7 @@ public class SelinuxManagerActivity extends AppCompatActivity {
                 }
 
                 String modeRaw = result.stdout.trim();
-                String mode = normalizeMode(modeRaw);
+                String mode = SelinuxShellUtil.normalizeGetenforceOutput(modeRaw);
                 if (MODE_ENFORCING.equals(mode)) {
                     tvSelinuxModeValue.setText("严格模式");
                     btnToggleSelinux.setText("切换到宽容模式");
@@ -124,7 +122,7 @@ public class SelinuxManagerActivity extends AppCompatActivity {
         String command = toPermissive ? "setenforce 0" : "setenforce 1";
 
         new Thread(() -> {
-            ShellResult result = runSuCommand(command);
+            SelinuxShellUtil.ShellResult result = SelinuxShellUtil.runSu(command, 60_000L);
             runOnUiThread(() -> {
                 if (result.success) {
                     Toast.makeText(this, "SELinux 模式切换成功", Toast.LENGTH_SHORT).show();
@@ -146,62 +144,7 @@ public class SelinuxManagerActivity extends AppCompatActivity {
         String mode = context.getSharedPreferences(PREF_NAME, MODE_PRIVATE)
                 .getString(KEY_TARGET_MODE, MODE_ENFORCING);
         String command = MODE_PERMISSIVE.equals(mode) ? "setenforce 0" : "setenforce 1";
-        ShellResult result = runSuCommand(command);
+        SelinuxShellUtil.ShellResult result = SelinuxShellUtil.runSu(command, 60_000L);
         return result.success;
-    }
-
-    private static String normalizeMode(String modeRaw) {
-        if (modeRaw == null) {
-            return "";
-        }
-        String lower = modeRaw.trim().toLowerCase();
-        if (lower.startsWith("enforcing")) {
-            return MODE_ENFORCING;
-        }
-        if (lower.startsWith("permissive")) {
-            return MODE_PERMISSIVE;
-        }
-        return lower;
-    }
-
-    private static ShellResult runSuCommand(String command) {
-        Process process = null;
-        try {
-            process = new ProcessBuilder("su", "-c", command).start();
-            String stdout = readAll(process.getInputStream());
-            String stderr = readAll(process.getErrorStream());
-            int exit = process.waitFor();
-            return new ShellResult(exit == 0, stdout, stderr);
-        } catch (Exception e) {
-            return new ShellResult(false, "", e.getMessage() == null ? "" : e.getMessage());
-        } finally {
-            if (process != null) {
-                process.destroy();
-            }
-        }
-    }
-
-    private static String readAll(java.io.InputStream inputStream) {
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append('\n');
-            }
-        } catch (Exception ignored) {
-        }
-        return sb.toString();
-    }
-
-    private static class ShellResult {
-        final boolean success;
-        final String stdout;
-        final String stderr;
-
-        ShellResult(boolean success, String stdout, String stderr) {
-            this.success = success;
-            this.stdout = stdout;
-            this.stderr = stderr;
-        }
     }
 }

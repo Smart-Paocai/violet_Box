@@ -19,6 +19,7 @@ import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.scottyab.rootbeer.RootBeer;
+import com.violet.safe.util.SelinuxStatusReader;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -189,37 +191,37 @@ public class MainActivity extends AppCompatActivity {
                 selectedNav = navHome;
                 selectedIcon = iconHome;
                 selectedText = textHome;
-                findViewById(R.id.contentHome).setVisibility(View.GONE);
-                findViewById(R.id.contentDevice).setVisibility(View.VISIBLE);
-                findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.GONE);
-                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
+                setViewVisibilitySafe(R.id.contentHome, View.GONE);
+                setViewVisibilitySafe(R.id.contentDevice, View.VISIBLE);
+                setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
+                setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
                 break;
             case 1:
                 selectedNav = navDevice;
                 selectedIcon = iconDevice;
                 selectedText = textDevice;
-                findViewById(R.id.contentHome).setVisibility(View.VISIBLE);
-                findViewById(R.id.contentDevice).setVisibility(View.GONE);
-                findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.GONE);
-                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
+                setViewVisibilitySafe(R.id.contentHome, View.VISIBLE);
+                setViewVisibilitySafe(R.id.contentDevice, View.GONE);
+                setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
+                setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
                 break;
             case 2:
                 selectedNav = navExplore;
                 selectedIcon = iconExplore;
                 selectedText = textExplore;
-                findViewById(R.id.contentHome).setVisibility(View.GONE);
-                findViewById(R.id.contentDevice).setVisibility(View.GONE);
-                findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.VISIBLE);
-                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.GONE);
+                setViewVisibilitySafe(R.id.contentHome, View.GONE);
+                setViewVisibilitySafe(R.id.contentDevice, View.GONE);
+                setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.VISIBLE);
+                setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
                 break;
             case 3:
                 selectedNav = navSettings;
                 selectedIcon = iconSettings;
                 selectedText = textSettings;
-                findViewById(R.id.contentHome).setVisibility(View.GONE);
-                findViewById(R.id.contentDevice).setVisibility(View.GONE);
-                findViewById(R.id.fragmentExplorePlaceholder).setVisibility(View.GONE);
-                findViewById(R.id.fragmentSettingsPlaceholder).setVisibility(View.VISIBLE);
+                setViewVisibilitySafe(R.id.contentHome, View.GONE);
+                setViewVisibilitySafe(R.id.contentDevice, View.GONE);
+                setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
+                setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.VISIBLE);
                 break;
         }
 
@@ -253,6 +255,13 @@ public class MainActivity extends AppCompatActivity {
         bindQuickRebootButton(R.id.btnQuickRebootRecovery, "重启到 Recovery", "reboot recovery");
         bindQuickRebootButton(R.id.btnQuickRebootEdl, "重启到 EDL", "reboot edl");
         bindQuickRebootButton(R.id.btnQuickRebootSafeMode, "重启到安全模式", "setprop persist.sys.safemode 1; reboot");
+    }
+
+    private void setViewVisibilitySafe(int viewId, int visibility) {
+        View v = findViewById(viewId);
+        if (v != null) {
+            v.setVisibility(visibility);
+        }
     }
 
     private void bindQuickRebootButton(int viewId, String title, String command) {
@@ -551,38 +560,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupDeviceInfo() {
         appendLog("开始设备信息与 SELinux 诊断");
-        TextView tvDeviceName = findViewById(R.id.tvDeviceName);
-        TextView tvDeviceCode = findViewById(R.id.tvDeviceCode);
-        TextView tvAndroidVersion = findViewById(R.id.tvAndroidVersion);
-        TextView tvKernelVersion = findViewById(R.id.tvKernelVersion);
-        TextView tvSelinuxStatus = findViewById(R.id.tvSelinuxStatus);
-        TextView tvBootSlot = findViewById(R.id.tvBootSlot);
-
-        // 设备名称 (通常是厂商+型号)
-        String deviceName = Build.MANUFACTURER + " " + Build.MODEL;
-        tvDeviceName.setText("设备名称: " + deviceName);
-
-        // 设备代号 (Device code name)
-        String deviceCode = Build.DEVICE;
-        tvDeviceCode.setText("设备代号: " + deviceCode);
-
-        // 安卓版本 (Release version + API level)
-        String androidVersion = Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ")";
-        tvAndroidVersion.setText("安卓版本: Android " + androidVersion);
-
-        // 内核版本
-        String kernelVersion = System.getProperty("os.version");
-        if (kernelVersion == null) kernelVersion = "未知";
-        tvKernelVersion.setText("内核版本: " + kernelVersion);
-
-        // SELinux 状态
+        // 设备页 UI 由 DeviceFragment + fragment_device.xml 绑定；此处仅写日志与首页检测逻辑
         String selinuxStatus = getSELinuxStatus();
-        tvSelinuxStatus.setText("SELinux状态: " + selinuxStatus);
         appendLog(buildSelinuxDiagnostics(selinuxStatus));
-
-        // 启动槽位 (A/B)
         String bootSlot = getBootSlot();
-        tvBootSlot.setText("启动槽位: " + bootSlot);
         appendLog("启动槽位 = " + bootSlot);
 
         setupRootDetection();
@@ -729,14 +710,37 @@ public class MainActivity extends AppCompatActivity {
         clearLog();
         checkRiskApps();
         appendLog("开始执行 Root 与安全检测");
-        
+
         android.widget.LinearLayout layoutRootDetails = findViewById(R.id.layoutRootDetails);
-        layoutRootDetails.removeAllViews();
         android.widget.LinearLayout layoutAdvancedDetails = findViewById(R.id.layoutAdvancedDetails);
-        layoutAdvancedDetails.removeAllViews();
         TextView tvBootloader = findViewById(R.id.tvBootloader);
         TextView tvUsbDebug = findViewById(R.id.tvUsbDebug);
+        if (layoutRootDetails == null || layoutAdvancedDetails == null
+                || tvBootloader == null || tvUsbDebug == null) {
+            appendLog("安全检测 UI 缺失，已跳过明细渲染");
+            return;
+        }
 
+        layoutRootDetails.removeAllViews();
+        layoutAdvancedDetails.removeAllViews();
+
+        try {
+            runRootDetectionBody(layoutRootDetails, layoutAdvancedDetails, tvBootloader, tvUsbDebug);
+        } catch (Throwable t) {
+            android.util.Log.e("MainActivity", "setupRootDetection", t);
+            appendLog("安全检测异常: " + (t.getMessage() != null ? t.getMessage() : t.getClass().getSimpleName()));
+            layoutRootDetails.removeAllViews();
+            layoutAdvancedDetails.removeAllViews();
+            totalDetectionRiskCount = 0;
+            environmentRiskCount = riskAppsDetectionPoint;
+            updateEnvironmentSummary();
+        }
+    }
+
+    private void runRootDetectionBody(android.widget.LinearLayout layoutRootDetails,
+                                      android.widget.LinearLayout layoutAdvancedDetails,
+                                      TextView tvBootloader,
+                                      TextView tvUsbDebug) {
         RootBeer rootBeer = new RootBeer(this);
 
         // 将每项单独检测提取出来
@@ -1067,10 +1071,13 @@ public class MainActivity extends AppCompatActivity {
         tv.setTextColor(ContextCompat.getColor(this, R.color.ios_text_primary));
         tv.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
 
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tv.getLayoutParams();
-        lp.topMargin = dpToPx(6);
-        lp.bottomMargin = dpToPx(10);
-        tv.setLayoutParams(lp);
+        ViewGroup.LayoutParams lpRaw = tv.getLayoutParams();
+        if (lpRaw instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) lpRaw;
+            lp.topMargin = dpToPx(6);
+            lp.bottomMargin = dpToPx(10);
+            tv.setLayoutParams(lp);
+        }
 
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(0x14FF4D4F);
@@ -1083,10 +1090,13 @@ public class MainActivity extends AppCompatActivity {
         tv.setTextColor(ContextCompat.getColor(this, R.color.ios_text_primary));
         tv.setPadding(dpToPx(14), dpToPx(12), dpToPx(14), dpToPx(12));
 
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tv.getLayoutParams();
-        lp.topMargin = dpToPx(6);
-        lp.bottomMargin = dpToPx(10);
-        tv.setLayoutParams(lp);
+        ViewGroup.LayoutParams lpRaw = tv.getLayoutParams();
+        if (lpRaw instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) lpRaw;
+            lp.topMargin = dpToPx(6);
+            lp.bottomMargin = dpToPx(10);
+            tv.setLayoutParams(lp);
+        }
 
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(0x14FFB74D);
@@ -1180,7 +1190,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkRiskApps() {
         TextView tvRiskApps = findViewById(R.id.tvRiskApps);
-        
+        if (tvRiskApps == null) {
+            appendLog("风险应用: UI 缺失，已跳过");
+            return;
+        }
+
         String[] targetPackages = {
             "com.topjohnwu.magisk",
             "io.github.vvb2060.magisk",
@@ -1240,151 +1254,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * 读取 /sys/fs/selinux/status 中的 “SELinux status:” 行。
-     *
-     * @return null 表示无法解析；true 表示已启用；false 表示完全未启用（关闭）
-     */
-    private Boolean readSelinuxEnabledFromStatusNode() {
-        File statusFile = new File("/sys/fs/selinux/status");
-        if (!statusFile.exists()) {
-            return null;
-        }
-        try (BufferedReader reader = new BufferedReader(new FileReader(statusFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String t = line.trim();
-                if (!t.startsWith("SELinux status:")) {
-                    continue;
-                }
-                String rest = t.substring(t.indexOf(':') + 1).trim().toLowerCase();
-                if (rest.contains("disabled")) {
-                    return Boolean.FALSE;
-                }
-                if (rest.contains("enabled")) {
-                    return Boolean.TRUE;
-                }
-            }
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
-    /**
-     * 读取 /sys/fs/selinux/enforce：1=强制，0=宽容（仅在 SELinux 已启用时有定义）。
-     */
-    private String readEnforceNodeOrNull() {
-        File enforceFile = new File("/sys/fs/selinux/enforce");
-        if (!enforceFile.exists()) {
-            return null;
-        }
-        try (BufferedReader reader = new BufferedReader(new FileReader(enforceFile))) {
-            String line = reader.readLine();
-            if (line != null) {
-                return line.trim();
-            }
-        } catch (Exception ignored) {
-        }
-        return null;
-    }
-
-    private String readEnforceViaGetenforce() {
-        String[] getenforcePaths = {
-            "/system/bin/getenforce",
-            "/vendor/bin/getenforce",
-            "/system_ext/bin/getenforce"
-        };
-        for (String path : getenforcePaths) {
-            if (!new File(path).isFile()) continue;
-            try {
-                Process p = new ProcessBuilder(path).redirectErrorStream(true).start();
-                try (BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-                    String line = r.readLine();
-                    if (p.waitFor() == 0 && line != null) {
-                        String l = line.trim().toLowerCase();
-                        if (l.equals("enforcing") || l.equals("permissive") || l.equals("disabled")) {
-                            return l;
-                        }
-                    }
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        return null;
-    }
-
-    private String readSelinuxApiStatus() {
-        try {
-            Class<?> selinuxClass = Class.forName("android.os.SELinux");
-            Method isSELinuxEnabled = selinuxClass.getMethod("isSELinuxEnabled");
-            Method isSELinuxEnforced = selinuxClass.getMethod("isSELinuxEnforced");
-            
-            boolean apiEnabled = (boolean) isSELinuxEnabled.invoke(null);
-            android.util.Log.d("SELinux", "API - Enabled: " + apiEnabled);
-            
-            if (!apiEnabled) {
-                return "disabled";
-            }
-            
-            boolean enforced = (boolean) isSELinuxEnforced.invoke(null);
-            android.util.Log.d("SELinux", "API - Enforced: " + enforced);
-            
-            return enforced ? "enforcing" : "permissive";
-        } catch (Exception e) {
-            android.util.Log.e("SELinux", "API检测失败", e);
-        }
-        return null;
-    }
-
     private String getSELinuxStatus() {
-        // 方法1：使用反射调用 android.os.SELinux API（最可靠）
-        try {
-            Class<?> selinuxClass = Class.forName("android.os.SELinux");
-            Method isSELinuxEnabled = selinuxClass.getMethod("isSELinuxEnabled");
-            Method isSELinuxEnforced = selinuxClass.getMethod("isSELinuxEnforced");
-            
-            Boolean enabled = (Boolean) isSELinuxEnabled.invoke(null);
-            android.util.Log.d("SELinux", "反射API - Enabled: " + enabled);
-            
-            if (enabled != null && !enabled) {
-                return "关闭状态 (SELinux 未启用)";
-            }
-            
-            Boolean enforced = (Boolean) isSELinuxEnforced.invoke(null);
-            android.util.Log.d("SELinux", "反射API - Enforced: " + enforced);
-            
-            if (enforced != null) {
-                return enforced ? "强制模式 (Enforcing)" : "宽容模式 (Permissive)";
-            }
-        } catch (Exception e) {
-            android.util.Log.e("SELinux", "反射API调用失败", e);
-        }
-
-        // 方法2：使用 getenforce 命令
-        String getenforceVal = readEnforceViaGetenforce();
-        android.util.Log.d("SELinux", "getenforce命令返回值: " + getenforceVal);
-        if (getenforceVal != null) {
-            if ("enforcing".equals(getenforceVal)) return "强制模式 (Enforcing)";
-            if ("permissive".equals(getenforceVal)) return "宽容模式 (Permissive)";
-            if ("disabled".equals(getenforceVal)) return "关闭状态 (SELinux 未启用)";
-        }
-
-        // 方法3：读取 /sys/fs/selinux/enforce 文件
-        String enforceVal = readEnforceNodeOrNull();
-        android.util.Log.d("SELinux", "enforce文件返回值: " + enforceVal);
-        if (enforceVal != null) {
-            if ("1".equals(enforceVal)) return "强制模式 (Enforcing)";
-            if ("0".equals(enforceVal)) return "宽容模式 (Permissive)";
-        }
-
-        // 方法4：检查 /sys/fs/selinux/status 文件
-        Boolean enabled = readSelinuxEnabledFromStatusNode();
-        android.util.Log.d("SELinux", "status文件返回值: " + enabled);
-        if (Boolean.FALSE.equals(enabled)) {
-            return "关闭状态 (SELinux 未启用)";
-        }
-
-        return "未知 (权限不足或系统不支持)";
+        return SelinuxStatusReader.getStatusString();
     }
 
     private String getBootloaderStatus() {
@@ -1451,10 +1322,10 @@ public class MainActivity extends AppCompatActivity {
     private String buildSelinuxDiagnostics(String finalStatus) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELinux诊断开始");
-        String enforceVal = readEnforceNodeOrNull();
-        String getenforceVal = readEnforceViaGetenforce();
-        Boolean enabled = readSelinuxEnabledFromStatusNode();
-        String apiVal = readSelinuxApiStatus();
+        String enforceVal = SelinuxStatusReader.readEnforceNodeOrNull();
+        String getenforceVal = SelinuxStatusReader.readEnforceViaGetenforce();
+        Boolean enabled = SelinuxStatusReader.readEnabledFromStatusNode();
+        String apiVal = SelinuxStatusReader.readApiModeOrNull();
         sb.append(" | enforce=").append(String.valueOf(enforceVal));
         sb.append(" | getenforce=").append(String.valueOf(getenforceVal));
         sb.append(" | status=").append(String.valueOf(enabled));
