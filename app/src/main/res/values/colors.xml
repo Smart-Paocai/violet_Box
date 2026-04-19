@@ -56,4 +56,13 @@
     <color name="fluent_root_badge_text">#15803d</color>
     <color name="fluent_orange">#f97316</color>
     <color name="fluent_green_600">#16a34a</color>
+    <!-- 各核 CPU 仪表（参考 CPU 状态卡片：低/中/高 + 轨道灰） -->
+    <color name="stitch_gauge_track">#E0E2E9</color>
+    <color name="cpu_core_bar_track">#E7E8EE</color>
+    <color name="stitch_gauge_fill_low">#A0D8FF</color>
+    <color name="stitch_gauge_fill_med">#7B61FF</color>
+    <color name="stitch_gauge_fill_high">#F25C6E</color>
+    <color name="stitch_pct_low">#A0D8FF</color>
+    <color name="stitch_pct_med">#7B61FF</color>
+    <color name="stitch_pct_high">#F25C6E</color>
 </resources>

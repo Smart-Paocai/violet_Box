@@ -481,39 +481,11 @@
                             android:textStyle="bold"
                             tools:text="460001234567890" />
                     </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnSpan="2"
-                        android:layout_gravity="fill_horizontal"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="内核构建日期"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvKernelBuildDate"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="Thu Jan 16 14:23:45 CST 2025" />
-                    </LinearLayout>
                 </GridLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- CPU 状态：/proc/stat、cpuinfo、cpufreq，每秒刷新 -->
+        <!-- CPU 状态：各核 cpufreq，每秒刷新 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -565,160 +537,20 @@
                     android:orientation="vertical"
                     android:padding="12dp">
 
-                    <LinearLayout
+
+
+
+
+                    <GridLayout
+                        android:id="@+id/llCpuCoreRings"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="总 CPU 占用"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvCpuTotalPct"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/fluent_primary"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="0%" />
-                    </LinearLayout>
-
-                    <ProgressBar
-                        android:id="@+id/pbCpuCluster1"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:layout_marginTop="6dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:progressDrawable="@drawable/fluent_progress_cpu_primary" />
-
-                    <TextView
-                        android:id="@+id/tvCpuSocSummary"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:textColor="@color/fluent_on_surface_variant"
-                        android:textSize="10sp"
-                        tools:text="aarch64 · 8 核 · …" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/fluent_cell_bg"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="用户态 / 忙碌周期"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvCpuUserPct"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/fluent_secondary"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="0%" />
-                    </LinearLayout>
-
-                    <ProgressBar
-                        android:id="@+id/pbCpuCluster2"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:layout_marginTop="6dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:progressDrawable="@drawable/fluent_progress_cpu_secondary" />
-
-                    <TextView
-                        android:id="@+id/tvCpuUserHint"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="(user+nice) 占非空闲 tick 比例"
-                        android:textColor="@color/fluent_on_surface_variant"
-                        android:textSize="10sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/fluent_cell_bg"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="IO 等待"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvCpuIoPct"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/explore_slate_500"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="0%" />
-                    </LinearLayout>
-
-                    <ProgressBar
-                        android:id="@+id/pbCpuCluster3"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="6dp"
-                        android:layout_marginTop="6dp"
-                        android:max="100"
-                        android:progress="0"
-                        android:progressDrawable="@drawable/fluent_progress_cpu_outline" />
-
-                    <TextView
-                        android:id="@+id/tvCpuFreqLine"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textColor="@color/fluent_on_surface_variant"
-                        android:textSize="10sp"
-                        tools:text="CPU0 当前频率 · …" />
+                        android:layout_marginTop="8dp"
+                        android:alignmentMode="alignBounds"
+                        android:clipChildren="false"
+                        android:columnCount="4"
+                        android:orientation="horizontal"
+                        android:useDefaultMargins="false" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

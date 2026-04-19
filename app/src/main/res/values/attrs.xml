@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CpuRingGaugeView">
+        <attr name="gaugeStyle" format="enum">
+            <enum name="semi" value="0" />
+            <enum name="donut" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>
