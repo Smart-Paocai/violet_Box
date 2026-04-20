@@ -42,21 +42,48 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutSearchApps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:boxBackgroundMode="filled"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/ios_separator"
+                app:startIconDrawable="@drawable/ic_search_tricky_store"
+                app:startIconTint="@color/explore_slate_500">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSearchApps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="搜索应用名称或包名"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="@color/explore_slate_800"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardUserAppsSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="12dp"
                 app:cardBackgroundColor="@color/ios_card"
                 app:cardCornerRadius="@dimen/explore_card_radius"
-                app:cardElevation="@dimen/explore_card_elevation"
-                app:strokeWidth="0dp">
+                app:cardElevation="0dp"
+                app:strokeColor="@color/ios_separator"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <LinearLayout
                         android:id="@+id/layoutUserAppsHeader"
@@ -65,7 +92,7 @@
                         android:foreground="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="4dp">
+                        android:padding="6dp">
 
                         <TextView
                             android:id="@+id/tvUserAppsTitle"
@@ -118,7 +145,7 @@
                         android:id="@+id/containerUserApps"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="10dp"
                         android:orientation="vertical"
                         android:visibility="gone" />
                 </LinearLayout>
@@ -130,14 +157,15 @@
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/ios_card"
                 app:cardCornerRadius="@dimen/explore_card_radius"
-                app:cardElevation="@dimen/explore_card_elevation"
-                app:strokeWidth="0dp">
+                app:cardElevation="0dp"
+                app:strokeColor="@color/ios_separator"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="14dp">
 
                     <LinearLayout
                         android:id="@+id/layoutSystemAppsHeader"
@@ -146,7 +174,7 @@
                         android:foreground="?attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="4dp">
+                        android:padding="6dp">
 
                         <TextView
                             android:id="@+id/tvSystemAppsTitle"
@@ -199,7 +227,7 @@
                         android:id="@+id/containerSystemApps"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="10dp"
                         android:orientation="vertical"
                         android:visibility="gone" />
                 </LinearLayout>

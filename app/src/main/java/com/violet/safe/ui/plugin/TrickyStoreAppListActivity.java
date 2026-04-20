@@ -4,6 +4,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +53,7 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
     private TextView tvSystemAppsToggle;
     private CheckBox cbUserSelectAll;
     private CheckBox cbSystemSelectAll;
+    private com.google.android.material.textfield.TextInputEditText etSearchApps;
     private boolean userExpanded = false;
     private boolean systemExpanded = false;
     private boolean userLoaded = false;
@@ -63,6 +66,7 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
     private final Set<String> selectedPackagesMaster = new HashSet<>();
     private boolean targetConfigLoaded = false;
     private boolean suppressSelectAllCallback = false;
+    private String currentSearchQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +94,7 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
         tvSystemAppsToggle = findViewById(R.id.tvSystemAppsToggle);
         cbUserSelectAll = findViewById(R.id.cbUserSelectAll);
         cbSystemSelectAll = findViewById(R.id.cbSystemSelectAll);
+        etSearchApps = findViewById(R.id.etSearchApps);
 
         View headerUser = findViewById(R.id.layoutUserAppsHeader);
         View headerSystem = findViewById(R.id.layoutSystemAppsHeader);
@@ -97,6 +102,23 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
         headerSystem.setOnClickListener(v -> toggleSystemSection());
         cbUserSelectAll.setOnClickListener(v -> onUserSelectAllChanged(cbUserSelectAll.isChecked()));
         cbSystemSelectAll.setOnClickListener(v -> onSystemSelectAllChanged(cbSystemSelectAll.isChecked()));
+        if (etSearchApps != null) {
+            etSearchApps.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    currentSearchQuery = s == null ? "" : s.toString().trim();
+                    renderCurrentSections();
+                }
+            });
+        }
 
         // 默认展开并加载用户应用
         toggleUserSection();
@@ -188,19 +210,10 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
                 userAppsCache = userApps;
                 userLoaded = true;
                 progressUserApps.setVisibility(View.GONE);
-                tvUserAppsTitle.setText("用户应用（" + userApps.size() + "）");
                 if (!userExpanded) {
                     return;
                 }
-                if (userApps.isEmpty()) {
-                    tvUserAppsEmpty.setVisibility(View.VISIBLE);
-                    containerUserApps.setVisibility(View.GONE);
-                    syncSelectAllCheckboxes();
-                    return;
-                }
-                renderAppRows(containerUserApps, userApps, selectedUserPackages);
-                containerUserApps.setVisibility(View.VISIBLE);
-                syncSelectAllCheckboxes();
+                renderCurrentSections();
             });
         });
     }
@@ -229,19 +242,10 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
                 systemAppsCache = systemApps;
                 systemLoaded = true;
                 progressSystemApps.setVisibility(View.GONE);
-                tvSystemAppsTitle.setText("系统应用（" + systemApps.size() + "）");
                 if (!systemExpanded) {
                     return;
                 }
-                if (systemApps.isEmpty()) {
-                    tvSystemAppsEmpty.setVisibility(View.VISIBLE);
-                    containerSystemApps.setVisibility(View.GONE);
-                    syncSelectAllCheckboxes();
-                    return;
-                }
-                renderAppRows(containerSystemApps, systemApps, selectedSystemPackages);
-                containerSystemApps.setVisibility(View.VISIBLE);
-                syncSelectAllCheckboxes();
+                renderCurrentSections();
             });
         });
     }
@@ -279,9 +283,9 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
                     selectedPackagesMaster.add(row.packageName);
                 }
                 if (container == containerUserApps) {
-                    renderAppRows(containerUserApps, userAppsCache, selectedUserPackages);
+                    renderCurrentSections();
                 } else if (container == containerSystemApps) {
-                    renderAppRows(containerSystemApps, systemAppsCache, selectedSystemPackages);
+                    renderCurrentSections();
                 }
                 syncSelectAllCheckboxes();
                 persistTargetConfigAsync();
@@ -308,7 +312,7 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
             }
         }
         if (userLoaded && userExpanded) {
-            renderAppRows(containerUserApps, userAppsCache, selectedUserPackages);
+            renderCurrentSections();
         }
         syncSelectAllCheckboxes();
         persistTargetConfigAsync();
@@ -329,7 +333,7 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
             }
         }
         if (systemLoaded && systemExpanded) {
-            renderAppRows(containerSystemApps, systemAppsCache, selectedSystemPackages);
+            renderCurrentSections();
         }
         syncSelectAllCheckboxes();
         persistTargetConfigAsync();
@@ -340,6 +344,60 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
         cbUserSelectAll.setChecked(!userAppsCache.isEmpty() && selectedUserPackages.size() == userAppsCache.size());
         cbSystemSelectAll.setChecked(!systemAppsCache.isEmpty() && selectedSystemPackages.size() == systemAppsCache.size());
         suppressSelectAllCallback = false;
+    }
+
+    private void renderCurrentSections() {
+        List<AppItem> filteredUserApps = getFilteredApps(userAppsCache, currentSearchQuery);
+        List<AppItem> filteredSystemApps = getFilteredApps(systemAppsCache, currentSearchQuery);
+
+        tvUserAppsTitle.setText("用户应用（" + filteredUserApps.size() + "/" + userAppsCache.size() + "）");
+        tvSystemAppsTitle.setText("系统应用（" + filteredSystemApps.size() + "/" + systemAppsCache.size() + "）");
+
+        if (userExpanded && userLoaded) {
+            if (filteredUserApps.isEmpty()) {
+                tvUserAppsEmpty.setText(userAppsCache.isEmpty() ? "未读取到用户应用" : "未匹配到用户应用");
+                tvUserAppsEmpty.setVisibility(View.VISIBLE);
+                containerUserApps.setVisibility(View.GONE);
+            } else {
+                tvUserAppsEmpty.setVisibility(View.GONE);
+                renderAppRows(containerUserApps, filteredUserApps, selectedUserPackages);
+                containerUserApps.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (systemExpanded && systemLoaded) {
+            if (filteredSystemApps.isEmpty()) {
+                tvSystemAppsEmpty.setText(systemAppsCache.isEmpty() ? "未读取到系统应用" : "未匹配到系统应用");
+                tvSystemAppsEmpty.setVisibility(View.VISIBLE);
+                containerSystemApps.setVisibility(View.GONE);
+            } else {
+                tvSystemAppsEmpty.setVisibility(View.GONE);
+                renderAppRows(containerSystemApps, filteredSystemApps, selectedSystemPackages);
+                containerSystemApps.setVisibility(View.VISIBLE);
+            }
+        }
+
+        syncSelectAllCheckboxes();
+    }
+
+    private static List<AppItem> getFilteredApps(List<AppItem> source, String query) {
+        if (source == null || source.isEmpty()) {
+            return new ArrayList<>();
+        }
+        if (query == null || query.trim().isEmpty()) {
+            return new ArrayList<>(source);
+        }
+        String needle = query.toLowerCase(Locale.ROOT);
+        List<AppItem> out = new ArrayList<>();
+        for (AppItem item : source) {
+            if (item == null) continue;
+            String appName = item.appName == null ? "" : item.appName.toLowerCase(Locale.ROOT);
+            String packageName = item.packageName == null ? "" : item.packageName.toLowerCase(Locale.ROOT);
+            if (appName.contains(needle) || packageName.contains(needle)) {
+                out.add(item);
+            }
+        }
+        return out;
     }
 
     private boolean isSystemApp(ApplicationInfo appInfo) {
