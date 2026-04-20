@@ -71,6 +71,8 @@ import com.violet.safe.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String EXTRA_OPEN_TAB = "extra_open_tab";
+
     private static final String PREFS_NAME = "violet_detection_logs";
     private static final String KEY_LOG_PATH = "log_path";
 
@@ -169,7 +171,15 @@ public class MainActivity extends AppCompatActivity {
             navDevice.setOnClickListener(v -> selectTab(1, true));
             navExplore.setOnClickListener(v -> selectTab(2, true));
             navSettings.setOnClickListener(v -> selectTab(3, true));
-            selectTab(0, false);
+            int defaultTab = 0;
+            Intent intent = getIntent();
+            if (intent != null && intent.hasExtra(EXTRA_OPEN_TAB)) {
+                int requested = intent.getIntExtra(EXTRA_OPEN_TAB, defaultTab);
+                if (requested >= 0 && requested <= 3) {
+                    defaultTab = requested;
+                }
+            }
+            selectTab(defaultTab, false);
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
