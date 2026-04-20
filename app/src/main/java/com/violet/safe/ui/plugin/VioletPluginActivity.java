@@ -2,8 +2,6 @@ package com.violet.safe.ui.plugin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,30 +34,6 @@ public class VioletPluginActivity extends AppCompatActivity {
 
         cardTrickyStoreModule = findViewById(R.id.cardTrickyStoreModule);
         detectTrickyStoreModule();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.tricky_store_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            finish();
-            return true;
-        }
-        if (id == R.id.action_open_hide_bl_list) {
-            startActivity(new Intent(this, TrickyStoreAppListActivity.class));
-            return true;
-        }
-        if (id == R.id.action_set_security_patch) {
-            startActivity(new Intent(this, TrickyStoreSecurityPatchActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

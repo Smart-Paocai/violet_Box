@@ -1,11 +1,8 @@
 package com.violet.safe.ui.plugin;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -85,30 +82,6 @@ public class TrickyStoreSecurityPatchActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         ioExecutor.shutdownNow();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.tricky_store_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            finish();
-            return true;
-        }
-        if (id == R.id.action_open_hide_bl_list) {
-            startActivity(new Intent(this, TrickyStoreAppListActivity.class));
-            return true;
-        }
-        if (id == R.id.action_set_security_patch) {
-            android.widget.Toast.makeText(this, "已在设置安全补丁界面", android.widget.Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void setBusy(boolean busy) {

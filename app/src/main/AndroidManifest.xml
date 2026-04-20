@@ -57,6 +57,9 @@
         <activity
             android:name=".ui.plugin.TrickyStoreSecurityPatchActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.plugin.TrickyStoreHashActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

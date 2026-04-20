@@ -145,6 +145,10 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
             startActivity(new Intent(this, TrickyStoreSecurityPatchActivity.class));
             return true;
         }
+        if (id == R.id.action_set_hash_value) {
+            startActivity(new Intent(this, TrickyStoreHashActivity.class));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
