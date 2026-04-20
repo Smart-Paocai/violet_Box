@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_open_hide_bl_list"
+        android:title="隐藏BL列表"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_set_security_patch"
+        android:title="设置安全补丁"
+        app:showAsAction="never" />
+</menu>

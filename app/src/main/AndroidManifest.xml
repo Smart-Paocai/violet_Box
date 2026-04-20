@@ -48,6 +48,15 @@
         <activity
             android:name=".ui.payload.PayloadActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.plugin.VioletPluginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.plugin.TrickyStoreAppListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.plugin.TrickyStoreSecurityPatchActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
