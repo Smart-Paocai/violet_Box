@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
@@ -76,9 +77,9 @@ public class VioletPluginActivity extends AppCompatActivity {
     private View cardTrickyStoreModule;
     private View cardHiddenAppList;
     private TextView tvHiddenAppListMeta;
-    private TextView tvHiddenAppListDetail;
     private ImageView ivHiddenAppListLoading;
     private ObjectAnimator hiddenAppListLoadingAnimator;
+    private volatile DetectionResult lastHiddenAppListResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,12 +96,39 @@ public class VioletPluginActivity extends AppCompatActivity {
 
         cardHiddenAppList = findViewById(R.id.cardHiddenAppList);
         tvHiddenAppListMeta = findViewById(R.id.tvHiddenAppListMeta);
-        tvHiddenAppListDetail = findViewById(R.id.tvHiddenAppListDetail);
         ivHiddenAppListLoading = findViewById(R.id.ivHiddenAppListLoading);
         if (cardHiddenAppList != null) {
             cardHiddenAppList.setOnClickListener(v -> {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra(MainActivity.EXTRA_OPEN_TAB, 2);
+                DetectionResult cached = lastHiddenAppListResult;
+                if (cached == null) {
+                    Toast.makeText(this, "正在检测隐藏应用列表，请稍后…", Toast.LENGTH_SHORT).show();
+                    detectHiddenAppListModule();
+                    return;
+                }
+                if (!cached.likelyHiddenAppListModuleDetected) {
+                    if (cached.ambiguousCandidates != null && !cached.ambiguousCandidates.isEmpty()) {
+                        showBindModuleDialog(cached.ambiguousCandidates);
+                        return;
+                    }
+                    new AlertDialog.Builder(this)
+                            .setTitle("无法进入")
+                            .setMessage("未检测到“隐藏应用列表”模块。\n\n请先安装对应应用后再进入。")
+                            .setPositiveButton("知道了", null)
+                            .show();
+                    return;
+                }
+                if (cached.configJsonPath == null || cached.configJsonPath.trim().isEmpty()) {
+                    new AlertDialog.Builder(this)
+                            .setTitle("配置缺失")
+                            .setMessage("已检测到模块，但未找到 config.json。\n\n可能原因：未授权 su / 模块版本不一致 / 配置未生成。")
+                            .setPositiveButton("知道了", null)
+                            .show();
+                    return;
+                }
+                Intent intent = new Intent(this, HiddenAppListConfigActivity.class);
+                intent.putExtra(HiddenAppListConfigActivity.EXTRA_MODULE_PACKAGE, cached.bestPackageName);
+                intent.putExtra(HiddenAppListConfigActivity.EXTRA_MODULE_NAME, cached.displayName);
+                intent.putExtra(HiddenAppListConfigActivity.EXTRA_CONFIG_PATH, cached.configJsonPath);
                 startActivity(intent);
             });
         }
@@ -131,13 +159,11 @@ public class VioletPluginActivity extends AppCompatActivity {
         tvHiddenAppListMeta.setText("状态：检测中…");
         tvHiddenAppListMeta.setTextColor(ContextCompat.getColor(this, R.color.explore_slate_500));
         startHiddenAppListLoading();
-        if (tvHiddenAppListDetail != null) {
-            tvHiddenAppListDetail.setText("查看 Root 隐藏/伪装相关检测与信息");
-        }
         ioExecutor.execute(() -> {
             DetectionResult result = detectLikelyHiddenAppListXposedModule();
             runOnUiThread(() -> {
                 if (tvHiddenAppListMeta == null) return;
+                lastHiddenAppListResult = result;
                 stopHiddenAppListLoading();
                 applyHiddenAppListStatus(tvHiddenAppListMeta, result);
                 tvHiddenAppListMeta.setOnClickListener(null);
@@ -300,6 +326,8 @@ public class VioletPluginActivity extends AppCompatActivity {
             c.certSha256 = certSha256;
             c.xposedInitSha256 = xposedInitSha256;
             c.hasConfigJson = hasConfig;
+            c.configJsonPath = configHit.path;
+            c.configJsonDiagnostic = configHit.diagnostic;
 
             // 只要是 Xposed 模块，都作为可绑定候选
             candidatesForBinding.add(c);
@@ -339,6 +367,8 @@ public class VioletPluginActivity extends AppCompatActivity {
             out.bestPackageName = configMatched.packageName;
             out.bestScore = 1000;
             out.matchedByConfigJson = true;
+            out.configJsonPath = configMatched.configJsonPath;
+            out.configJsonDiagnostic = configMatched.configJsonDiagnostic;
         } else if (pinned != null) {
             Log.d(TAG, "final matched by fingerprint, pkg=" + pinned.packageName
                     + ", enabled=" + pinned.enabled);
@@ -347,6 +377,8 @@ public class VioletPluginActivity extends AppCompatActivity {
             out.likelyModuleEnabled = false;
             out.bestPackageName = pinned.packageName;
             out.bestScore = 999;
+            out.configJsonPath = pinned.configJsonPath;
+            out.configJsonDiagnostic = pinned.configJsonDiagnostic;
         } else if (best != null && best.score >= 3) {
             Log.d(TAG, "final matched by score, pkg=" + best.packageName
                     + ", score=" + best.score + ", enabled=" + best.enabled);
@@ -355,6 +387,8 @@ public class VioletPluginActivity extends AppCompatActivity {
             out.likelyModuleEnabled = false;
             out.bestPackageName = best.packageName;
             out.bestScore = best.score;
+            out.configJsonPath = best.configJsonPath;
+            out.configJsonDiagnostic = best.configJsonDiagnostic;
         }
 
         if (!out.likelyHiddenAppListModuleDetected) {
@@ -1127,6 +1161,8 @@ public class VioletPluginActivity extends AppCompatActivity {
         int bestScore = 0;
         List<Candidate> ambiguousCandidates = null;
         boolean matchedByConfigJson = false;
+        String configJsonPath = "";
+        String configJsonDiagnostic = "";
     }
 
     private static class Candidate {
@@ -1137,6 +1173,8 @@ public class VioletPluginActivity extends AppCompatActivity {
         String certSha256 = "";
         String xposedInitSha256 = "";
         boolean hasConfigJson = false;
+        String configJsonPath = "";
+        String configJsonDiagnostic = "";
     }
 
     private static class ConfigHit {

@@ -98,15 +98,6 @@
                         android:layout_marginTop="10dp"
                         android:background="@color/explore_slate_100" />
 
-                    <TextView
-                        android:id="@+id/tvHiddenAppListDetail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:lineSpacingExtra="2dp"
-                        android:text="查看 Root 隐藏/伪装相关检测与信息"
-                        android:textColor="@color/explore_slate_800"
-                        android:textSize="14sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -141,8 +132,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:text="状态：已安装"
-                        android:textColor="@color/explore_slate_500"
+                        android:text="已激活"
+                        android:textColor="@color/ios_semantic_positive"
                         android:textSize="14sp" />
 
                     <View
@@ -151,15 +142,6 @@
                         android:layout_marginTop="10dp"
                         android:background="@color/explore_slate_100" />
 
-                    <TextView
-                        android:id="@+id/tvTrickyStoreDetail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:lineSpacingExtra="2dp"
-                        android:text="已检测到目录：/data/adb/tricky_store"
-                        android:textColor="@color/explore_slate_800"
-                        android:textSize="14sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
