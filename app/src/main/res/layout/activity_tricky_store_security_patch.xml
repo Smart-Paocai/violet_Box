@@ -60,38 +60,45 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
-                        android:text="当前系统安全补丁："
+                        android:text="当前状态"
                         android:textColor="@color/explore_slate_800"
-                        android:textSize="13sp" />
+                        android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/tvSystemSecurityPatch"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:fontFamily="monospace"
-                        android:textColor="@color/explore_slate_500"
-                        android:textSize="12sp"
-                        android:text="—" />
-
-                    <TextView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:fontFamily="sans-serif-medium"
-                        android:text="Tricky Store安全补丁："
-                        android:textColor="@color/explore_slate_800"
-                        android:textSize="13sp" />
+                        app:cardBackgroundColor="@color/ios_background_grouped"
+                        app:cardCornerRadius="@dimen/explore_card_radius"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
 
-                    <TextView
-                        android:id="@+id/tvTrickyStoreSecurityPatch"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:fontFamily="monospace"
-                        android:textColor="@color/explore_slate_500"
-                        android:textSize="12sp"
-                        android:text="—" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:id="@+id/tvSystemSecurityPatch"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif"
+                                android:text="系统安全补丁：—"
+                                android:textColor="@color/explore_slate_800"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/tvTrickyStoreSecurityPatch"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif"
+                                android:text="Tricky Store安全补丁：&#10;system：—&#10;boot：—&#10;vendor：—"
+                                android:textColor="@color/explore_slate_800"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <View
                         android:layout_width="match_parent"
@@ -106,7 +113,7 @@
                         android:fontFamily="sans-serif-medium"
                         android:text="配置项"
                         android:textColor="@color/explore_slate_800"
-                        android:textSize="13sp" />
+                        android:textSize="16sp" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
@@ -128,9 +135,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:text="system"
+                                android:text="System"
                                 android:textColor="@color/explore_slate_800"
-                                android:textSize="12sp" />
+                                android:textSize="16sp" />
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
@@ -147,11 +154,11 @@
                                     android:id="@+id/etSecurityPatchSystem"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="monospace"
-                                    android:hint="点击选择日期（YYYY-MM-DD）"
+                                    android:fontFamily="sans-serif"
+                                    android:hint="选择日期 (YYYY-MM-DD)"
                                     android:inputType="textNoSuggestions"
                                     android:textColor="@color/explore_slate_800"
-                                    android:textSize="13sp" />
+                                    android:textSize="16sp" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -176,9 +183,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:text="boot"
+                                android:text="Boot"
                                 android:textColor="@color/explore_slate_800"
-                                android:textSize="12sp" />
+                                android:textSize="16sp" />
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
@@ -195,11 +202,11 @@
                                     android:id="@+id/etSecurityPatchBoot"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="monospace"
-                                    android:hint="点击选择日期（YYYY-MM-DD）"
+                                    android:fontFamily="sans-serif"
+                                    android:hint="选择日期 (YYYY-MM-DD)"
                                     android:inputType="textNoSuggestions"
                                     android:textColor="@color/explore_slate_800"
-                                    android:textSize="13sp" />
+                                    android:textSize="16sp" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -224,9 +231,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="sans-serif-medium"
-                                android:text="vendor"
+                                android:text="Vendor"
                                 android:textColor="@color/explore_slate_800"
-                                android:textSize="12sp" />
+                                android:textSize="16sp" />
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:layout_width="match_parent"
@@ -243,11 +250,11 @@
                                     android:id="@+id/etSecurityPatchVendor"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="monospace"
-                                    android:hint="点击选择日期（YYYY-MM-DD）"
+                                    android:fontFamily="sans-serif"
+                                    android:hint="选择日期 (YYYY-MM-DD)"
                                     android:inputType="textNoSuggestions"
                                     android:textColor="@color/explore_slate_800"
-                                    android:textSize="13sp" />
+                                    android:textSize="16sp" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -263,23 +270,25 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="20dp"
                         android:gravity="end"
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSecurityPatchSyncSystem"
                             style="@style/Widget.Material3.Button.OutlinedButton"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:text="同步系统" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSecurityPatchSave"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="保存" />
+                            android:layout_weight="1"
+                            android:text="保存更改" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

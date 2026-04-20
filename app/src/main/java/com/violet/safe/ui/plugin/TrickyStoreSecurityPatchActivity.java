@@ -72,7 +72,7 @@ public class TrickyStoreSecurityPatchActivity extends AppCompatActivity {
 
         if (tvSystemSecurityPatch != null) {
             String sp = Build.VERSION.SECURITY_PATCH;
-            tvSystemSecurityPatch.setText(sp == null || sp.trim().isEmpty() ? "—" : sp);
+            tvSystemSecurityPatch.setText("系统安全补丁：" + (sp == null || sp.trim().isEmpty() ? "—" : sp));
         }
 
         btnSyncSystem.setOnClickListener(v -> syncFieldsWithSystemPatch());
@@ -129,7 +129,7 @@ public class TrickyStoreSecurityPatchActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 setBusy(false);
                 if (tvTrickyStoreSecurityPatch != null) {
-                    tvTrickyStoreSecurityPatch.setText(content == null || content.trim().isEmpty() ? "—" : content);
+                    tvTrickyStoreSecurityPatch.setText(formatTrickyStorePatchStatus(content));
                 }
                 applyParsedPatchToFields(content);
                 android.widget.Toast.makeText(this, content == null ? "读取失败" : "已读取", android.widget.Toast.LENGTH_SHORT).show();
@@ -145,7 +145,7 @@ public class TrickyStoreSecurityPatchActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 setBusy(false);
                 if (ok && tvTrickyStoreSecurityPatch != null) {
-                    tvTrickyStoreSecurityPatch.setText(out == null || out.trim().isEmpty() ? "—" : out.trim());
+                    tvTrickyStoreSecurityPatch.setText(formatTrickyStorePatchStatus(out));
                 }
                 android.widget.Toast.makeText(this, ok ? "保存成功" : "保存失败", android.widget.Toast.LENGTH_SHORT).show();
             });
@@ -290,6 +290,17 @@ public class TrickyStoreSecurityPatchActivity extends AppCompatActivity {
         if (etVendor != null) etVendor.setText(nullToEmpty(kv.get("vendor")));
     }
 
+    private static String formatTrickyStorePatchStatus(String raw) {
+        Map<String, String> kv = parseSecurityPatchConfig(raw);
+        String system = valueOrDash(kv.get("system"));
+        String boot = valueOrDash(kv.get("boot"));
+        String vendor = valueOrDash(kv.get("vendor"));
+        return "Tricky Store安全补丁：\n"
+                + "system：" + system + "\n"
+                + "boot：" + boot + "\n"
+                + "vendor：" + vendor;
+    }
+
     private String buildPatchConfigFromFields() {
         String system = normalizeField(etSystem);
         String boot = normalizeField(etBoot);
@@ -311,6 +322,10 @@ public class TrickyStoreSecurityPatchActivity extends AppCompatActivity {
 
     private static String nullToEmpty(String s) {
         return s == null ? "" : s;
+    }
+
+    private static String valueOrDash(String s) {
+        return s == null || s.trim().isEmpty() ? "—" : s.trim();
     }
 
     private static Map<String, String> parseSecurityPatchConfig(String raw) {
