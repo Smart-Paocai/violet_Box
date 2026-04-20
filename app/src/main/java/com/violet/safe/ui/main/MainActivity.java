@@ -52,6 +52,7 @@ import com.violet.safe.ui.appmanager.AppManagerActivity;
 import com.violet.safe.ui.font.FontLibraryBackupActivity;
 import com.violet.safe.ui.module.ModuleManagerActivity;
 import com.violet.safe.ui.partition.PartitionManagerActivity;
+import com.violet.safe.ui.payload.PayloadActivity;
 import com.violet.safe.ui.selinux.SelinuxManagerActivity;
 
 import androidx.activity.EdgeToEdge;
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         View btnPayload = findViewById(R.id.btnPayload);
         if (btnPayload != null) {
             btnPayload.setOnClickListener(v ->
-                    Toast.makeText(this, "Payload 功能开发中", Toast.LENGTH_SHORT).show());
+                    startActivity(new Intent(this, PayloadActivity.class)));
         }
         setupQuickRebootButtons();
 

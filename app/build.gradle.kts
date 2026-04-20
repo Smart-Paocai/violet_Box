@@ -45,6 +45,11 @@ dependencies {
     // 引入 Rootbeer 进行 Root 检测
     implementation("com.scottyab:rootbeer-lib:0.1.0")
 
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.apache.commons:commons-compress:1.27.1")
+    implementation("org.tukaani:xz:1.10")
+    implementation("commons-io:commons-io:2.18.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
