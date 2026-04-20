@@ -5,7 +5,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.animation.ObjectAnimator;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
@@ -30,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.util.regex.Matcher;
@@ -37,8 +44,28 @@ import java.util.regex.Pattern;
 
 public class VioletPluginActivity extends AppCompatActivity {
 
+    private static final String TAG = "HiddenAppListDetect";
     private static final String TRICKY_STORE_DIR = "/data/adb/tricky_store";
-    private static final String LSPOSED_DIR = "/data/adb/modules/lsposed";
+    private static final String[] LSPOSED_MODULE_DIR_CANDIDATES = new String[]{
+            "/data/adb/modules/lsposed",
+            "/data/adb/modules/zygisk_lsposed",
+            "/data/adb/modules/riru_lsposed",
+            "/data/adb/modules/lspd"
+    };
+    private static final String[] LSPOSED_CONFIG_FILE_CANDIDATES = new String[]{
+            "/data/adb/lspd/config/modules.list",
+            "/data/adb/lspd/config/modules.json",
+            "/data/adb/lspd/config/modules.xml",
+            "/data/adb/lspd/config/modules_config.xml",
+            "/data/adb/lspd/config/modules.conf",
+            "/data/adb/lspd/config/modules",
+            "/data/adb/lspd/config/config.json",
+            "/data/adb/lspd/config/config.xml"
+    };
+    private static final String[] LSPOSED_DB_CANDIDATES = new String[]{
+            "/data/adb/lspd/config/modules_config.db-wal",
+            "/data/adb/lspd/config/modules_config.db"
+    };
     private static final Pattern PACKAGE_NAME_PATTERN = Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*(?:\\.[a-zA-Z0-9_]+)+");
     private static final String PREFS_HIDDEN_APP_LIST = "hidden_app_list_detector";
     private static final String KEY_FINGERPRINT_CERT_SHA256 = "fingerprint_cert_sha256";
@@ -112,8 +139,7 @@ public class VioletPluginActivity extends AppCompatActivity {
             runOnUiThread(() -> {
                 if (tvHiddenAppListMeta == null) return;
                 stopHiddenAppListLoading();
-                boolean installed = result.likelyHiddenAppListModuleDetected;
-                applyInstallStatusPill(tvHiddenAppListMeta, installed);
+                applyHiddenAppListStatus(tvHiddenAppListMeta, result);
                 tvHiddenAppListMeta.setOnClickListener(null);
             });
         });
@@ -121,12 +147,54 @@ public class VioletPluginActivity extends AppCompatActivity {
 
     private void applyInstallStatusPill(TextView target, boolean installed) {
         if (target == null) return;
-        target.setText(installed ? "状态：已安装" : "状态：未安装");
+        target.setText(installed ? "已安装" : "未安装");
         int color = ContextCompat.getColor(
                 this,
                 installed ? R.color.ios_semantic_positive : R.color.ios_semantic_negative
         );
         target.setTextColor(color);
+    }
+
+    private void applyHiddenAppListStatus(TextView target, DetectionResult result) {
+        if (target == null || result == null) return;
+        if (!result.likelyHiddenAppListModuleDetected) {
+            applyDualStatusText(target, "未安装", false, "未激活", false);
+            return;
+        }
+        if (!result.lsposedInstalled) {
+            applyDualStatusText(target, "已安装", true, "未激活", false);
+            return;
+        }
+        boolean enabled = result.likelyModuleEnabled;
+        applyDualStatusText(target, "已安装", true, enabled ? "已激活" : "未激活", enabled);
+    }
+
+    private void applyDualStatusText(
+            TextView target,
+            String installLabel,
+            boolean installPositive,
+            String activeLabel,
+            boolean activePositive
+    ) {
+        if (target == null) return;
+        String text = installLabel + " " + activeLabel;
+        SpannableString spannable = new SpannableString(text);
+        int positive = ContextCompat.getColor(this, R.color.ios_semantic_positive);
+        int negative = ContextCompat.getColor(this, R.color.ios_semantic_negative);
+        spannable.setSpan(
+                new ForegroundColorSpan(installPositive ? positive : negative),
+                0,
+                installLabel.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+        int activeStart = installLabel.length() + 1;
+        spannable.setSpan(
+                new ForegroundColorSpan(activePositive ? positive : negative),
+                activeStart,
+                activeStart + activeLabel.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+        target.setText(spannable);
     }
 
     private void startHiddenAppListLoading() {
@@ -158,9 +226,11 @@ public class VioletPluginActivity extends AppCompatActivity {
 
     private DetectionResult detectLikelyHiddenAppListXposedModule() {
         DetectionResult out = new DetectionResult();
-        out.lsposedInstalled = isDirectoryExistsViaSu(LSPOSED_DIR);
-
-        Set<String> enabledPackages = out.lsposedInstalled ? readEnabledLsposedModulePackagesViaSu() : new HashSet<>();
+        Set<String> hintedPackages = readEnabledLsposedModulePackagesViaSu();
+        out.lsposedInstalled = isLikelyLsposedInstalledViaSu(hintedPackages, new HashSet<>());
+        Log.d(TAG, "lsposedInstalled=" + out.lsposedInstalled
+                + ", hintedPackagesCount=" + hintedPackages.size()
+                + ", strictEnabledPackagesCount=deferred");
 
         PackageManager pm = getPackageManager();
         if (pm == null) {
@@ -209,7 +279,11 @@ public class VioletPluginActivity extends AppCompatActivity {
 
             String label = safeGetAppLabel(pm, ai);
             String desc = resolveXposedDescription(pm, ai, md);
-            boolean enabled = !enabledPackages.isEmpty() && !pkg.isEmpty() && enabledPackages.contains(pkg);
+            // 安装识别阶段不跑严格激活检测，仅用轻量 hint 做评分辅助。
+            boolean enabled = !pkg.isEmpty() && hintedPackages.contains(pkg);
+            if (!pkg.isEmpty()) {
+                Log.d(TAG, "candidate pkg=" + pkg + ", enabledByHint=" + enabled);
+            }
 
             String certSha256 = getSigningCertSha256(pm, pkg);
             String xposedInitSha256 = getXposedInitSha256(ai == null ? "" : ai.sourceDir);
@@ -257,33 +331,47 @@ public class VioletPluginActivity extends AppCompatActivity {
         out.anyXposedModuleDetected = xposedCount > 0;
         out.xposedModuleCount = xposedCount;
         if (configMatched != null) {
+            Log.d(TAG, "final matched by config json, pkg=" + configMatched.packageName
+                    + ", enabled=" + configMatched.enabled);
             out.likelyHiddenAppListModuleDetected = true;
             out.displayName = configMatched.displayName;
-            out.likelyModuleEnabled = configMatched.enabled;
+            out.likelyModuleEnabled = false;
             out.bestPackageName = configMatched.packageName;
             out.bestScore = 1000;
             out.matchedByConfigJson = true;
-            return out;
-        }
-        if (pinned != null) {
+        } else if (pinned != null) {
+            Log.d(TAG, "final matched by fingerprint, pkg=" + pinned.packageName
+                    + ", enabled=" + pinned.enabled);
             out.likelyHiddenAppListModuleDetected = true;
             out.displayName = pinned.displayName;
-            out.likelyModuleEnabled = pinned.enabled;
+            out.likelyModuleEnabled = false;
             out.bestPackageName = pinned.packageName;
             out.bestScore = 999;
+        } else if (best != null && best.score >= 3) {
+            Log.d(TAG, "final matched by score, pkg=" + best.packageName
+                    + ", score=" + best.score + ", enabled=" + best.enabled);
+            out.likelyHiddenAppListModuleDetected = true;
+            out.displayName = best.displayName;
+            out.likelyModuleEnabled = false;
+            out.bestPackageName = best.packageName;
+            out.bestScore = best.score;
+        }
+
+        if (!out.likelyHiddenAppListModuleDetected) {
+            Log.d(TAG, "no reliable hidden-app-list module found; candidates="
+                    + (candidatesForBinding == null ? 0 : candidatesForBinding.size()));
+            // 无法可靠识别时，如果存在多个模块，则提供“绑定”入口，做到后续必中
+            out.ambiguousCandidates = candidatesForBinding;
             return out;
         }
 
-        if (best != null && best.score >= 3) {
-            out.likelyHiddenAppListModuleDetected = true;
-            out.displayName = best.displayName;
-            out.likelyModuleEnabled = best.enabled;
-            out.bestPackageName = best.packageName;
-            out.bestScore = best.score;
-        } else {
-            // 无法可靠识别时，如果存在多个模块，则提供“绑定”入口，做到后续必中
-            out.ambiguousCandidates = candidatesForBinding;
-        }
+        // 仅在“已安装”后才执行严格激活检测（避免未安装时做无意义的激活探测）。
+        Set<String> strictEnabledPackages = readStrictEnabledPackagesViaSu();
+        out.lsposedInstalled = isLikelyLsposedInstalledViaSu(hintedPackages, strictEnabledPackages);
+        out.likelyModuleEnabled = !out.bestPackageName.isEmpty() && strictEnabledPackages.contains(out.bestPackageName);
+        Log.d(TAG, "activation check after installed: pkg=" + out.bestPackageName
+                + ", strictEnabledPackagesCount=" + strictEnabledPackages.size()
+                + ", enabled=" + out.likelyModuleEnabled);
         return out;
     }
 
@@ -673,18 +761,7 @@ public class VioletPluginActivity extends AppCompatActivity {
         // LSPosed 的配置格式/路径在不同版本可能不同，这里做多路径兜底解析：
         // 只要能从配置文件里提取出包名，就当作“已启用模块包名集合”使用。
         Set<String> out = new HashSet<>();
-        String[] candidates = new String[]{
-                "/data/adb/lspd/config/modules.list",
-                "/data/adb/lspd/config/modules.json",
-                "/data/adb/lspd/config/modules.xml",
-                "/data/adb/lspd/config/modules_config.xml",
-                "/data/adb/lspd/config/modules.conf",
-                "/data/adb/lspd/config/modules",
-                "/data/adb/lspd/config/config.json",
-                "/data/adb/lspd/config/config.xml"
-        };
-
-        for (String path : candidates) {
+        for (String path : LSPOSED_CONFIG_FILE_CANDIDATES) {
             String content = readTextFileViaSu(path);
             if (content == null || content.trim().isEmpty()) {
                 continue;
@@ -695,6 +772,298 @@ public class VioletPluginActivity extends AppCompatActivity {
             }
             if (!out.isEmpty()) {
                 return out;
+            }
+        }
+        return out;
+    }
+
+    private boolean isLikelyLsposedInstalledViaSu(Set<String> hintedPackages, Set<String> strictEnabledPackages) {
+        if (strictEnabledPackages != null && !strictEnabledPackages.isEmpty()) {
+            return true;
+        }
+        if (hintedPackages != null && !hintedPackages.isEmpty()) {
+            return true;
+        }
+        for (String dir : LSPOSED_MODULE_DIR_CANDIDATES) {
+            if (isDirectoryExistsViaSu(dir)) {
+                return true;
+            }
+        }
+        for (String file : LSPOSED_CONFIG_FILE_CANDIDATES) {
+            if (isFileExistsViaSu(file)) {
+                return true;
+            }
+        }
+        for (String file : LSPOSED_DB_CANDIDATES) {
+            if (isFileExistsViaSu(file)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Set<String> readStrictEnabledPackagesViaSu() {
+        Set<String> out = new HashSet<>();
+        String dbPath = "/data/adb/lspd/config/modules_config.db";
+        if (!isFileExistsViaSu(dbPath)) {
+            Log.d(TAG, "strict db not found: " + dbPath);
+            return out;
+        }
+        if (!isSqliteAvailableViaSu()) {
+            Log.d(TAG, "sqlite3 not available via su");
+            return readStrictEnabledPackagesFromCopiedDbViaSu(dbPath);
+        }
+        Log.d(TAG, "strict db exists, start schema probing: " + dbPath);
+
+        List<String> tableLines = runSuCommandLines(
+                "sqlite3 \"" + dbPath + "\" \"SELECT name FROM sqlite_master WHERE type='table';\"",
+                2200,
+                80_000
+        );
+        List<String> tables = new ArrayList<>();
+        for (String line : tableLines) {
+            if (line == null) continue;
+            String name = line.trim();
+            if (name.isEmpty()) continue;
+            tables.add(name);
+        }
+        Log.d(TAG, "sqlite tables count=" + tables.size() + ", names=" + tables);
+        if (tables.isEmpty()) {
+            return out;
+        }
+
+        for (String table : tables) {
+            String tbl = table == null ? "" : table.trim();
+            if (tbl.isEmpty()) continue;
+            List<String> pragma = runSuCommandLines(
+                    "sqlite3 \"" + dbPath + "\" \"PRAGMA table_info('" + tbl.replace("'", "''") + "');\"",
+                    2200,
+                    120_000
+            );
+            if (pragma.isEmpty()) continue;
+
+            List<String> packageCols = new ArrayList<>();
+            List<String> enabledCols = new ArrayList<>();
+            for (String row : pragma) {
+                if (row == null) continue;
+                String[] parts = row.split("\\|");
+                if (parts.length < 2) continue;
+                String col = parts[1] == null ? "" : parts[1].trim();
+                if (col.isEmpty()) continue;
+                String lower = col.toLowerCase(Locale.ROOT);
+                if (lower.contains("package") || lower.contains("pkg")) {
+                    packageCols.add(col);
+                }
+                if (lower.contains("enable") || lower.contains("active") || lower.contains("state")) {
+                    enabledCols.add(col);
+                }
+            }
+            Log.d(TAG, "table=" + tbl + ", packageCols=" + packageCols + ", enabledCols=" + enabledCols);
+            if (packageCols.isEmpty() || enabledCols.isEmpty()) {
+                continue;
+            }
+
+            String safeTable = "\"" + tbl.replace("\"", "\"\"") + "\"";
+            for (String pkgCol : packageCols) {
+                String safePkg = "\"" + pkgCol.replace("\"", "\"\"") + "\"";
+                for (String enabledCol : enabledCols) {
+                    String safeEnabled = "\"" + enabledCol.replace("\"", "\"\"") + "\"";
+                    String sql = "SELECT " + safePkg + " FROM " + safeTable
+                            + " WHERE " + safePkg + " IS NOT NULL AND TRIM(" + safePkg + ")!=''"
+                            + " AND (LOWER(CAST(" + safeEnabled + " AS TEXT)) IN ('1','true','enabled','on')"
+                            + " OR CAST(" + safeEnabled + " AS INTEGER)=1);";
+                    List<String> lines = runSuCommandLines(
+                            "sqlite3 \"" + dbPath + "\" \"" + sql + "\"",
+                            2200,
+                            120_000
+                    );
+                    Log.d(TAG, "query table=" + tbl + ", pkgCol=" + pkgCol
+                            + ", enabledCol=" + enabledCol + ", rows=" + lines.size());
+                    for (String l : lines) {
+                        if (l == null) continue;
+                        String s = l.trim();
+                        if (s.isEmpty()) continue;
+                        Matcher matcher = PACKAGE_NAME_PATTERN.matcher(s);
+                        while (matcher.find()) {
+                            String hitPkg = matcher.group();
+                            out.add(hitPkg);
+                            Log.d(TAG, "strict enabled pkg hit: " + hitPkg);
+                        }
+                    }
+                }
+            }
+        }
+        Log.d(TAG, "strict enabled package final count=" + out.size() + ", pkgs=" + out);
+        return out;
+    }
+
+    private Set<String> readStrictEnabledPackagesFromCopiedDbViaSu(String srcDbPath) {
+        Set<String> out = new HashSet<>();
+        File cacheDir = getCacheDir();
+        if (cacheDir == null) {
+            Log.d(TAG, "cache dir unavailable for db fallback");
+            return out;
+        }
+
+        File localDb = new File(cacheDir, "lspd_modules_config.db");
+        File localWal = new File(cacheDir, "lspd_modules_config.db-wal");
+        File localShm = new File(cacheDir, "lspd_modules_config.db-shm");
+        int appUid = android.os.Process.myUid();
+        try {
+            if (localDb.exists()) localDb.delete();
+            if (localWal.exists()) localWal.delete();
+            if (localShm.exists()) localShm.delete();
+        } catch (Exception ignored) {
+        }
+
+        String copyDbCmd = "cp \"" + srcDbPath + "\" \"" + localDb.getAbsolutePath() + "\""
+                + " && chown " + appUid + ":" + appUid + " \"" + localDb.getAbsolutePath() + "\""
+                + " && chmod 600 \"" + localDb.getAbsolutePath() + "\"";
+        List<String> copyDbOut = runSuCommandLines(copyDbCmd, 2200, 2048);
+        if (!localDb.exists()) {
+            Log.d(TAG, "fallback copy db failed, output=" + copyDbOut);
+            return out;
+        }
+        runSuCommandLines(
+                "cp \"" + srcDbPath + "-wal\" \"" + localWal.getAbsolutePath() + "\" 2>/dev/null;"
+                        + " chown " + appUid + ":" + appUid + " \"" + localWal.getAbsolutePath() + "\" 2>/dev/null;"
+                        + " chmod 600 \"" + localWal.getAbsolutePath() + "\" 2>/dev/null",
+                1200,
+                512
+        );
+        runSuCommandLines(
+                "cp \"" + srcDbPath + "-shm\" \"" + localShm.getAbsolutePath() + "\" 2>/dev/null;"
+                        + " chown " + appUid + ":" + appUid + " \"" + localShm.getAbsolutePath() + "\" 2>/dev/null;"
+                        + " chmod 600 \"" + localShm.getAbsolutePath() + "\" 2>/dev/null",
+                1200,
+                512
+        );
+
+        Log.d(TAG, "fallback open copied db: " + localDb.getAbsolutePath()
+                + ", exists=" + localDb.exists() + ", canRead=" + localDb.canRead()
+                + ", uid=" + appUid);
+        SQLiteDatabase db = null;
+        Cursor tableCursor = null;
+        try {
+            db = SQLiteDatabase.openDatabase(localDb.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+            tableCursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+            List<String> tables = new ArrayList<>();
+            while (tableCursor.moveToNext()) {
+                String name = tableCursor.getString(0);
+                if (name != null && !name.trim().isEmpty()) {
+                    tables.add(name.trim());
+                }
+            }
+            Log.d(TAG, "fallback sqlite tables count=" + tables.size() + ", names=" + tables);
+
+            for (String tbl : tables) {
+                List<String> packageCols = new ArrayList<>();
+                List<String> enabledCols = new ArrayList<>();
+                Cursor pragma = null;
+                try {
+                    pragma = db.rawQuery("PRAGMA table_info('" + tbl.replace("'", "''") + "')", null);
+                    while (pragma.moveToNext()) {
+                        String col = pragma.getString(1);
+                        if (col == null || col.trim().isEmpty()) continue;
+                        String lower = col.toLowerCase(Locale.ROOT);
+                        if (lower.contains("package") || lower.contains("pkg")) {
+                            packageCols.add(col);
+                        }
+                        if (lower.contains("enable") || lower.contains("active") || lower.contains("state")) {
+                            enabledCols.add(col);
+                        }
+                    }
+                } finally {
+                    if (pragma != null) pragma.close();
+                }
+                Log.d(TAG, "fallback table=" + tbl + ", packageCols=" + packageCols + ", enabledCols=" + enabledCols);
+                if (packageCols.isEmpty() || enabledCols.isEmpty()) continue;
+
+                String safeTable = "\"" + tbl.replace("\"", "\"\"") + "\"";
+                for (String pkgCol : packageCols) {
+                    String safePkg = "\"" + pkgCol.replace("\"", "\"\"") + "\"";
+                    for (String enabledCol : enabledCols) {
+                        String safeEnabled = "\"" + enabledCol.replace("\"", "\"\"") + "\"";
+                        String sql = "SELECT " + safePkg + " FROM " + safeTable
+                                + " WHERE " + safePkg + " IS NOT NULL AND TRIM(" + safePkg + ")!=''"
+                                + " AND (LOWER(CAST(" + safeEnabled + " AS TEXT)) IN ('1','true','enabled','on')"
+                                + " OR CAST(" + safeEnabled + " AS INTEGER)=1)";
+                        Cursor c = null;
+                        int rowCount = 0;
+                        try {
+                            c = db.rawQuery(sql, null);
+                            while (c.moveToNext()) {
+                                rowCount++;
+                                String value = c.getString(0);
+                                if (value == null) continue;
+                                Matcher matcher = PACKAGE_NAME_PATTERN.matcher(value.trim());
+                                while (matcher.find()) {
+                                    String hitPkg = matcher.group();
+                                    out.add(hitPkg);
+                                    Log.d(TAG, "fallback strict enabled pkg hit: " + hitPkg);
+                                }
+                            }
+                        } finally {
+                            if (c != null) c.close();
+                        }
+                        Log.d(TAG, "fallback query table=" + tbl + ", pkgCol=" + pkgCol
+                                + ", enabledCol=" + enabledCol + ", rows=" + rowCount);
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            Log.d(TAG, "fallback parse copied db failed: " + t.getMessage());
+        } finally {
+            if (tableCursor != null) tableCursor.close();
+            if (db != null) db.close();
+            try {
+                if (localDb.exists()) localDb.delete();
+                if (localWal.exists()) localWal.delete();
+                if (localShm.exists()) localShm.delete();
+            } catch (Exception ignored) {
+            }
+        }
+        Log.d(TAG, "fallback strict enabled package final count=" + out.size() + ", pkgs=" + out);
+        return out;
+    }
+
+    private boolean isSqliteAvailableViaSu() {
+        List<String> lines = runSuCommandLines("command -v sqlite3", 1200, 512);
+        for (String line : lines) {
+            if (line != null && !line.trim().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<String> runSuCommandLines(String cmd, long timeoutMs, int maxChars) {
+        List<String> out = new ArrayList<>();
+        for (String[] suCmd : buildSuCommands(cmd)) {
+            Process process = null;
+            try {
+                process = new ProcessBuilder(suCmd)
+                        .redirectErrorStream(true)
+                        .start();
+                boolean finished = process.waitFor(timeoutMs, TimeUnit.MILLISECONDS);
+                if (!finished || process.exitValue() != 0) {
+                    continue;
+                }
+                int total = 0;
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        out.add(line);
+                        total += line.length() + 1;
+                        if (total >= maxChars) {
+                            break;
+                        }
+                    }
+                }
+                return out;
+            } catch (Exception ignored) {
+            } finally {
+                if (process != null) process.destroy();
             }
         }
         return out;
