@@ -2,7 +2,7 @@ package com.violet.safe.ui.plugin;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,12 +38,11 @@ public class KernelDisguiseActivity extends AppCompatActivity {
     private TextView tvSpoofedKernelBuild;
     private TextInputEditText etKernelVersion;
     private TextInputEditText etKernelBuild;
-    private androidx.appcompat.widget.SwitchCompat switchKernelAutoApply;
+    private RadioGroup rgSpoofUnameMode;
     private MaterialButton btnSyncCurrent;
     private MaterialButton btnApplySpoof;
     private View progress;
     private volatile String lastApplyError = "";
-    private boolean suppressAutoApplySwitchCallback = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +63,13 @@ public class KernelDisguiseActivity extends AppCompatActivity {
         tvSpoofedKernelBuild = findViewById(R.id.tvSpoofedKernelBuild);
         etKernelVersion = findViewById(R.id.etKernelVersion);
         etKernelBuild = findViewById(R.id.etKernelBuild);
-        switchKernelAutoApply = findViewById(R.id.switchKernelAutoApply);
+        rgSpoofUnameMode = findViewById(R.id.rgSpoofUnameMode);
         btnSyncCurrent = findViewById(R.id.btnKernelSyncCurrent);
         btnApplySpoof = findViewById(R.id.btnKernelApplySpoof);
         progress = findViewById(R.id.progressKernelDisguise);
 
         btnSyncCurrent.setOnClickListener(v -> syncInputWithCurrentKernel());
         btnApplySpoof.setOnClickListener(v -> applySpoofKernelInfo());
-        if (switchKernelAutoApply != null) {
-            switchKernelAutoApply.setOnCheckedChangeListener(this::onAutoApplySwitchChanged);
-        }
 
         loadKernelInfo();
     }
@@ -90,7 +86,7 @@ public class KernelDisguiseActivity extends AppCompatActivity {
         if (btnApplySpoof != null) btnApplySpoof.setEnabled(!busy);
         if (etKernelVersion != null) etKernelVersion.setEnabled(!busy);
         if (etKernelBuild != null) etKernelBuild.setEnabled(!busy);
-        if (switchKernelAutoApply != null) switchKernelAutoApply.setEnabled(!busy);
+        if (rgSpoofUnameMode != null) rgSpoofUnameMode.setEnabled(!busy);
     }
 
     private void loadKernelInfo() {
@@ -101,20 +97,16 @@ public class KernelDisguiseActivity extends AppCompatActivity {
             String config = readTextFileViaSu(resolveConfigPathForRead());
             String spoofVersion = parseConfigValue(config, "kernel_version");
             String spoofBuild = parseConfigValue(config, "kernel_build");
-            boolean autoApplyEnabled = isBootAutoApplyEnabled(config);
+            String spoofMode = parseConfigValue(config, "spoof_uname");
             runOnUiThread(() -> {
                 setBusy(false);
                 tvCurrentKernelVersion.setText("当前内核版本：" + valueOrDash(version));
                 tvCurrentKernelBuild.setText("当前构建信息：" + valueOrDash(build));
                 tvSpoofedKernelVersion.setText("伪装内核版本：" + valueOrDash(spoofVersion));
                 tvSpoofedKernelBuild.setText("伪装构建日期：" + valueOrDash(spoofBuild));
-                if (etKernelVersion != null) etKernelVersion.setText(spoofVersion);
-                if (etKernelBuild != null) etKernelBuild.setText(spoofBuild);
-                if (switchKernelAutoApply != null) {
-                    suppressAutoApplySwitchCallback = true;
-                    switchKernelAutoApply.setChecked(autoApplyEnabled);
-                    suppressAutoApplySwitchCallback = false;
-                }
+                if (etKernelVersion != null) etKernelVersion.setText("");
+                if (etKernelBuild != null) etKernelBuild.setText("");
+                applySpoofModeToUi(spoofMode);
                 Toast.makeText(this, "已读取内核信息", Toast.LENGTH_SHORT).show();
             });
         });
@@ -132,7 +124,7 @@ public class KernelDisguiseActivity extends AppCompatActivity {
         final String kernelVersion = normalizeInput(etKernelVersion);
         final String kernelBuild = normalizeInput(etKernelBuild);
         if (kernelVersion.isEmpty() || kernelBuild.isEmpty()) {
-            Toast.makeText(this, "内核版本与构建日期都不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "内核版本与构建日期不为空", Toast.LENGTH_SHORT).show();
             return;
         }
         setBusy(true);
@@ -146,7 +138,7 @@ public class KernelDisguiseActivity extends AppCompatActivity {
                     String detail = trimOrEmpty(lastApplyError);
                     if (detail.length() > 80) detail = detail.substring(0, 80) + "...";
                     String msg = detail.isEmpty()
-                            ? "应用失败，请检查 Root/SUSFS 环境"
+                            ? "应用失败，请检查配置环境"
                             : "应用失败：" + detail;
                     Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
                 }
@@ -158,7 +150,7 @@ public class KernelDisguiseActivity extends AppCompatActivity {
     private boolean writeSpoofConfigAndApply(String kernelVersion, String kernelBuild) {
         String versionEsc = singleQuoteEscape(kernelVersion);
         String buildEsc = singleQuoteEscape(kernelBuild);
-        String spoofMode = (switchKernelAutoApply != null && switchKernelAutoApply.isChecked()) ? "1" : "0";
+        String spoofMode = getSelectedSpoofMode();
         String cmd = "PRIMARY=\"" + SUSFS_CONFIG_PRIMARY + "\"; LEGACY=\"" + SUSFS_CONFIG_LEGACY + "\"; "
                 + "if [ -f \"$PRIMARY\" ] || [ -d /data/adb/violet_kernel_spoof ]; then CONFIG=\"$PRIMARY\"; "
                 + "else CONFIG=\"$LEGACY\"; fi; "
@@ -177,42 +169,6 @@ public class KernelDisguiseActivity extends AppCompatActivity {
                 + "if [ -x \"" + SUSFS_BIN + "\" ]; then \"" + SUSFS_BIN + "\" set_uname \"$KV\" \"$KB\"; "
                 + "else ksu_susfs set_uname \"$KV\" \"$KB\"; fi";
         ShellExecResult result = runShellViaSuDetailed(cmd, 7000);
-        lastApplyError = result.summary;
-        return result.success;
-    }
-
-    private void onAutoApplySwitchChanged(CompoundButton buttonView, boolean isChecked) {
-        if (suppressAutoApplySwitchCallback) return;
-        setBusy(true);
-        ioExecutor.execute(() -> {
-            boolean ok = writeBootAutoApplyOnly(isChecked);
-            runOnUiThread(() -> {
-                setBusy(false);
-                if (!ok && switchKernelAutoApply != null) {
-                    suppressAutoApplySwitchCallback = true;
-                    switchKernelAutoApply.setChecked(!isChecked);
-                    suppressAutoApplySwitchCallback = false;
-                }
-                Toast.makeText(
-                        this,
-                        ok ? (isChecked ? "已开启开机自动伪装" : "已关闭开机自动伪装") : "开关保存失败",
-                        Toast.LENGTH_SHORT
-                ).show();
-            });
-        });
-    }
-
-    private boolean writeBootAutoApplyOnly(boolean enabled) {
-        String mode = enabled ? "1" : "0";
-        String cmd = "PRIMARY=\"" + SUSFS_CONFIG_PRIMARY + "\"; LEGACY=\"" + SUSFS_CONFIG_LEGACY + "\"; "
-                + "if [ -f \"$PRIMARY\" ] || [ -d /data/adb/violet_kernel_spoof ]; then CONFIG=\"$PRIMARY\"; "
-                + "else CONFIG=\"$LEGACY\"; fi; "
-                + "mkdir -p \"$(dirname \"$CONFIG\")\"; "
-                + "[ -f \"$CONFIG\" ] || touch \"$CONFIG\"; "
-                + "if grep -q '^spoof_uname=' \"$CONFIG\"; then "
-                + "sed -i \"s|^spoof_uname=.*|spoof_uname=" + mode + "|\" \"$CONFIG\"; "
-                + "else echo \"spoof_uname=" + mode + "\" >> \"$CONFIG\"; fi";
-        ShellExecResult result = runShellViaSuDetailed(cmd, 3000);
         lastApplyError = result.summary;
         return result.success;
     }
@@ -330,10 +286,26 @@ public class KernelDisguiseActivity extends AppCompatActivity {
         return "";
     }
 
-    private static boolean isBootAutoApplyEnabled(String rawConfig) {
-        String value = parseConfigValue(rawConfig, "spoof_uname");
-        if (value.isEmpty()) return true;
-        return !"0".equals(value.trim());
+    private void applySpoofModeToUi(String spoofMode) {
+        if (rgSpoofUnameMode == null) return;
+        String mode = trimOrEmpty(spoofMode);
+        if ("0".equals(mode)) {
+            rgSpoofUnameMode.check(R.id.rbSpoofUnameOff);
+            return;
+        }
+        if ("2".equals(mode)) {
+            rgSpoofUnameMode.check(R.id.rbSpoofUnamePostFs);
+            return;
+        }
+        rgSpoofUnameMode.check(R.id.rbSpoofUnameService);
+    }
+
+    private String getSelectedSpoofMode() {
+        if (rgSpoofUnameMode == null) return "1";
+        int checkedId = rgSpoofUnameMode.getCheckedRadioButtonId();
+        if (checkedId == R.id.rbSpoofUnameOff) return "0";
+        if (checkedId == R.id.rbSpoofUnamePostFs) return "2";
+        return "1";
     }
 
     private String[][] buildSuCommands(String cmd) {

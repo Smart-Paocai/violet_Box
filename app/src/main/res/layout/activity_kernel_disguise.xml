@@ -155,26 +155,40 @@
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:text="执行位置"
+                    android:textColor="@color/explore_slate_800"
+                    android:textSize="14sp" />
 
-                    <TextView
-                        android:layout_width="0dp"
+                <RadioGroup
+                    android:id="@+id/rgSpoofUnameMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/rbSpoofUnameOff"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="开机自动伪装"
-                        android:textColor="@color/explore_slate_800"
-                        android:textSize="14sp" />
+                        android:text="关闭" />
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/switchKernelAutoApply"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+                    <RadioButton
+                        android:id="@+id/rbSpoofUnameService"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Service" />
+
+                    <RadioButton
+                        android:id="@+id/rbSpoofUnamePostFs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Post-fs-data" />
+                </RadioGroup>
 
                 <ProgressBar
                     android:id="@+id/progressKernelDisguise"
