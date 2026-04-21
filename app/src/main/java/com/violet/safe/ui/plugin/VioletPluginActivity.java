@@ -76,6 +76,7 @@ public class VioletPluginActivity extends AppCompatActivity {
     private final ExecutorService ioExecutor = Executors.newFixedThreadPool(3);
     private View cardTrickyStoreModule;
     private View cardHiddenAppList;
+    private View cardKernelDisguise;
     private TextView tvHiddenAppListMeta;
     private ImageView ivHiddenAppListLoading;
     private ObjectAnimator hiddenAppListLoadingAnimator;
@@ -136,6 +137,12 @@ public class VioletPluginActivity extends AppCompatActivity {
 
         cardTrickyStoreModule = findViewById(R.id.cardTrickyStoreModule);
         detectTrickyStoreModule();
+
+        cardKernelDisguise = findViewById(R.id.cardKernelDisguise);
+        if (cardKernelDisguise != null) {
+            cardKernelDisguise.setOnClickListener(v ->
+                    startActivity(new Intent(this, KernelDisguiseActivity.class)));
+        }
     }
 
     @Override
