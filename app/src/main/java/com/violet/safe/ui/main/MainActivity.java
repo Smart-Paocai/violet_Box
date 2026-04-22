@@ -53,6 +53,7 @@ import com.violet.safe.ui.font.FontLibraryBackupActivity;
 import com.violet.safe.ui.module.ModuleManagerActivity;
 import com.violet.safe.ui.partition.PartitionManagerActivity;
 import com.violet.safe.ui.payload.PayloadActivity;
+import com.violet.safe.ui.plugin.GlobalDeviceSpoofActivity;
 import com.violet.safe.ui.plugin.VioletPluginActivity;
 import com.violet.safe.ui.selinux.SelinuxManagerActivity;
 
@@ -163,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
         if (btnVioletPlugin != null) {
             btnVioletPlugin.setOnClickListener(v ->
                     startActivity(new Intent(this, VioletPluginActivity.class)));
+        }
+        View btnGlobalDeviceSpoof = findViewById(R.id.btnGlobalDeviceSpoof);
+        if (btnGlobalDeviceSpoof != null) {
+            btnGlobalDeviceSpoof.setOnClickListener(v ->
+                    startActivity(new Intent(this, GlobalDeviceSpoofActivity.class)));
         }
         setupQuickRebootButtons();
 

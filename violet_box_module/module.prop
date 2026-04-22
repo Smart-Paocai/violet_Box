@@ -1,0 +1,6 @@
+id=violet_box_module
+name=紫罗兰Box（核心扩展）
+version=v1.0.0
+versionCode=100
+author=泡菜
+description=实现紫罗兰Box的一些特殊功能，卸载该模块后会导致，全局模拟机型，内核伪装等功能无法使用.

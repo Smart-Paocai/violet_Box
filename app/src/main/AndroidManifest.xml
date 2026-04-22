@@ -66,6 +66,9 @@
         <activity
             android:name=".ui.plugin.KernelDisguiseActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.plugin.GlobalDeviceSpoofActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

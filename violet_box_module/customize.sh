@@ -7,7 +7,7 @@ MODULE_BIN="$MODPATH/tools/ksu_susfs_arm64"
 
 ui_print " "
 ui_print "***************************************"
-ui_print "  Violet Kernel Spoof (Minimal)"
+ui_print "  Violet Box Core Extension"
 ui_print "***************************************"
 ui_print " "
 

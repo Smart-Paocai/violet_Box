@@ -1,6 +1,0 @@
-id=violet_kernel_spoof
-name=紫罗兰Box（核心扩展）
-version=v1.0.0
-versionCode=100
-author=pao
-description=Minimal kernel uname spoof module. Only spoof kernel version/build and auto-apply on boot.
