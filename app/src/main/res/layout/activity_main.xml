@@ -23,6 +23,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/ios_background_elevated"
             app:menu="@menu/toolbar_menu"
+            app:popupTheme="@style/ThemeOverlay.Violet.ToolbarPopup"
             app:title="紫罗兰Box"
             app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
             app:titleTextColor="@color/ios_text_primary" />
@@ -33,6 +34,16 @@
             android:background="@color/ios_separator" />
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <View
+        android:id="@+id/overflowMenuScrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:background="#78000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/contentHome"

@@ -2,27 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_quick_reboot_system"
-        android:title="重启系统"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_quick_reboot_bootloader"
-        android:title="重启到 Bootloader"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_quick_reboot_fastbootd"
-        android:title="重启到 FastbootD"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_quick_reboot_recovery"
-        android:title="重启到 Recovery"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_quick_reboot_edl"
-        android:title="重启到 EDL"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_quick_reboot_safe_mode"
-        android:title="重启到安全模式"
-        app:showAsAction="never" />
+        android:id="@+id/action_overflow_quick_reboot"
+        android:icon="@drawable/ic_toolbar_overflow_custom"
+        android:title="快捷重启菜单"
+        app:showAsAction="always" />
 </menu>

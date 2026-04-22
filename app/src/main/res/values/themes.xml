@@ -52,4 +52,8 @@
         <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+
+    <style name="ThemeOverlay.Violet.ToolbarPopup" parent="ThemeOverlay.Material3.Light">
+        <item name="android:popupBackground">@drawable/bg_toolbar_popup_menu</item>
+    </style>
 </resources>

@@ -20,7 +20,9 @@ import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Gravity;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.Toast;
 import android.system.Os;
@@ -60,7 +62,6 @@ import com.violet.safe.ui.selinux.SelinuxManagerActivity;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.card.MaterialCardView;
@@ -98,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView textHome, textDevice, textExplore, textSettings;
     private View navLiquidIndicator;
     private AppBarLayout appBarLayout;
+    private View overflowMenuScrim;
+    private PopupMenu quickRebootPopupMenu;
     private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     @Override
@@ -108,13 +111,21 @@ public class MainActivity extends AppCompatActivity {
         
         Toolbar toolbar = findViewById(R.id.toolbar);
         appBarLayout = findViewById(R.id.appBarLayout);
+        overflowMenuScrim = findViewById(R.id.overflowMenuScrim);
         setSupportActionBar(toolbar);
-        toolbar.setOverflowIcon(AppCompatResources.getDrawable(this, R.drawable.ic_toolbar_overflow_custom));
-        toolbar.inflateMenu(R.menu.toolbar_menu);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("紫罗兰Box");
         }
         ensureToolbarVisible();
+        if (overflowMenuScrim != null) {
+            overflowMenuScrim.setOnClickListener(v -> {
+                if (quickRebootPopupMenu != null) {
+                    quickRebootPopupMenu.dismiss();
+                } else {
+                    setOverflowMenuScrimVisible(false);
+                }
+            });
+        }
 
         // 初始化导航栏
         navHome = findViewById(R.id.nav_home);
@@ -477,6 +488,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         int itemId = item.getItemId();
+        if (itemId == R.id.action_overflow_quick_reboot) {
+            View anchor = findViewById(R.id.action_overflow_quick_reboot);
+            if (anchor == null) {
+                Toolbar toolbar = findViewById(R.id.toolbar);
+                if (toolbar != null) {
+                    anchor = toolbar;
+                }
+            }
+            showQuickRebootPopupMenu(anchor);
+            return true;
+        }
         if (itemId == R.id.action_quick_reboot_system) {
             showQuickRebootConfirmDialog("重启系统", "reboot");
             return true;
@@ -502,6 +524,79 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showQuickRebootPopupMenu(View anchor) {
+        if (anchor == null) return;
+        PopupMenu popupMenu = new PopupMenu(this, anchor, Gravity.END, 0, R.style.ThemeOverlay_Violet_ToolbarPopup);
+        popupMenu.getMenuInflater().inflate(R.menu.quick_reboot_menu, popupMenu.getMenu());
+        applyPopupMenuOffsetCompat(popupMenu, -dpToPx(22));
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_quick_reboot_system) {
+                showQuickRebootConfirmDialog("重启系统", "reboot");
+                return true;
+            }
+            if (itemId == R.id.action_quick_reboot_bootloader) {
+                showQuickRebootConfirmDialog("重启到 Bootloader", "reboot bootloader");
+                return true;
+            }
+            if (itemId == R.id.action_quick_reboot_fastbootd) {
+                showQuickRebootConfirmDialog("重启到 FastbootD", "reboot fastboot");
+                return true;
+            }
+            if (itemId == R.id.action_quick_reboot_recovery) {
+                showQuickRebootConfirmDialog("重启到 Recovery", "reboot recovery");
+                return true;
+            }
+            if (itemId == R.id.action_quick_reboot_edl) {
+                showQuickRebootConfirmDialog("重启到 EDL", "reboot edl");
+                return true;
+            }
+            if (itemId == R.id.action_quick_reboot_safe_mode) {
+                showQuickRebootConfirmDialog("重启到安全模式", "setprop persist.sys.safemode 1; reboot");
+                return true;
+            }
+            return false;
+        });
+        popupMenu.setOnDismissListener(menu -> {
+            quickRebootPopupMenu = null;
+            setOverflowMenuScrimVisible(false);
+        });
+        quickRebootPopupMenu = popupMenu;
+        setOverflowMenuScrimVisible(true);
+        popupMenu.show();
+    }
+
+    private void applyPopupMenuOffsetCompat(PopupMenu popupMenu, int verticalOffsetPx) {
+        if (popupMenu == null) return;
+        try {
+            java.lang.reflect.Field popupField = PopupMenu.class.getDeclaredField("mPopup");
+            popupField.setAccessible(true);
+            Object helper = popupField.get(popupMenu);
+            if (helper == null) return;
+            java.lang.reflect.Method setVerticalOffsetMethod = helper.getClass().getMethod("setVerticalOffset", int.class);
+            setVerticalOffsetMethod.invoke(helper, verticalOffsetPx);
+        } catch (Exception ignored) {
+            // 兼容不同 appcompat 版本，偏移失败时保持默认位置
+        }
+    }
+
+    private void setOverflowMenuScrimVisible(boolean visible) {
+        if (overflowMenuScrim == null) return;
+        overflowMenuScrim.animate().cancel();
+        if (visible) {
+            overflowMenuScrim.bringToFront();
+            overflowMenuScrim.setAlpha(0f);
+            overflowMenuScrim.setVisibility(View.VISIBLE);
+            overflowMenuScrim.animate().alpha(1f).setDuration(160).start();
+        } else {
+            overflowMenuScrim.animate()
+                    .alpha(0f)
+                    .setDuration(140)
+                    .withEndAction(() -> overflowMenuScrim.setVisibility(View.GONE))
+                    .start();
+        }
     }
 
     private File getLogFile() {
