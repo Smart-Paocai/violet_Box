@@ -37,6 +37,7 @@ import com.violet.safe.R;
 import com.violet.safe.core.util.BatterySysFiles;
 import com.violet.safe.core.util.CpuSysFiles;
 import com.violet.safe.core.util.GpuInfoQuery;
+import com.violet.safe.core.util.SelinuxShellUtil;
 import com.violet.safe.core.util.SelinuxStatusReader;
 import com.violet.safe.ui.widget.CpuRingGaugeView;
 
@@ -111,6 +112,7 @@ public class DeviceFragment extends Fragment {
 
     private TextView tvGpuRenderer;
     private TextView tvGpuApi;
+    private TextView tvAndroidId;
 
     private TextView tvImei;
     private TextView tvImsi;
@@ -141,7 +143,7 @@ public class DeviceFragment extends Fragment {
         TextView tvRadioVersion = view.findViewById(R.id.tvRadioVersion);
         TextView tvBuildDisplay = view.findViewById(R.id.tvBuildDisplay);
         TextView tvSecurityPatch = view.findViewById(R.id.tvSecurityPatch);
-        TextView tvAndroidId = view.findViewById(R.id.tvAndroidId);
+        tvAndroidId = view.findViewById(R.id.tvAndroidId);
         tvImei = view.findViewById(R.id.tvImei);
         tvImsi = view.findViewById(R.id.tvImsi);
 
@@ -195,10 +197,7 @@ public class DeviceFragment extends Fragment {
         if (tvSecurityPatch != null) {
             tvSecurityPatch.setText(Build.VERSION.SECURITY_PATCH);
         }
-        if (tvAndroidId != null) {
-            String androidId = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-            tvAndroidId.setText(androidId != null ? androidId : "—");
-        }
+        refreshAndroidIdUi();
         refreshPhoneIdentifiers();
 
         bindGpuSectionAsync();
@@ -240,6 +239,7 @@ public class DeviceFragment extends Fragment {
         }
 
         applySelinuxSummary();
+        refreshAndroidIdUi();
 
         mainHandler.removeCallbacks(cpuRingTickRunnable);
         mainHandler.post(cpuRingTickRunnable);
@@ -309,6 +309,31 @@ public class DeviceFragment extends Fragment {
         if (tvImsi != null) {
             tvImsi.setText(readImsiOrPlaceholder());
         }
+    }
+
+    private void refreshAndroidIdUi() {
+        if (tvAndroidId == null || getContext() == null) {
+            return;
+        }
+        String viaSu = readAndroidIdViaSu();
+        if (!TextUtils.isEmpty(viaSu)) {
+            tvAndroidId.setText(viaSu);
+            return;
+        }
+        String apiValue = Settings.Secure.getString(requireContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        tvAndroidId.setText(!TextUtils.isEmpty(apiValue) ? apiValue : "—");
+    }
+
+    private String readAndroidIdViaSu() {
+        SelinuxShellUtil.ShellResult result = SelinuxShellUtil.runSu("settings get secure android_id", 1500);
+        if (!result.success) {
+            return "";
+        }
+        String out = result.stdout == null ? "" : result.stdout.trim();
+        if (TextUtils.isEmpty(out) || "null".equalsIgnoreCase(out)) {
+            return "";
+        }
+        return out;
     }
 
     private void applyBatteryIntent(Intent batteryStatus) {

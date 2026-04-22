@@ -54,6 +54,7 @@ import com.violet.safe.ui.module.ModuleManagerActivity;
 import com.violet.safe.ui.partition.PartitionManagerActivity;
 import com.violet.safe.ui.payload.PayloadActivity;
 import com.violet.safe.ui.plugin.GlobalDeviceSpoofActivity;
+import com.violet.safe.ui.plugin.DeviceIdModifyActivity;
 import com.violet.safe.ui.plugin.VioletPluginActivity;
 import com.violet.safe.ui.selinux.SelinuxManagerActivity;
 
@@ -169,6 +170,11 @@ public class MainActivity extends AppCompatActivity {
         if (btnGlobalDeviceSpoof != null) {
             btnGlobalDeviceSpoof.setOnClickListener(v ->
                     startActivity(new Intent(this, GlobalDeviceSpoofActivity.class)));
+        }
+        View btnDeviceIdModify = findViewById(R.id.btnDeviceIdModify);
+        if (btnDeviceIdModify != null) {
+            btnDeviceIdModify.setOnClickListener(v ->
+                    startActivity(new Intent(this, DeviceIdModifyActivity.class)));
         }
         setupQuickRebootButtons();
 
