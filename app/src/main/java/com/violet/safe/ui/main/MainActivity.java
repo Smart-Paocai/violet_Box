@@ -60,6 +60,7 @@ import com.violet.safe.ui.selinux.SelinuxManagerActivity;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.card.MaterialCardView;
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         appBarLayout = findViewById(R.id.appBarLayout);
         setSupportActionBar(toolbar);
+        toolbar.setOverflowIcon(AppCompatResources.getDrawable(this, R.drawable.ic_toolbar_overflow_custom));
         toolbar.inflateMenu(R.menu.toolbar_menu);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("紫罗兰Box");
@@ -176,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
             btnDeviceIdModify.setOnClickListener(v ->
                     startActivity(new Intent(this, DeviceIdModifyActivity.class)));
         }
-        setupQuickRebootButtons();
-
         if (navHome != null) {
             navHome.setOnClickListener(v -> selectTab(0, true));
             navDevice.setOnClickListener(v -> selectTab(1, true));
@@ -299,28 +299,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, AppManagerActivity.class));
     }
 
-    private void setupQuickRebootButtons() {
-        bindQuickRebootButton(R.id.btnQuickRebootSystem, "重启系统", "reboot");
-        bindQuickRebootButton(R.id.btnQuickRebootBootloader, "重启到 Bootloader", "reboot bootloader");
-        bindQuickRebootButton(R.id.btnQuickRebootFastbootd, "重启到 FastbootD", "reboot fastboot");
-        bindQuickRebootButton(R.id.btnQuickRebootRecovery, "重启到 Recovery", "reboot recovery");
-        bindQuickRebootButton(R.id.btnQuickRebootEdl, "重启到 EDL", "reboot edl");
-        bindQuickRebootButton(R.id.btnQuickRebootSafeMode, "重启到安全模式", "setprop persist.sys.safemode 1; reboot");
-    }
-
     private void setViewVisibilitySafe(int viewId, int visibility) {
         View v = findViewById(viewId);
         if (v != null) {
             v.setVisibility(visibility);
         }
-    }
-
-    private void bindQuickRebootButton(int viewId, String title, String command) {
-        View button = findViewById(viewId);
-        if (button == null) {
-            return;
-        }
-        button.setOnClickListener(v -> showQuickRebootConfirmDialog(title, command));
     }
 
     private void showQuickRebootConfirmDialog(String title, String command) {
@@ -493,8 +476,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
-        if (item.getItemId() == R.id.action_view_logs) {
-            showLogsDialog();
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_quick_reboot_system) {
+            showQuickRebootConfirmDialog("重启系统", "reboot");
+            return true;
+        }
+        if (itemId == R.id.action_quick_reboot_bootloader) {
+            showQuickRebootConfirmDialog("重启到 Bootloader", "reboot bootloader");
+            return true;
+        }
+        if (itemId == R.id.action_quick_reboot_fastbootd) {
+            showQuickRebootConfirmDialog("重启到 FastbootD", "reboot fastboot");
+            return true;
+        }
+        if (itemId == R.id.action_quick_reboot_recovery) {
+            showQuickRebootConfirmDialog("重启到 Recovery", "reboot recovery");
+            return true;
+        }
+        if (itemId == R.id.action_quick_reboot_edl) {
+            showQuickRebootConfirmDialog("重启到 EDL", "reboot edl");
+            return true;
+        }
+        if (itemId == R.id.action_quick_reboot_safe_mode) {
+            showQuickRebootConfirmDialog("重启到安全模式", "setprop persist.sys.safemode 1; reboot");
             return true;
         }
         return super.onOptionsItemSelected(item);
