@@ -152,7 +152,7 @@ public class GlobalDeviceSpoofActivity extends AppCompatActivity {
             }
             runOnUiThread(() -> {
                 setBusy(false);
-                Toast.makeText(this, valid ? "原机属性已保存" : "保存失败，无法读取完整原机属性", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, valid ? "原机属性已备份" : "备份失败，无法读取完整原机属性", Toast.LENGTH_SHORT).show();
             });
         });
     }
@@ -165,7 +165,7 @@ public class GlobalDeviceSpoofActivity extends AppCompatActivity {
         String device = trimOrEmpty(prefs.getString(KEY_ORIGINAL_DEVICE, ""));
         String fingerprint = trimOrEmpty(prefs.getString(KEY_ORIGINAL_FINGERPRINT, ""));
         if (brand.isEmpty() || manufacturer.isEmpty() || model.isEmpty() || device.isEmpty() || fingerprint.isEmpty()) {
-            Toast.makeText(this, "未找到已保存的原机属性，请先点击保存", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "未找到已备份的原机属性，请先点击备份", Toast.LENGTH_SHORT).show();
             return;
         }
         if (etSpoofBrand != null) etSpoofBrand.setText(brand);

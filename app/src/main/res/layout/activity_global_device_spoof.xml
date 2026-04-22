@@ -61,6 +61,14 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="实时读取当前系统属性，用于核对伪装结果"
+                    android:textColor="@color/explore_slate_500"
+                    android:textSize="12sp" />
+
+                <TextView
                     android:id="@+id/tvCurrentBrand"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -110,6 +118,14 @@
                     android:text="伪装配置"
                     android:textColor="@color/explore_slate_800"
                     android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="品牌/制造商/机型/设备代号为必填，指纹可选"
+                    android:textColor="@color/explore_slate_500"
+                    android:textSize="12sp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -199,6 +215,14 @@
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="留空则不覆盖当前指纹"
+                    android:textColor="@color/explore_slate_500"
+                    android:textSize="12sp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -233,32 +257,36 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:gravity="end"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSaveOriginalProps"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="保存原机属性" />
+                        android:orientation="horizontal">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnRestoreOriginalProps"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1"
-                        android:text="还原原机属性" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSaveOriginalProps"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="备份原机属性" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRestoreOriginalProps"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:text="还原原机属性" />
+                    </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGlobalApplySpoof"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1"
+                        android:layout_marginTop="10dp"
                         android:text="应用伪装" />
                 </LinearLayout>
             </LinearLayout>
