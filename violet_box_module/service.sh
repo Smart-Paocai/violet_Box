@@ -33,6 +33,13 @@ set_prop_value() {
   return 1
 }
 
+is_unset_or_default() {
+  val="$1"
+  [ -z "$val" ] && return 0
+  [ "$val" = "default" ] && return 0
+  return 1
+}
+
 apply_spoof_uname() {
   [ -f "$CONFIG_FILE" ] || return 1
   . "$CONFIG_FILE"
@@ -51,13 +58,15 @@ apply_global_props() {
   [ -f "$CONFIG_FILE" ] || return 1
   . "$CONFIG_FILE"
 
-  [ -z "$spoof_props" ] && spoof_props=1
+  [ -z "$spoof_props" ] && spoof_props=0
   [ "$spoof_props" = "0" ] && return 0
 
-  [ -z "$ro_product_brand" ] && ro_product_brand='default'
-  [ -z "$ro_product_manufacturer" ] && ro_product_manufacturer='default'
-  [ -z "$ro_product_model" ] && ro_product_model='default'
-  [ -z "$ro_product_device" ] && ro_product_device='default'
+  if is_unset_or_default "$ro_product_brand" \
+    || is_unset_or_default "$ro_product_manufacturer" \
+    || is_unset_or_default "$ro_product_model" \
+    || is_unset_or_default "$ro_product_device"; then
+    return 0
+  fi
 
   set_prop_value "ro.product.brand" "$ro_product_brand" || return 1
   set_prop_value "ro.product.manufacturer" "$ro_product_manufacturer" || return 1
@@ -69,7 +78,9 @@ apply_global_props() {
   set_prop_value "ro.product.system.name" "$ro_product_device" || return 1
   set_prop_value "ro.product.system.device" "$ro_product_device" || return 1
   set_prop_value "ro.build.product" "$ro_product_device" || return 1
-  [ -n "$ro_build_fingerprint" ] && set_prop_value "ro.build.fingerprint" "$ro_build_fingerprint"
+  if ! is_unset_or_default "$ro_build_fingerprint"; then
+    set_prop_value "ro.build.fingerprint" "$ro_build_fingerprint" || return 1
+  fi
 }
 
 mkdir -p "$PERSISTENT_DIR"
@@ -77,7 +88,7 @@ mkdir -p "$PERSISTENT_DIR"
 # 复刻 susfs4ksu 行为：mode=1 在 service 阶段应用
 . "$CONFIG_FILE" 2>/dev/null
 [ -z "$spoof_uname" ] && spoof_uname=1
-[ -z "$spoof_props" ] && spoof_props=1
+[ -z "$spoof_props" ] && spoof_props=0
 
 # 记录特性，便于排障
 SUSFS_BIN="$(find_susfs_bin)"
