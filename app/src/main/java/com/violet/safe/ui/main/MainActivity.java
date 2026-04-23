@@ -60,18 +60,22 @@ import com.violet.safe.ui.plugin.DeviceIdModifyActivity;
 import com.violet.safe.ui.plugin.VioletPluginActivity;
 import com.violet.safe.ui.selinux.SelinuxManagerActivity;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.compose.ui.platform.ComposeView;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.violet.safe.R;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -106,7 +110,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            getWindow().setNavigationBarContrastEnforced(false);
+        }
+        getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+        getWindow().setNavigationBarColor(android.graphics.Color.TRANSPARENT);
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller != null) {
+            controller.setAppearanceLightNavigationBars(false);
+            controller.setAppearanceLightStatusBars(true);
+            controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            controller.hide(WindowInsetsCompat.Type.navigationBars());
+        }
         setContentView(R.layout.activity_main);
         
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -126,24 +142,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
-        // 初始化导航栏
-        navHome = findViewById(R.id.nav_home);
-        navDevice = findViewById(R.id.nav_device);
-        navExplore = findViewById(R.id.nav_explore);
-        navSettings = findViewById(R.id.nav_settings);
-        navRow = findViewById(R.id.nav_row);
-        navLiquidIndicator = findViewById(R.id.nav_liquid_indicator);
-        
-        iconHome = findViewById(R.id.nav_home_icon);
-        iconDevice = findViewById(R.id.nav_device_icon);
-        iconExplore = findViewById(R.id.nav_explore_icon);
-        iconSettings = findViewById(R.id.nav_settings_icon);
-        
-        textHome = findViewById(R.id.nav_home_text);
-        textDevice = findViewById(R.id.nav_device_text);
-        textExplore = findViewById(R.id.nav_explore_text);
-        textSettings = findViewById(R.id.nav_settings_text);
 
         View btnSelinuxManager = findViewById(R.id.btnSelinuxManager);
         if (btnSelinuxManager != null) {
@@ -189,25 +187,33 @@ public class MainActivity extends AppCompatActivity {
             btnDeviceIdModify.setOnClickListener(v ->
                     startActivity(new Intent(this, DeviceIdModifyActivity.class)));
         }
-        if (navHome != null) {
-            navHome.setOnClickListener(v -> selectTab(0, true));
-            navDevice.setOnClickListener(v -> selectTab(1, true));
-            navExplore.setOnClickListener(v -> selectTab(2, true));
-            navSettings.setOnClickListener(v -> selectTab(3, true));
-            int defaultTab = 0;
-            Intent intent = getIntent();
-            if (intent != null && intent.hasExtra(EXTRA_OPEN_TAB)) {
-                int requested = intent.getIntExtra(EXTRA_OPEN_TAB, defaultTab);
-                if (requested >= 0 && requested <= 3) {
-                    defaultTab = requested;
-                }
+        int defaultTab = 0;
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(EXTRA_OPEN_TAB)) {
+            int requested = intent.getIntExtra(EXTRA_OPEN_TAB, defaultTab);
+            if (requested >= 0 && requested <= 3) {
+                defaultTab = requested;
             }
-            selectTab(defaultTab, false);
         }
+        currentTab = defaultTab;
+        BottomBarState.INSTANCE.setSelectedTab(defaultTab);
+        ComposeView composeBottomBar = findViewById(R.id.composeBottomBar);
+        if (composeBottomBar != null) {
+            composeBottomBar.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+            FloatingBottomBarComposeKt.attachFloatingBottomBar(composeBottomBar, new Function1<Integer, Unit>() {
+                @Override
+                public Unit invoke(Integer index) {
+                    selectTab(index != null ? index : 0, true);
+                    return Unit.INSTANCE;
+                }
+            });
+        }
+        selectTab(defaultTab, false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            // 底部 inset 交由 Compose 悬浮底栏自己处理，避免出现“底部容器包裹感”
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
 
@@ -230,71 +236,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectTab(int tab, boolean animate) {
-        if (iconHome == null) return; // Views not initialized
         currentTab = tab;
+        BottomBarState.INSTANCE.setSelectedTab(tab);
         ensureToolbarVisible();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("紫罗兰Box");
         }
-        resetAllTabs();
-        int selectedColor = ContextCompat.getColor(this, R.color.purple_500);
-        int defaultColor = ContextCompat.getColor(this, R.color.ios_text_primary);
-        LinearLayout selectedNav = null;
-        ImageView selectedIcon = null;
-        TextView selectedText = null;
 
         switch (tab) {
             case 0:
-                selectedNav = navHome;
-                selectedIcon = iconHome;
-                selectedText = textHome;
                 setViewVisibilitySafe(R.id.contentHome, View.GONE);
                 setViewVisibilitySafe(R.id.contentDevice, View.VISIBLE);
                 setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
                 setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
                 break;
             case 1:
-                selectedNav = navDevice;
-                selectedIcon = iconDevice;
-                selectedText = textDevice;
                 setViewVisibilitySafe(R.id.contentHome, View.VISIBLE);
                 setViewVisibilitySafe(R.id.contentDevice, View.GONE);
                 setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
                 setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
                 break;
             case 2:
-                selectedNav = navExplore;
-                selectedIcon = iconExplore;
-                selectedText = textExplore;
                 setViewVisibilitySafe(R.id.contentHome, View.GONE);
                 setViewVisibilitySafe(R.id.contentDevice, View.GONE);
                 setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.VISIBLE);
                 setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
                 break;
             case 3:
-                selectedNav = navSettings;
-                selectedIcon = iconSettings;
-                selectedText = textSettings;
                 setViewVisibilitySafe(R.id.contentHome, View.GONE);
                 setViewVisibilitySafe(R.id.contentDevice, View.GONE);
                 setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
                 setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.VISIBLE);
                 break;
-        }
-
-        if (selectedIcon != null && selectedText != null) {
-            if (animate) {
-                animateColorTransition(selectedIcon, selectedText, defaultColor, selectedColor);
-            } else {
-                selectedIcon.setColorFilter(selectedColor);
-                selectedText.setTextColor(selectedColor);
-            }
-        }
-
-        moveLiquidIndicator(selectedNav, animate);
-
-        if (animate) {
-            animateNavScale(selectedNav);
         }
     }
 
@@ -359,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetAllTabs() {
-        int defaultColor = ContextCompat.getColor(this, R.color.ios_text_primary);
+        int defaultColor = ContextCompat.getColor(this, R.color.nav_item_text);
         
         iconHome.setColorFilter(defaultColor);
         iconDevice.setColorFilter(defaultColor);

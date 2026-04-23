@@ -39,6 +39,10 @@
     <color name="explore_page_background">#F3F4F9</color>
     <color name="explore_muted_blue_grey">#7A869A</color>
     <color name="nav_tab_active_pill">#F3E5F5</color>
+    <color name="nav_floating_surface">#66FFFFFF</color>
+    <color name="nav_floating_stroke">#26FFFFFF</color>
+    <color name="nav_item_text">#1F2937</color>
+    <color name="nav_item_accent">#652FE7</color>
     <!-- stitch_fluent_root_system / code.html tokens（实心表面 + 描边，避免半透明叠阴影发脏） -->
     <color name="fluent_background">#f3f4f8</color>
     <color name="fluent_glass_card">#FFFFFFFF</color>

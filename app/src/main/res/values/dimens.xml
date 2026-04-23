@@ -10,4 +10,9 @@
     <dimen name="explore_card_radius">16dp</dimen>
     <dimen name="explore_card_elevation">2dp</dimen>
     <dimen name="explore_tool_icon_radius">12dp</dimen>
+    <dimen name="floating_nav_bottom_margin">12dp</dimen>
+    <dimen name="floating_nav_horizontal_margin">14dp</dimen>
+    <dimen name="floating_nav_card_corner">32dp</dimen>
+    <dimen name="floating_nav_item_width">76dp</dimen>
+    <dimen name="floating_nav_item_height">56dp</dimen>
 </resources>
