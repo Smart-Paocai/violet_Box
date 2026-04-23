@@ -253,5 +253,12 @@
             android:textColor="@color/ios_text_secondary" />
     </LinearLayout>
 
-    <!-- Compose 底部悬浮导航被移到 MainActivity.java 中，用 AndroidView 渲染整个 activity_main -->
+    <!-- Compose 底部悬浮导航 -->
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeBottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:layout_marginBottom="0dp" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

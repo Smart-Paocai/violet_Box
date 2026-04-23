@@ -5,9 +5,7 @@ import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,19 +13,23 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -39,14 +41,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -76,119 +78,152 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.sign
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.CompositionLocalProvider
 
-fun attachFloatingBottomBar(composeView: ComposeView, onTabSelected: (Int) -> Unit) {
+import androidx.compose.ui.viewinterop.AndroidView
+import android.view.View
+import androidx.compose.foundation.layout.fillMaxSize
+
+fun attachMainScreen(composeView: ComposeView, nativeContentView: View, onTabSelected: (Int) -> Unit) {
     composeView.setContent {
         MaterialTheme {
-            val surfaceColor = MaterialTheme.colorScheme.surface
             val backdrop = rememberLayerBackdrop {
                 drawRect(Color.Transparent)
                 drawContent()
             }
             val selectedTab by BottomBarState.selectedTab.collectAsState()
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                FloatingBottomBar(
-                modifier = Modifier
-                    .padding(bottom = 12.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()),
-                selectedIndex = { selectedTab },
-                onSelected = { index ->
-                    BottomBarState.setSelectedTab(index)
-                    onTabSelected(index)
-                },
-                backdrop = backdrop,
-                tabsCount = 4,
-                isBlurEnabled = true
-            ) {
-                FloatingBottomBarItem(onClick = {
-                    BottomBarState.setSelectedTab(0)
-                    onTabSelected(0)
-                }, modifier = Modifier.defaultMinSize(minWidth = 76.dp)) {
-                    androidx.compose.material3.Icon(
-                        modifier = Modifier.width(22.dp).height(22.dp),
-                        painter = painterResource(R.drawable.ic_device_info),
-                        contentDescription = "设备",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        "设备",
-                        fontSize = 11.sp,
-                        lineHeight = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = TextOverflow.Visible
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Native views layer
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .layerBackdrop(backdrop)
+                ) {
+                    AndroidView(
+                        factory = { nativeContentView },
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
-                FloatingBottomBarItem(onClick = {
-                    BottomBarState.setSelectedTab(1)
-                    onTabSelected(1)
-                }, modifier = Modifier.defaultMinSize(minWidth = 76.dp)) {
-                    androidx.compose.material3.Icon(
-                        modifier = Modifier.width(22.dp).height(22.dp),
-                        painter = painterResource(R.drawable.ic_ms_selinux),
-                        contentDescription = "安全",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        "安全",
-                        fontSize = 11.sp,
-                        lineHeight = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = TextOverflow.Visible
-                    )
-                }
-                FloatingBottomBarItem(onClick = {
-                    BottomBarState.setSelectedTab(2)
-                    onTabSelected(2)
-                }, modifier = Modifier.defaultMinSize(minWidth = 76.dp)) {
-                    androidx.compose.material3.Icon(
-                        modifier = Modifier.width(22.dp).height(22.dp),
-                        painter = painterResource(R.drawable.ic_explore),
-                        contentDescription = "玩机",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        "玩机",
-                        fontSize = 11.sp,
-                        lineHeight = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = TextOverflow.Visible
-                    )
-                }
-                FloatingBottomBarItem(onClick = {
-                    BottomBarState.setSelectedTab(3)
-                    onTabSelected(3)
-                }, modifier = Modifier.defaultMinSize(minWidth = 76.dp)) {
-                    androidx.compose.material3.Icon(
-                        modifier = Modifier.width(22.dp).height(22.dp),
-                        painter = painterResource(R.drawable.ic_settings),
-                        contentDescription = "设置",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        "设置",
-                        fontSize = 11.sp,
-                        lineHeight = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = TextOverflow.Visible
-                    )
+
+                // Floating bottom bar layer
+                Box(
+                    modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    FloatingBottomBar(
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = {}
+                            )
+                            .padding(bottom = 12.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()),
+                        selectedIndex = { selectedTab },
+                        onSelected = { index ->
+                            BottomBarState.setSelectedTab(index)
+                            onTabSelected(index)
+                        },
+                        backdrop = backdrop,
+                        tabsCount = 4,
+                        isBlurEnabled = true
+                    ) {
+                    FloatingBottomBarItem(
+                        onClick = {
+                            BottomBarState.setSelectedTab(0)
+                            onTabSelected(0)
+                        },
+                        modifier = Modifier.defaultMinSize(minWidth = 76.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            modifier = Modifier.width(22.dp).height(22.dp),
+                            painter = painterResource(R.drawable.ic_device_info),
+                            contentDescription = "设备",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "设备",
+                            fontSize = 11.sp,
+                            lineHeight = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Visible
+                        )
+                    }
+                    FloatingBottomBarItem(
+                        onClick = {
+                            BottomBarState.setSelectedTab(1)
+                            onTabSelected(1)
+                        },
+                        modifier = Modifier.defaultMinSize(minWidth = 76.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            modifier = Modifier.width(22.dp).height(22.dp),
+                            painter = painterResource(R.drawable.ic_ms_selinux),
+                            contentDescription = "安全",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "安全",
+                            fontSize = 11.sp,
+                            lineHeight = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Visible
+                        )
+                    }
+                    FloatingBottomBarItem(
+                        onClick = {
+                            BottomBarState.setSelectedTab(2)
+                            onTabSelected(2)
+                        },
+                        modifier = Modifier.defaultMinSize(minWidth = 76.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            modifier = Modifier.width(22.dp).height(22.dp),
+                            painter = painterResource(R.drawable.ic_explore),
+                            contentDescription = "玩机",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "玩机",
+                            fontSize = 11.sp,
+                            lineHeight = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Visible
+                        )
+                    }
+                    FloatingBottomBarItem(
+                        onClick = {
+                            BottomBarState.setSelectedTab(3)
+                            onTabSelected(3)
+                        },
+                        modifier = Modifier.defaultMinSize(minWidth = 76.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            modifier = Modifier.width(22.dp).height(22.dp),
+                            painter = painterResource(R.drawable.ic_settings),
+                            contentDescription = "设置",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "设置",
+                            fontSize = 11.sp,
+                            lineHeight = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Visible
+                        )
                     }
                 }
             }
         }
     }
+}
 }
 
 val LocalFloatingBottomBarTabScale = staticCompositionLocalOf { { 1f } }
@@ -239,27 +274,34 @@ fun FloatingBottomBar(
     } else {
         MaterialTheme.colorScheme.surfaceContainer
     }
+
     val tabsBackdrop = rememberLayerBackdrop()
     val density = LocalDensity.current
-    val isLtr = androidx.compose.ui.platform.LocalLayoutDirection.current == LayoutDirection.Ltr
+    val isLtr = LocalLayoutDirection.current == LayoutDirection.Ltr
     val animationScope = rememberCoroutineScope()
+
     var tabWidthPx by remember { mutableFloatStateOf(0f) }
     var totalWidthPx by remember { mutableFloatStateOf(0f) }
+
     val offsetAnimation = remember { Animatable(0f) }
     val panelOffset by remember(density) {
         derivedStateOf {
             if (totalWidthPx == 0f) 0f else {
                 val fraction = (offsetAnimation.value / totalWidthPx).coerceIn(-1f, 1f)
-                with(density) { 4f.dp.toPx() * fraction.sign * EaseOut.transform(abs(fraction)) }
+                with(density) {
+                    4f.dp.toPx() * fraction.sign * EaseOut.transform(abs(fraction))
+                }
             }
         }
     }
+
     var currentIndex by remember(selectedIndex) { mutableIntStateOf(selectedIndex()) }
 
-    class Holder {
+    class DampedDragAnimationHolder {
         var instance: DampedDragAnimation? = null
     }
-    val holder = remember { Holder() }
+    val holder = remember { DampedDragAnimationHolder() }
+
     val dampedDragAnimation = remember(animationScope, tabsCount, density, isLtr) {
         DampedDragAnimation(
             animationScope = animationScope,
@@ -271,10 +313,17 @@ fun FloatingBottomBar(
             canDrag = { offset ->
                 val anim = holder.instance ?: return@DampedDragAnimation true
                 if (tabWidthPx == 0f) return@DampedDragAnimation false
-                val indicatorX = anim.value * tabWidthPx
+
+                val currentValue = anim.value
+                val indicatorX = currentValue * tabWidthPx
                 val padding = with(density) { 4.dp.toPx() }
-                val globalTouchX = if (isLtr) padding + (indicatorX + offset.x)
-                else totalWidthPx - padding - tabWidthPx - indicatorX + offset.x
+                val globalTouchX = if (isLtr) {
+                    val touchX = indicatorX + offset.x
+                    padding + touchX
+                } else {
+                    val touchX = totalWidthPx - padding - tabWidthPx - indicatorX + offset.x
+                    touchX
+                }
                 globalTouchX in 0f..totalWidthPx
             },
             onDragStarted = {},
@@ -295,6 +344,7 @@ fun FloatingBottomBar(
             }
         ).also { holder.instance = it }
     }
+
     LaunchedEffect(selectedIndex) {
         snapshotFlow { selectedIndex() }.collectLatest { currentIndex = it }
     }
@@ -318,7 +368,10 @@ fun FloatingBottomBar(
         )
     }
 
-    Box(modifier = modifier.width(IntrinsicSize.Min), contentAlignment = Alignment.CenterStart) {
+    Box(
+        modifier = modifier.width(IntrinsicSize.Min),
+        contentAlignment = Alignment.CenterStart
+    ) {
         Row(
             Modifier
                 .onGloballyPositioned { coords ->
@@ -342,9 +395,13 @@ fun FloatingBottomBar(
                             lens(24f.dp.toPx(), 24f.dp.toPx())
                         }
                     },
-                    highlight = { Highlight.Default.copy(alpha = if (isBlurEnabled) 1f else 0f) },
+                    highlight = {
+                        Highlight.Default.copy(alpha = if (isBlurEnabled) 1f else 0f)
+                    },
                     shadow = {
-                        Shadow.Default.copy(color = Color.Black.copy(if (isInLightTheme) 0.1f else 0.2f))
+                        Shadow.Default.copy(
+                            color = Color.Black.copy(if (isInLightTheme) 0.1f else 0.2f)
+                        )
                     },
                     layerBlock = {
                         if (isBlurEnabled) {
@@ -362,6 +419,7 @@ fun FloatingBottomBar(
             verticalAlignment = Alignment.CenterVertically,
             content = content
         )
+
         CompositionLocalProvider(
             LocalFloatingBottomBarTabScale provides {
                 if (isBlurEnabled) lerp(1f, 1.2f, dampedDragAnimation.pressProgress) else 1f
@@ -392,14 +450,12 @@ fun FloatingBottomBar(
                     .then(if (isBlurEnabled) interactiveHighlight.modifier else Modifier)
                     .height(56.dp)
                     .padding(horizontal = 4.dp)
-                    .drawWithContent {
-                        drawContent()
-                        drawRect(color = accentColor, blendMode = BlendMode.SrcAtop)
-                    },
+                    .graphicsLayer(colorFilter = ColorFilter.tint(accentColor)),
                 verticalAlignment = Alignment.CenterVertically,
                 content = content
             )
         }
+
         if (tabWidthPx > 0f) {
             Box(
                 Modifier

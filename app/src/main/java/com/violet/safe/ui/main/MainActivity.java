@@ -107,6 +107,19 @@ public class MainActivity extends AppCompatActivity {
     private PopupMenu quickRebootPopupMenu;
     private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
+    private View nativeContentView;
+
+    @Override
+    public <T extends View> T findViewById(int id) {
+        if (nativeContentView != null) {
+            T view = nativeContentView.findViewById(id);
+            if (view != null) {
+                return view;
+            }
+        }
+        return super.findViewById(id);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,8 +136,11 @@ public class MainActivity extends AppCompatActivity {
             controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
             controller.hide(WindowInsetsCompat.Type.navigationBars());
         }
-        setContentView(R.layout.activity_main);
-        
+
+        nativeContentView = getLayoutInflater().inflate(R.layout.activity_main, null, false);
+        ComposeView composeView = new ComposeView(this);
+        setContentView(composeView);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         appBarLayout = findViewById(R.id.appBarLayout);
         overflowMenuScrim = findViewById(R.id.overflowMenuScrim);
@@ -197,17 +213,15 @@ public class MainActivity extends AppCompatActivity {
         }
         currentTab = defaultTab;
         BottomBarState.INSTANCE.setSelectedTab(defaultTab);
-        ComposeView composeBottomBar = findViewById(R.id.composeBottomBar);
-        if (composeBottomBar != null) {
-            composeBottomBar.setBackgroundColor(android.graphics.Color.TRANSPARENT);
-            FloatingBottomBarComposeKt.attachFloatingBottomBar(composeBottomBar, new Function1<Integer, Unit>() {
-                @Override
-                public Unit invoke(Integer index) {
-                    selectTab(index != null ? index : 0, true);
-                    return Unit.INSTANCE;
-                }
-            });
-        }
+        
+        FloatingBottomBarComposeKt.attachMainScreen(composeView, nativeContentView, new Function1<Integer, Unit>() {
+            @Override
+            public Unit invoke(Integer index) {
+                selectTab(index != null ? index : 0, true);
+                return Unit.INSTANCE;
+            }
+        });
+
         selectTab(defaultTab, false);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
