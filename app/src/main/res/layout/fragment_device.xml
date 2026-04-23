@@ -10,13 +10,23 @@
     android:overScrollMode="never"
     android:paddingBottom="88dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp"
         android:paddingTop="12dp"
         android:paddingBottom="24dp">
+
+        <LinearLayout
+            android:id="@+id/deviceContentContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_default="spread"
+            app:layout_constraintWidth_max="900dp">
 
         <!-- 设备概览（对应 code.html 第一卡，lg:col-span-2） -->
         <com.google.android.material.card.MaterialCardView
@@ -69,7 +79,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:textColor="@color/fluent_primary"
-                                android:textSize="22sp"
+                                android:textSize="15sp"
                                 android:textStyle="bold"
                                 tools:text="OnePlus PJX110" />
 
@@ -83,33 +93,6 @@
                                 tools:text="设备代号: PJX110" />
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/badgeDeviceRoot"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/fluent_root_badge_bg"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="6dp">
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="14dp"
-                                android:layout_height="14dp"
-                                android:importantForAccessibility="no"
-                                app:srcCompat="@drawable/ic_ms_verified_user"
-                                app:tint="@color/fluent_root_badge_text" />
-
-                            <TextView
-                                android:id="@+id/tvDeviceRootBadge"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:textColor="@color/fluent_root_badge_text"
-                                android:textSize="11sp"
-                                android:textStyle="bold"
-                                tools:text="已 Root" />
-                        </LinearLayout>
                     </LinearLayout>
 
                     <GridLayout
@@ -235,6 +218,206 @@
                                 tools:text="Slot B" />
                         </LinearLayout>
                     </GridLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginBottom="14dp"
+                        android:background="@color/fluent_surface_container" />
+
+                    <GridLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:columnCount="2"
+                        android:useDefaultMargins="false">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="68dp"
+                            android:layout_columnWeight="1"
+                            android:layout_marginBottom="10dp"
+                            android:layout_columnSpan="2"
+                            android:layout_gravity="fill_horizontal"
+                            android:background="@drawable/fluent_cell_bg"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="系统版本"
+                                android:textColor="@color/fluent_on_surface_variant"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/tvBuildDisplay"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="monospace"
+                                android:maxLines="3"
+                                android:textColor="@color/fluent_on_surface"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                tools:text="PJX110_15.0.0.300(CN01)" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="68dp"
+                            android:layout_columnWeight="1"
+                            android:layout_marginEnd="6dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/fluent_cell_bg"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="安全补丁日期"
+                                android:textColor="@color/fluent_on_surface_variant"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/tvSecurityPatch"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="monospace"
+                                android:textColor="@color/fluent_on_surface"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                tools:text="2025-01-05" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="68dp"
+                            android:layout_columnWeight="1"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/fluent_cell_bg"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="基带版本"
+                                android:textColor="@color/fluent_on_surface_variant"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/tvRadioVersion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="monospace"
+                                android:maxLines="3"
+                                android:textColor="@color/fluent_on_surface"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                tools:text="Q_V1_P14,Q_V1_P14" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="68dp"
+                            android:layout_columnWeight="1"
+                            android:layout_marginEnd="6dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/fluent_cell_bg"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="安卓 ID"
+                                android:textColor="@color/fluent_on_surface_variant"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/tvAndroidId"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="monospace"
+                                android:maxLines="3"
+                                android:textColor="@color/fluent_on_surface"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                tools:text="a1b2c3d4e5f6g7h8" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="68dp"
+                            android:layout_columnWeight="1"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/fluent_cell_bg"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="电池循环次数"
+                                android:textColor="@color/fluent_on_surface_variant"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/tvBatteryCycles"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="monospace"
+                                android:maxLines="3"
+                                android:textColor="@color/fluent_on_surface"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                tools:text="333" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_columnWeight="1"
+                            android:layout_marginBottom="10dp"
+                            android:layout_columnSpan="2"
+                            android:layout_gravity="fill_horizontal"
+                            android:background="@drawable/fluent_cell_bg"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="构建指纹"
+                                android:textColor="@color/fluent_on_surface_variant"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:id="@+id/tvBuildFingerprint"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="monospace"
+                                android:maxLines="4"
+                                android:textColor="@color/fluent_on_surface"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                tools:text="google/oriole/oriole:16/BP1A.250405.007/1234567:user/release-keys" />
+                        </LinearLayout>
+                    </GridLayout>
                 </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -250,240 +433,7 @@
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 系统与网络详情 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="@color/fluent_glass_card"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:cardMaxElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/fluent_card_stroke"
-            app:cardUseCompatPadding="false">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="8dp"
-                        android:importantForAccessibility="no"
-                        app:srcCompat="@drawable/ic_device_info"
-                        app:tint="@color/fluent_android_green" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:letterSpacing="0.06"
-                        android:text="系统与网络详情"
-                        android:textAllCaps="true"
-                        android:textColor="@color/fluent_on_surface_variant"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:columnCount="2"
-                    android:useDefaultMargins="false">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginEnd="6dp"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="基带版本"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvRadioVersion"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:ellipsize="end"
-                            android:fontFamily="monospace"
-                            android:maxLines="2"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="Q_V1_P14,Q_V1_P14" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="系统版本"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvBuildDisplay"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:ellipsize="end"
-                            android:fontFamily="monospace"
-                            android:maxLines="2"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="PJX110_15.0.0.300(CN01)" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginEnd="6dp"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="安全补丁日期"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvSecurityPatch"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="2025-01-05" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="安卓 ID"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvAndroidId"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:ellipsize="end"
-                            android:fontFamily="monospace"
-                            android:maxLines="1"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="a1b2c3d4e5f6g7h8" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginEnd="6dp"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="IMEI"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvImei"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:ellipsize="end"
-                            android:fontFamily="monospace"
-                            android:maxLines="1"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="861234567890123" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="IMSI"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvImsi"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:ellipsize="end"
-                            android:fontFamily="monospace"
-                            android:maxLines="1"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            tools:text="460001234567890" />
-                    </LinearLayout>
-                </GridLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        <!-- 系统与网络详情已合并进设备概览卡片 -->
 
         <!-- CPU 状态：各核 cpufreq，每秒刷新 -->
         <com.google.android.material.card.MaterialCardView
@@ -555,401 +505,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 电池状态：广播摘要 + 容量/电流等 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="@color/fluent_glass_card"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:cardMaxElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/fluent_card_stroke"
-            app:cardUseCompatPadding="false">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="8dp"
-                        android:importantForAccessibility="no"
-                        app:srcCompat="@drawable/ic_ms_bolt"
-                        app:tint="@color/fluent_green_600" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:letterSpacing="0.06"
-                        android:text="电池状态"
-                        android:textAllCaps="true"
-                        android:textColor="@color/fluent_on_surface_variant"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tvBatteryStatusSummary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:lineSpacingExtra="2dp"
-                    android:text="—"
-                    android:textColor="@color/fluent_on_surface"
-                    android:textSize="13sp"
-                    tools:text="充电中 · USB 供电 · 良好" />
-
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:columnCount="2">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginEnd="6dp"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="剩余电量"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvBatteryHealth"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="—"
-                            android:textColor="@color/fluent_green_600"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            tools:text="85%" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="设计容量"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvBatteryDesignMah"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="—"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            tools:text="4880 mAh" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginEnd="6dp"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="循环次数"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvBatteryCycles"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="monospace"
-                            android:text="—"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            tools:text="142" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginBottom="10dp"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="温度"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvBatteryTemp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="monospace"
-                            android:text="—"
-                            android:textColor="@color/fluent_orange"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            tools:text="34.2°C" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnSpan="2"
-                        android:layout_gravity="fill_horizontal"
-                        android:background="@drawable/fluent_cell_bg"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="12dp">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="实时电流"
-                                android:textColor="@color/fluent_on_surface_variant"
-                                android:textSize="10sp" />
-
-                            <TextView
-                                android:id="@+id/tvBatteryCurrent"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="monospace"
-                                android:text="—"
-                                android:textColor="@color/fluent_primary"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                tools:text="+1240 mA" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="end"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="电压"
-                                android:textColor="@color/fluent_on_surface_variant"
-                                android:textSize="10sp" />
-
-                            <TextView
-                                android:id="@+id/tvBatteryVoltage"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="monospace"
-                                android:text="—"
-                                android:textColor="@color/fluent_on_surface"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                tools:text="4320 mV" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </GridLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 存储 & GPU -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/fluent_glass_card"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:cardMaxElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/fluent_card_stroke"
-            app:cardUseCompatPadding="false">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="8dp"
-                        android:importantForAccessibility="no"
-                        app:srcCompat="@drawable/ic_ms_data_usage"
-                        app:tint="@color/fluent_secondary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:letterSpacing="0.06"
-                        android:text="存储 &amp; GPU"
-                        android:textAllCaps="true"
-                        android:textColor="@color/fluent_on_surface_variant"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="bottom"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="UFS 存储"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tvStorageUsedTotal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="monospace"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="12sp"
-                            tools:text="214GB / 512GB" />
-                    </LinearLayout>
-
-                    <ProgressBar
-                        android:id="@+id/pbStorage"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="8dp"
-                        android:layout_marginTop="8dp"
-                        android:max="100"
-                        android:progress="42"
-                        android:progressDrawable="@drawable/fluent_progress_storage" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginVertical="14dp"
-                    android:background="@color/fluent_surface_container" />
-
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnCount="2">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="渲染器"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvGpuRenderer"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            tools:text="Adreno 750" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="end"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="图形 API"
-                            android:textColor="@color/fluent_on_surface_variant"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/tvGpuApi"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:textColor="@color/fluent_on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            tools:text="Vulkan 1.3" />
-                    </LinearLayout>
-                </GridLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-    </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

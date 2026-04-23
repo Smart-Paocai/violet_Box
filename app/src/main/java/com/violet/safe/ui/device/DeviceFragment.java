@@ -1,12 +1,11 @@
 package com.violet.safe.ui.device;
 
-import android.Manifest;
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -16,27 +15,23 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StatFs;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.scottyab.rootbeer.RootBeer;
 import com.violet.safe.R;
 import com.violet.safe.core.util.BatterySysFiles;
 import com.violet.safe.core.util.CpuSysFiles;
-import com.violet.safe.core.util.GpuInfoQuery;
 import com.violet.safe.core.util.SelinuxShellUtil;
 import com.violet.safe.core.util.SelinuxStatusReader;
 import com.violet.safe.ui.widget.CpuRingGaugeView;
@@ -49,8 +44,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class DeviceFragment extends Fragment {
-
-    private static final int REQ_READ_PHONE = 6011;
 
     /**
      * 部分 {@code android.jar} 存根未声明 {@link BatteryManager} 的较新 {@code BATTERY_PROPERTY_*} 字段，编译期用反射解析一次。
@@ -79,7 +72,6 @@ public class DeviceFragment extends Fragment {
             }
             refreshBatteryStickyUi();
             refreshCpuCoreRingsUi();
-            refreshStorageUi();
             mainHandler.postDelayed(this, 1000L);
         }
     };
@@ -99,23 +91,12 @@ public class DeviceFragment extends Fragment {
     private GridLayout llCpuCoreRings;
     private final List<CpuCoreRingHolder> cpuCoreRingHolders = new ArrayList<>();
 
-    private TextView tvBatteryStatusSummary;
-    private TextView tvBatteryHealth;
-    private TextView tvBatteryDesignMah;
     private TextView tvBatteryCycles;
-    private TextView tvBatteryTemp;
-    private TextView tvBatteryCurrent;
-    private TextView tvBatteryVoltage;
 
-    private TextView tvStorageUsedTotal;
-    private ProgressBar pbStorage;
+    private TextView tvBuildFingerprint;
 
-    private TextView tvGpuRenderer;
-    private TextView tvGpuApi;
     private TextView tvAndroidId;
 
-    private TextView tvImei;
-    private TextView tvImsi;
     private TextView tvSelinuxStatus;
 
     @Nullable
@@ -137,28 +118,27 @@ public class DeviceFragment extends Fragment {
         TextView tvKernelVersion = view.findViewById(R.id.tvKernelVersion);
         tvSelinuxStatus = view.findViewById(R.id.tvSelinuxStatus);
         TextView tvBootSlot = view.findViewById(R.id.tvBootSlot);
-        TextView tvDeviceRootBadge = view.findViewById(R.id.tvDeviceRootBadge);
-        View badgeDeviceRoot = view.findViewById(R.id.badgeDeviceRoot);
 
         TextView tvRadioVersion = view.findViewById(R.id.tvRadioVersion);
         TextView tvBuildDisplay = view.findViewById(R.id.tvBuildDisplay);
         TextView tvSecurityPatch = view.findViewById(R.id.tvSecurityPatch);
         tvAndroidId = view.findViewById(R.id.tvAndroidId);
-        tvImei = view.findViewById(R.id.tvImei);
-        tvImsi = view.findViewById(R.id.tvImsi);
 
-        tvBatteryStatusSummary = view.findViewById(R.id.tvBatteryStatusSummary);
-        tvBatteryHealth = view.findViewById(R.id.tvBatteryHealth);
-        tvBatteryDesignMah = view.findViewById(R.id.tvBatteryDesignMah);
         tvBatteryCycles = view.findViewById(R.id.tvBatteryCycles);
-        tvBatteryTemp = view.findViewById(R.id.tvBatteryTemp);
-        tvBatteryCurrent = view.findViewById(R.id.tvBatteryCurrent);
-        tvBatteryVoltage = view.findViewById(R.id.tvBatteryVoltage);
+        tvBuildFingerprint = view.findViewById(R.id.tvBuildFingerprint);
 
-        tvStorageUsedTotal = view.findViewById(R.id.tvStorageUsedTotal);
-        pbStorage = view.findViewById(R.id.pbStorage);
-        tvGpuRenderer = view.findViewById(R.id.tvGpuRenderer);
-        tvGpuApi = view.findViewById(R.id.tvGpuApi);
+        enableCopyOnClick(tvDeviceName, "设备名称");
+        enableCopyOnClick(tvDeviceCode, "设备代号");
+        enableCopyOnClick(tvAndroidVersion, "系统版本");
+        enableCopyOnClick(tvKernelVersion, "内核版本");
+        enableCopyOnClick(tvSelinuxStatus, "SELinux");
+        enableCopyOnClick(tvBootSlot, "当前 Slot");
+        enableCopyOnClick(tvBuildDisplay, "系统版本");
+        enableCopyOnClick(tvSecurityPatch, "安全补丁日期");
+        enableCopyOnClick(tvRadioVersion, "基带版本");
+        enableCopyOnClick(tvAndroidId, "安卓 ID");
+        enableCopyOnClick(tvBatteryCycles, "电池循环次数");
+        enableCopyOnClick(tvBuildFingerprint, "构建指纹");
 
         gpuExecutor = Executors.newSingleThreadExecutor();
 
@@ -178,15 +158,6 @@ public class DeviceFragment extends Fragment {
 
         tvBootSlot.setText(formatSlotShort(getBootSlotRaw()));
 
-        RootBeer rootBeer = new RootBeer(requireContext());
-        boolean rooted = rootBeer.isRooted();
-        if (tvDeviceRootBadge != null) {
-            tvDeviceRootBadge.setText(rooted ? "已 Root" : "未 Root");
-        }
-        if (badgeDeviceRoot != null) {
-            badgeDeviceRoot.setVisibility(View.VISIBLE);
-        }
-
         if (tvRadioVersion != null) {
             String radio = Build.getRadioVersion();
             tvRadioVersion.setText(TextUtils.isEmpty(radio) ? "—" : radio);
@@ -194,17 +165,13 @@ public class DeviceFragment extends Fragment {
         if (tvBuildDisplay != null) {
             tvBuildDisplay.setText(Build.DISPLAY);
         }
+        if (tvBuildFingerprint != null) {
+            tvBuildFingerprint.setText(Build.FINGERPRINT);
+        }
         if (tvSecurityPatch != null) {
             tvSecurityPatch.setText(Build.VERSION.SECURITY_PATCH);
         }
         refreshAndroidIdUi();
-        refreshPhoneIdentifiers();
-
-        bindGpuSectionAsync();
-
-        requestPhonePermissionIfNeeded();
-
-        refreshStorageUi();
     }
 
     @Override
@@ -230,12 +197,6 @@ public class DeviceFragment extends Fragment {
                 requireContext().registerReceiver(batteryReceiver, filter);
             }
         } catch (Exception ignored) {
-        }
-
-        if (getContext() != null
-                && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_PHONE_STATE)
-                == PackageManager.PERMISSION_GRANTED) {
-            refreshPhoneIdentifiers();
         }
 
         applySelinuxSummary();
@@ -264,51 +225,9 @@ public class DeviceFragment extends Fragment {
         }
         llCpuCoreRings = null;
         cpuCoreRingHolders.clear();
-        tvBatteryStatusSummary = null;
-        tvBatteryHealth = null;
-        tvBatteryDesignMah = null;
         tvBatteryCycles = null;
-        tvBatteryTemp = null;
-        tvBatteryCurrent = null;
-        tvBatteryVoltage = null;
-        tvStorageUsedTotal = null;
-        pbStorage = null;
-        tvGpuRenderer = null;
-        tvGpuApi = null;
-        tvImei = null;
-        tvImsi = null;
+        tvBuildFingerprint = null;
         tvSelinuxStatus = null;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQ_READ_PHONE && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // 系统回调时 Fragment 可能尚未完全 attach；延后到下一帧再读卡信息，避免 requireContext 抛错闪退
-            mainHandler.post(() -> {
-                if (isAdded()) {
-                    refreshPhoneIdentifiers();
-                }
-            });
-        }
-    }
-
-    private void requestPhonePermissionIfNeeded() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(),
-                    new String[]{Manifest.permission.READ_PHONE_STATE}, REQ_READ_PHONE);
-        }
-    }
-
-    private void refreshPhoneIdentifiers() {
-        if (tvImei != null) {
-            tvImei.setText(readImeiOrPlaceholder());
-        }
-        if (tvImsi != null) {
-            tvImsi.setText(readImsiOrPlaceholder());
-        }
     }
 
     private void refreshAndroidIdUi() {
@@ -334,6 +253,31 @@ public class DeviceFragment extends Fragment {
             return "";
         }
         return out;
+    }
+
+    private void enableCopyOnClick(@Nullable TextView textView, @NonNull String label) {
+        if (textView == null) {
+            return;
+        }
+        textView.setClickable(true);
+        textView.setOnClickListener(v -> copyTextToClipboard(label, textView.getText()));
+    }
+
+    private void copyTextToClipboard(@NonNull String label, @Nullable CharSequence value) {
+        Context ctx = getContext();
+        if (ctx == null) {
+            return;
+        }
+        String text = value == null ? "" : value.toString().trim();
+        if (TextUtils.isEmpty(text)) {
+            return;
+        }
+        ClipboardManager clipboard = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard == null) {
+            return;
+        }
+        clipboard.setPrimaryClip(ClipData.newPlainText(label, text));
+        Toast.makeText(ctx, "已复制到剪切板", Toast.LENGTH_SHORT).show();
     }
 
     private void applyBatteryIntent(Intent batteryStatus) {
@@ -371,55 +315,11 @@ public class DeviceFragment extends Fragment {
     }
 
     private void applyBatteryIntentInner(Intent batteryStatus) {
-        if (tvBatteryStatusSummary != null) {
-            tvBatteryStatusSummary.setText(formatBatteryStatusSummary(batteryStatus));
-        }
-
-        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        int pct = (level >= 0 && scale > 0) ? (level * 100 / scale) : -1;
-        if (tvBatteryHealth != null) {
-            if (pct >= 0) {
-                tvBatteryHealth.setText(pct + "%");
-            } else {
-                tvBatteryHealth.setText("—");
-            }
-        }
-
-        if (tvBatteryTemp != null) {
-            int t = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
-            tvBatteryTemp.setText(String.format(Locale.getDefault(), "%.1f°C", t / 10f));
-        }
-
-        if (tvBatteryVoltage != null) {
-            long sysUv = BatterySysFiles.readVoltageNowMicroVolts();
-            if (sysUv != Long.MIN_VALUE) {
-                tvBatteryVoltage.setText(sysfsMicroVoltsToMilliVolts(sysUv) + " mV");
-            } else {
-                int v = batteryStatus.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0);
-                if (v > 0) {
-                    tvBatteryVoltage.setText(v + " mV");
-                } else {
-                    tvBatteryVoltage.setText("—");
-                }
-            }
-        }
-
         Context ctx = getContext();
         if (ctx == null) {
             return;
         }
         BatteryManager bm = (BatteryManager) ctx.getSystemService(Context.BATTERY_SERVICE);
-
-        if (tvBatteryCurrent != null) {
-            String curLabel = formatBatteryCurrentMa(bm);
-            tvBatteryCurrent.setText(curLabel != null ? curLabel : "—");
-        }
-
-        if (tvBatteryDesignMah != null) {
-            String design = formatDesignCapacityMah(bm);
-            tvBatteryDesignMah.setText(design != null ? design : "—");
-        }
 
         if (tvBatteryCycles != null) {
             int c = readBatteryCycleCount(bm, batteryStatus);
@@ -747,51 +647,6 @@ public class DeviceFragment extends Fragment {
         }
     }
 
-    private void refreshStorageUi() {
-        if (tvStorageUsedTotal == null && pbStorage == null) {
-            return;
-        }
-        try {
-            StatFs stat = new StatFs(Environment.getDataDirectory().getAbsolutePath());
-            long total = stat.getBlockCountLong() * stat.getBlockSizeLong();
-            long avail = stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
-            long used = Math.max(0L, total - avail);
-            if (tvStorageUsedTotal != null && total > 0) {
-                tvStorageUsedTotal.setText(formatGb(used) + " / " + formatGb(total));
-            }
-            if (pbStorage != null && total > 0) {
-                int p = (int) (used * 100L / total);
-                pbStorage.setProgress(Math.min(100, Math.max(0, p)));
-            }
-        } catch (Exception e) {
-            if (tvStorageUsedTotal != null) {
-                tvStorageUsedTotal.setText("—");
-            }
-        }
-    }
-
-    private void bindGpuSectionAsync() {
-        ActivityManager am = (ActivityManager) requireContext().getSystemService(Context.ACTIVITY_SERVICE);
-        if (tvGpuApi != null && am != null) {
-            ConfigurationInfo info = am.getDeviceConfigurationInfo();
-            if (info != null) {
-                tvGpuApi.setText(glEsVersionToString(info.reqGlEsVersion));
-            }
-        }
-        if (gpuExecutor == null || tvGpuRenderer == null) {
-            return;
-        }
-        gpuExecutor.execute(() -> {
-            String renderer = GpuInfoQuery.queryGlRenderer();
-            final String text = TextUtils.isEmpty(renderer) ? Build.HARDWARE : renderer;
-            mainHandler.post(() -> {
-                if (tvGpuRenderer != null && isAdded()) {
-                    tvGpuRenderer.setText(text);
-                }
-            });
-        });
-    }
-
     private void applySelinuxSummary() {
         if (tvSelinuxStatus == null || getContext() == null) {
             return;
@@ -803,8 +658,13 @@ public class DeviceFragment extends Fragment {
             return;
         }
         ex.execute(() -> {
-            String raw = SelinuxStatusReader.getStatusString();
-            String label = formatSelinuxShort(raw);
+            final String label;
+            if (!hasRootAccess()) {
+                label = "严格模式";
+            } else {
+                String raw = SelinuxStatusReader.getStatusString();
+                label = formatSelinuxShort(raw);
+            }
             mainHandler.post(() -> {
                 if (!isAdded() || tvSelinuxStatus == null || getContext() == null) {
                     return;
@@ -821,6 +681,18 @@ public class DeviceFragment extends Fragment {
                 tvSelinuxStatus.setTextColor(ContextCompat.getColor(getContext(), colorRes));
             });
         });
+    }
+
+    private boolean hasRootAccess() {
+        SelinuxShellUtil.ShellResult result = SelinuxShellUtil.runSu("id -u", 1200);
+        if (!result.success) {
+            return false;
+        }
+        String uid = result.stdout == null ? "" : result.stdout.trim();
+        if (TextUtils.isEmpty(uid)) {
+            return true;
+        }
+        return uid.startsWith("0");
     }
 
     private boolean isPermissive(String shortStatus) {
@@ -895,62 +767,6 @@ public class DeviceFragment extends Fragment {
         }
     }
 
-    private String readImeiOrPlaceholder() {
-        try {
-            Context ctx = getContext();
-            if (ctx == null) {
-                return "—";
-            }
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return "未授予 READ_PHONE_STATE";
-            }
-            TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            if (tm == null) {
-                return "—";
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                String imei = tm.getImei();
-                if (!TextUtils.isEmpty(imei)) {
-                    return imei;
-                }
-            } else {
-                @SuppressWarnings("deprecation")
-                String imei = tm.getDeviceId();
-                if (!TextUtils.isEmpty(imei)) {
-                    return imei;
-                }
-            }
-        } catch (Throwable ignored) {
-            return "读取异常";
-        }
-        return "受限或无 SIM";
-    }
-
-    private String readImsiOrPlaceholder() {
-        try {
-            Context ctx = getContext();
-            if (ctx == null) {
-                return "—";
-            }
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return "未授予 READ_PHONE_STATE";
-            }
-            TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            if (tm == null) {
-                return "—";
-            }
-            String imsi = tm.getSubscriberId();
-            if (!TextUtils.isEmpty(imsi)) {
-                return imsi;
-            }
-        } catch (Throwable ignored) {
-            return "读取异常";
-        }
-        return "受限或未插卡";
-    }
-
     private String formatGb(long bytes) {
         double gb = bytes / (1024d * 1024d * 1024d);
         if (gb >= 100) {
@@ -962,9 +778,5 @@ public class DeviceFragment extends Fragment {
         return String.format(Locale.getDefault(), "%.2fGB", gb);
     }
 
-    private static String glEsVersionToString(int reqGlEsVersion) {
-        int major = (reqGlEsVersion & 0xffff0000) >> 16;
-        int minor = reqGlEsVersion & 0xffff;
-        return "OpenGL ES " + major + "." + minor;
-    }
+    // GPU/存储卡片已移除；保留其他功能区逻辑即可。
 }

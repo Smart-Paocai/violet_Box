@@ -25,7 +25,7 @@
             app:menu="@menu/toolbar_menu"
             app:popupTheme="@style/ThemeOverlay.Violet.ToolbarPopup"
             app:title="紫罗兰Box"
-            app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+            app:titleTextAppearance="@style/Widget.Violet.ToolbarTitle"
             app:titleTextColor="@color/ios_text_primary" />
 
         <View

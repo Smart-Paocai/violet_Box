@@ -36,6 +36,10 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="Widget.Violet.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <!-- 玩机页（stitch code.html） -->
     <!-- stitch_fluent_root_system/code.html：section 标题 slate-500、uppercase -->
     <style name="Widget.IOS.ExploreSectionTitle" parent="TextAppearance.Material3.LabelMedium">
