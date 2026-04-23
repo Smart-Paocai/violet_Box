@@ -2,6 +2,8 @@ package com.violet.safe.ui.main;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
@@ -72,6 +74,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.violet.safe.R;
 import kotlin.Unit;
@@ -106,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
     private View overflowMenuScrim;
     private PopupMenu quickRebootPopupMenu;
     private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
+    private AnimatorSet tabSwitchAnimator;
 
     private View nativeContentView;
 
@@ -250,6 +254,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectTab(int tab, boolean animate) {
+        int previousTab = currentTab;
+        if (animate && previousTab == tab) {
+            return;
+        }
         currentTab = tab;
         BottomBarState.INSTANCE.setSelectedTab(tab);
         ensureToolbarVisible();
@@ -257,32 +265,157 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("紫罗兰Box");
         }
 
+        View targetView = getTabContentView(tab);
+        View currentView = getTabContentView(previousTab);
+        if (targetView == null) return;
+
+        if (tabSwitchAnimator != null) {
+            tabSwitchAnimator.cancel();
+            tabSwitchAnimator = null;
+        }
+
+        if (!animate || previousTab == tab || currentView == null) {
+            showOnlyTabContent(tab);
+            return;
+        }
+
+        normalizeTabViewsForAnimation(currentView, targetView);
+
+        // 1. 获取屏幕宽度作为完整的滑屏距离，避免重叠堆叠
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        final float fromOffset = tab > previousTab ? screenWidth : -screenWidth;
+        final float toOffset = -fromOffset;
+        final long durationMs = 380L;
+        final FastOutSlowInInterpolator tabInterpolator = new FastOutSlowInInterpolator();
+        final int targetTab = tab;
+
+        // 2. 重置目标页和当前页的基础属性，去除 scale 和 alpha 的缩放/淡入淡出逻辑
+        currentView.setVisibility(View.VISIBLE);
+        currentView.setTranslationX(0f);
+        // 开启硬件加速以极大提升全屏滑动的流畅度
+        currentView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
+        targetView.bringToFront();
+        targetView.setVisibility(View.VISIBLE);
+        targetView.setTranslationX(fromOffset);
+        targetView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        
+        ensureToolbarVisible();
+
+        // 3. 仅通过 translationX 执行纯净的侧滑动画，解决堆叠问题
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(
+                ObjectAnimator.ofFloat(targetView, View.TRANSLATION_X, fromOffset, 0f),
+                ObjectAnimator.ofFloat(currentView, View.TRANSLATION_X, 0f, toOffset)
+        );
+        animatorSet.setDuration(durationMs);
+        animatorSet.setInterpolator(tabInterpolator);
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            private boolean cancelled;
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                cancelled = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // 动画结束时必须关闭硬件加速，防止内存泄漏或显示异常
+                currentView.setLayerType(View.LAYER_TYPE_NONE, null);
+                targetView.setLayerType(View.LAYER_TYPE_NONE, null);
+                
+                resetTabViewTransform(currentView);
+                resetTabViewTransform(targetView);
+                if (!cancelled && currentTab == targetTab) {
+                    showOnlyTabContent(targetTab);
+                }
+                tabSwitchAnimator = null;
+            }
+        });
+        tabSwitchAnimator = animatorSet;
+        animatorSet.start();
+    }
+
+    private View getTabContentView(int tab) {
         switch (tab) {
             case 0:
-                setViewVisibilitySafe(R.id.contentHome, View.GONE);
-                setViewVisibilitySafe(R.id.contentDevice, View.VISIBLE);
-                setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
-                setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
-                break;
+                return findViewById(R.id.contentDevice);
             case 1:
-                setViewVisibilitySafe(R.id.contentHome, View.VISIBLE);
-                setViewVisibilitySafe(R.id.contentDevice, View.GONE);
-                setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
-                setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
-                break;
+                return findViewById(R.id.contentHome);
             case 2:
-                setViewVisibilitySafe(R.id.contentHome, View.GONE);
-                setViewVisibilitySafe(R.id.contentDevice, View.GONE);
-                setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.VISIBLE);
-                setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.GONE);
-                break;
+                return findViewById(R.id.fragmentExplorePlaceholder);
             case 3:
-                setViewVisibilitySafe(R.id.contentHome, View.GONE);
-                setViewVisibilitySafe(R.id.contentDevice, View.GONE);
-                setViewVisibilitySafe(R.id.fragmentExplorePlaceholder, View.GONE);
-                setViewVisibilitySafe(R.id.fragmentSettingsPlaceholder, View.VISIBLE);
-                break;
+                return findViewById(R.id.fragmentSettingsPlaceholder);
+            default:
+                return null;
         }
+    }
+
+    private void showOnlyTabContent(int tab) {
+        View[] views = new View[]{
+                findViewById(R.id.contentHome),
+                findViewById(R.id.contentDevice),
+                findViewById(R.id.fragmentExplorePlaceholder),
+                findViewById(R.id.fragmentSettingsPlaceholder)
+        };
+        for (View view : views) {
+            if (view == null) continue;
+            resetTabViewTransform(view);
+            view.setVisibility(View.GONE);
+        }
+
+        View selectedView = getTabContentView(tab);
+        if (selectedView != null) {
+            selectedView.setVisibility(View.VISIBLE);
+            selectedView.bringToFront();
+        }
+        ensureToolbarVisible();
+    }
+
+    private void normalizeTabViewsForAnimation(View currentView, View targetView) {
+        View[] views = new View[]{
+                findViewById(R.id.contentHome),
+                findViewById(R.id.contentDevice),
+                findViewById(R.id.fragmentExplorePlaceholder),
+                findViewById(R.id.fragmentSettingsPlaceholder)
+        };
+        for (View view : views) {
+            if (view == null) continue;
+            resetTabViewTransform(view);
+            if (view == currentView || view == targetView) {
+                view.setVisibility(View.VISIBLE);
+                view.setAlpha(1f);
+            } else {
+                view.setAlpha(1f);
+                view.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private float resolveTabAnimationDistance(View currentView, View targetView) {
+        int width = 0;
+        if (targetView != null) {
+            width = targetView.getWidth();
+        }
+        if (width <= 0 && currentView != null) {
+            width = currentView.getWidth();
+        }
+        if (width <= 0 && nativeContentView != null) {
+            width = nativeContentView.getWidth();
+        }
+        if (width <= 0) {
+            width = getResources().getDisplayMetrics().widthPixels;
+        }
+        return Math.max(width * 0.32f, dpToPx(104));
+    }
+
+    private void resetTabViewTransform(View view) {
+        if (view == null) return;
+        view.animate().cancel();
+        view.setTranslationX(0f);
+        view.setAlpha(1f);
+        view.setScaleX(1f);
+        view.setScaleY(1f);
     }
 
     private void ensureToolbarVisible() {

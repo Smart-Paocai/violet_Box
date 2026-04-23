@@ -120,8 +120,9 @@ fun attachMainScreen(composeView: ComposeView, nativeContentView: View, onTabSel
                             .padding(bottom = 12.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()),
                         selectedIndex = { selectedTab },
                         onSelected = { index ->
-                            BottomBarState.setSelectedTab(index)
-                            onTabSelected(index)
+                            if (selectedTab != index) {
+                                onTabSelected(index)
+                            }
                         },
                         backdrop = backdrop,
                         tabsCount = 4,
@@ -129,7 +130,6 @@ fun attachMainScreen(composeView: ComposeView, nativeContentView: View, onTabSel
                     ) {
                     FloatingBottomBarItem(
                         onClick = {
-                            BottomBarState.setSelectedTab(0)
                             onTabSelected(0)
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 76.dp)
@@ -152,7 +152,6 @@ fun attachMainScreen(composeView: ComposeView, nativeContentView: View, onTabSel
                     }
                     FloatingBottomBarItem(
                         onClick = {
-                            BottomBarState.setSelectedTab(1)
                             onTabSelected(1)
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 76.dp)
@@ -175,7 +174,6 @@ fun attachMainScreen(composeView: ComposeView, nativeContentView: View, onTabSel
                     }
                     FloatingBottomBarItem(
                         onClick = {
-                            BottomBarState.setSelectedTab(2)
                             onTabSelected(2)
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 76.dp)
@@ -198,7 +196,6 @@ fun attachMainScreen(composeView: ComposeView, nativeContentView: View, onTabSel
                     }
                     FloatingBottomBarItem(
                         onClick = {
-                            BottomBarState.setSelectedTab(3)
                             onTabSelected(3)
                         },
                         modifier = Modifier.defaultMinSize(minWidth = 76.dp)
