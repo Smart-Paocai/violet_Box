@@ -4,9 +4,9 @@
 
 **一款专注设备环境检测与系统深度定制的综合性玩机工具**
 
-![Android 7.0+](https://img.shields.io/badge/Android-7.0%2B-3DDC84.svg?style=flat-square&logo=android)
-![Java & Kotlin](https://img.shields.io/badge/Language-Java%20%7C%20Kotlin-blue.svg?style=flat-square)
-![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4.svg?style=flat-square)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/Smart-Paocai/violet_Box/tree/main?tab=GPL-3.0-1-ov-file)
+[![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-2CA5E0?style=flat-square&logo=telegram)](https://t.me/violet_Box)
+[![Release](https://img.shields.io/badge/Release-v1.0.0-success.svg?style=flat-square)](https://github.com/Smart-Paocai/violet_Box/releases/tag/v1.0.0)
 
 </div>
 
@@ -101,4 +101,4 @@
 
 ## 📄 许可证
 
-本项目采用 [MIT License](LICENSE) 开源许可证。
+本项目采用 [GPL-3.0 License](LICENSE) 开源许可证。
