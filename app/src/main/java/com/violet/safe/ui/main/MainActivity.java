@@ -39,6 +39,8 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -124,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
     private AnimatorSet tabSwitchAnimator;
 
     private View nativeContentView;
+    private volatile boolean exploreAutoInstallTriggered = false;
+    private volatile boolean exploreAutoInstallRunning = false;
 
     @Override
     public <T extends View> T findViewById(int id) {
@@ -443,6 +447,101 @@ public class MainActivity extends AppCompatActivity {
             selectedView.bringToFront();
         }
         ensureToolbarVisible();
+
+        // 切到“玩机”(Explore) 时：静默检测并自动安装核心模块（只触发一次）
+        if (tab == 2) {
+            maybeAutoInstallCoreModuleSilently();
+        }
+    }
+
+    private void maybeAutoInstallCoreModuleSilently() {
+        if (exploreAutoInstallTriggered || exploreAutoInstallRunning) {
+            return;
+        }
+        exploreAutoInstallTriggered = true;
+        exploreAutoInstallRunning = true;
+
+        new Thread(() -> {
+            try {
+                if (!canExecuteSuAsRoot()) {
+                    return;
+                }
+                if (isCoreModulePresentViaSu()) {
+                    return;
+                }
+
+                File zip = extractAssetToCache("violet_box_module.zip", "violet_box_module_autoinstall.zip");
+                if (zip == null || !zip.exists()) {
+                    return;
+                }
+
+                // 静默执行：4 种安装命令依次尝试（成功即停止）
+                String p = shellEscape(zip.getAbsolutePath());
+                String[] candidates = new String[]{
+                        "magisk --install-module " + p,
+                        "/data/adb/magisk/magisk --install-module " + p,
+                        "ksud module install " + p,
+                        "apd module install " + p
+                };
+                for (String cmd : candidates) {
+                    if (runSuCommand(cmd) == 0) {
+                        break;
+                    }
+                }
+            } catch (Throwable ignored) {
+            } finally {
+                exploreAutoInstallRunning = false;
+            }
+        }).start();
+    }
+
+    private boolean isCoreModulePresentViaSu() {
+        // 兼容已安装与待更新目录
+        String check = "[ -d /data/adb/modules/violet_box_module ] || [ -d /data/adb/modules_update/violet_box_module ]";
+        return runSuCommand(check) == 0;
+    }
+
+    private File extractAssetToCache(String assetName, String outName) {
+        try {
+            File out = new File(getCacheDir(), outName);
+            try (InputStream is = getAssets().open(assetName);
+                 FileOutputStream fos = new FileOutputStream(out)) {
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = is.read(buf)) > 0) {
+                    fos.write(buf, 0, n);
+                }
+            }
+            return out;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private int runSuCommand(String command) {
+        Process process = null;
+        try {
+            process = new ProcessBuilder("su", "-c", command)
+                    .redirectErrorStream(true)
+                    .start();
+            boolean finished = process.waitFor(25, TimeUnit.SECONDS);
+            if (!finished) {
+                process.destroy();
+                return -1;
+            }
+            return process.exitValue();
+        } catch (Exception ignored) {
+            return -1;
+        } finally {
+            if (process != null) {
+                process.destroy();
+            }
+        }
+    }
+
+    private String shellEscape(String s) {
+        if (s == null) return "''";
+        return "'" + s.replace("'", "'\\''") + "'";
     }
 
     private void normalizeTabViewsForAnimation(View currentView, View targetView) {
