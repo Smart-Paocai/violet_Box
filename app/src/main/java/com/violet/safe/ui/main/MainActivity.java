@@ -48,6 +48,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import org.json.JSONObject;
 
 import com.scottyab.rootbeer.RootBeer;
 import com.violet.safe.core.util.SelinuxStatusReader;
@@ -86,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "violet_detection_logs";
     private static final String KEY_LOG_PATH = "log_path";
+    private static final String KEY_AUTO_CHECK_UPDATE = "auto_check_update";
+    private static final String UPDATE_JSON_URL = "https://gitee.com/smartpaocai/smart-tool/raw/master/violetbox.json";
+    private static final String CURRENT_VERSION_NAME = "1.0.0";
 
     private int environmentRiskCount = 0;
     private int totalDetectionRiskCount = 0;
@@ -206,6 +212,37 @@ public class MainActivity extends AppCompatActivity {
         if (btnDeviceIdModify != null) {
             btnDeviceIdModify.setOnClickListener(v ->
                     startActivity(new Intent(this, DeviceIdModifyActivity.class)));
+        }
+        View cardGithubRepo = findViewById(R.id.cardGithubRepo);
+        if (cardGithubRepo != null) {
+            cardGithubRepo.setOnClickListener(v -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Smart-Paocai/violet_Box"));
+                try {
+                    startActivity(browserIntent);
+                } catch (Exception e) {
+                    Toast.makeText(this, "无法打开 GitHub 链接", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        androidx.appcompat.widget.SwitchCompat switchCheckUpdate = findViewById(R.id.switchCheckUpdate);
+        View cardCheckUpdate = findViewById(R.id.cardCheckUpdate);
+        SharedPreferences updatePrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        boolean autoCheckUpdate = updatePrefs.getBoolean(KEY_AUTO_CHECK_UPDATE, true);
+        if (switchCheckUpdate != null) {
+            switchCheckUpdate.setChecked(autoCheckUpdate);
+            switchCheckUpdate.setOnCheckedChangeListener((buttonView, isChecked) ->
+                    updatePrefs.edit().putBoolean(KEY_AUTO_CHECK_UPDATE, isChecked).apply());
+        }
+        if (cardCheckUpdate != null) {
+            cardCheckUpdate.setOnClickListener(v -> {
+                Toast.makeText(this, "正在手动检测更新...", Toast.LENGTH_SHORT).show();
+                checkVersionUpdate(true);
+            });
+        }
+        if (autoCheckUpdate) {
+            checkVersionUpdate(false);
+        } else {
+            hideNewVersionCard();
         }
         int defaultTab = 0;
         Intent intent = getIntent();
@@ -892,6 +929,137 @@ public class MainActivity extends AppCompatActivity {
             uptimeText = minutes + "m";
         }
         tvExploreUptimeValue.setText(uptimeText);
+    }
+
+    private void hideNewVersionCard() {
+        View card = findViewById(R.id.cardNewVersion);
+        if (card != null) {
+            card.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkVersionUpdate(boolean showToast) {
+        Thread t = new Thread(() -> {
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL(UPDATE_JSON_URL);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(6000);
+                connection.setReadTimeout(6000);
+                connection.setUseCaches(false);
+
+                int code = connection.getResponseCode();
+                if (code != 200) {
+                    if (showToast) {
+                        runOnUiThread(() -> Toast.makeText(this, "检测失败：服务器响应异常", Toast.LENGTH_SHORT).show());
+                    }
+                    runOnUiThread(this::hideNewVersionCard);
+                    return;
+                }
+                StringBuilder sb = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                }
+                JSONObject json = new JSONObject(sb.toString());
+                String latestVersion = json.optString("version", "");
+                String downloadUrl = json.optString("downloadUrl", "");
+                if (latestVersion.isEmpty() || downloadUrl.isEmpty()) {
+                    if (showToast) {
+                        runOnUiThread(() -> Toast.makeText(this, "检测失败：更新配置无效", Toast.LENGTH_SHORT).show());
+                    }
+                    runOnUiThread(this::hideNewVersionCard);
+                    return;
+                }
+
+                String currentVersion = getAppVersionName();
+                if (isRemoteVersionNewer(currentVersion, latestVersion)) {
+                    runOnUiThread(() -> {
+                        showNewVersionCard(latestVersion, downloadUrl);
+                        if (showToast) {
+                            Toast.makeText(this, "发现新版本：" + latestVersion, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        hideNewVersionCard();
+                        if (showToast) {
+                            Toast.makeText(this, "当前已是最新版本", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            } catch (Exception ignored) {
+                if (showToast) {
+                    runOnUiThread(() -> Toast.makeText(this, "检测失败：网络或解析异常", Toast.LENGTH_SHORT).show());
+                }
+                runOnUiThread(this::hideNewVersionCard);
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+        });
+        t.start();
+    }
+
+    private void showNewVersionCard(String latestVersion, String downloadUrl) {
+        View card = findViewById(R.id.cardNewVersion);
+        TextView tvDesc = findViewById(R.id.tvNewVersionDesc);
+        TextView tvAction = findViewById(R.id.tvNewVersionAction);
+        if (card == null || tvDesc == null || tvAction == null) {
+            return;
+        }
+        tvDesc.setText("最新版本：" + latestVersion);
+        View.OnClickListener openDownload = v -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)));
+            } catch (Exception e) {
+                Toast.makeText(this, "无法打开下载链接", Toast.LENGTH_SHORT).show();
+            }
+        };
+        card.setOnClickListener(openDownload);
+        tvAction.setOnClickListener(openDownload);
+        card.setVisibility(View.VISIBLE);
+    }
+
+    private String getAppVersionName() {
+        return CURRENT_VERSION_NAME;
+    }
+
+    private boolean isRemoteVersionNewer(String currentVersion, String latestVersion) {
+        int[] current = parseVersion(currentVersion);
+        int[] latest = parseVersion(latestVersion);
+        int max = Math.max(current.length, latest.length);
+        for (int i = 0; i < max; i++) {
+            int c = i < current.length ? current[i] : 0;
+            int l = i < latest.length ? latest[i] : 0;
+            if (l > c) return true;
+            if (l < c) return false;
+        }
+        return false;
+    }
+
+    private int[] parseVersion(String version) {
+        if (version == null || version.trim().isEmpty()) {
+            return new int[]{0};
+        }
+        String normalized = version.trim().replaceAll("[^0-9.]", "");
+        if (normalized.isEmpty()) {
+            return new int[]{0};
+        }
+        String[] parts = normalized.split("\\.");
+        int[] result = new int[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            try {
+                result[i] = Integer.parseInt(parts[i]);
+            } catch (Exception ignored) {
+                result[i] = 0;
+            }
+        }
+        return result;
     }
 
     private boolean canExecuteSuAsRoot() {

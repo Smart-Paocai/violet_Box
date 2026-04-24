@@ -28,6 +28,73 @@
             app:layout_constraintWidth_default="spread"
             app:layout_constraintWidth_max="900dp">
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardNewVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="#FFF5F5"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#FFD6D6"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_marginEnd="6dp"
+                            android:background="@drawable/fluent_update_dot_red" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="发现新版本"
+                            android:textColor="#D92D20"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvNewVersionDesc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:textColor="#B54708"
+                        android:textSize="12sp"
+                        tools:text="最新版本：1.0.1" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvNewVersionAction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="下载"
+                    android:textColor="#D92D20"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- 设备概览（对应 code.html 第一卡，lg:col-span-2） -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -41,9 +108,10 @@
             app:strokeColor="@color/fluent_card_stroke"
             app:cardUseCompatPadding="false">
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -423,14 +491,14 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="140dp"
                     android:layout_height="140dp"
-                    android:layout_gravity="bottom|end"
+                    android:layout_gravity="end"
                     android:layout_marginEnd="-24dp"
-                    android:layout_marginBottom="-24dp"
+                    android:layout_marginTop="-24dp"
                     android:alpha="0.022"
                     android:importantForAccessibility="no"
                     app:srcCompat="@drawable/ic_device_info"
                     app:tint="@color/fluent_on_surface" />
-            </FrameLayout>
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- 系统与网络详情已合并进设备概览卡片 -->

@@ -191,34 +191,13 @@
         android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <LinearLayout
+    <include
         android:id="@+id/fragmentSettingsPlaceholder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        layout="@layout/fragment_settings_placeholder"
         android:layout_marginTop="?attr/actionBarSize"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp"
         android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="设置"
-            android:textColor="@color/ios_text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:text="这里之后可以放日志、开关和偏好设置"
-            android:textAppearance="@style/Widget.IOS.Body"
-            android:textColor="@color/ios_text_secondary" />
-    </LinearLayout>
+    </include>
 
     <!-- Compose 底部悬浮导航被移到 MainActivity.java 中，用 AndroidView 渲染整个 activity_main -->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
