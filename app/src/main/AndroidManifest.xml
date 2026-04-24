@@ -72,6 +72,9 @@
         <activity
             android:name=".ui.plugin.DeviceIdModifyActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.about.AboutActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

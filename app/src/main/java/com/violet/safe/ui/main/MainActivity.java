@@ -56,6 +56,7 @@ import com.scottyab.rootbeer.RootBeer;
 import com.violet.safe.core.util.SelinuxStatusReader;
 import com.violet.safe.data.detector.RootDetector;
 import com.violet.safe.ui.appmanager.AppManagerActivity;
+import com.violet.safe.ui.about.AboutActivity;
 import com.violet.safe.ui.font.FontLibraryBackupActivity;
 import com.violet.safe.ui.module.ModuleManagerActivity;
 import com.violet.safe.ui.partition.PartitionManagerActivity;
@@ -223,6 +224,21 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "无法打开 GitHub 链接", Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+        View cardTelegramChannel = findViewById(R.id.cardTelegramChannel);
+        if (cardTelegramChannel != null) {
+            cardTelegramChannel.setOnClickListener(v -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/violettoolbox"));
+                try {
+                    startActivity(browserIntent);
+                } catch (Exception e) {
+                    Toast.makeText(this, "无法打开 Telegram 频道链接", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        View cardAbout = findViewById(R.id.cardAbout);
+        if (cardAbout != null) {
+            cardAbout.setOnClickListener(v -> startActivity(new Intent(this, AboutActivity.class)));
         }
         androidx.appcompat.widget.SwitchCompat switchCheckUpdate = findViewById(R.id.switchCheckUpdate);
         View cardCheckUpdate = findViewById(R.id.cardCheckUpdate);
