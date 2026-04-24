@@ -1,9 +1,6 @@
 <div align="center">
 
 ## 紫罗兰Box (VioletBox)
-
-## 一款根据玩机用户需求而设计的工具箱
-
 [![License: GPL 3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/Smart-Paocai/violet_Box/tree/main?tab=GPL-3.0-1-ov-file)
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-2CA5E0?style=flat-square&logo=telegram)](https://t.me/violet_Box)
 [![Release](https://img.shields.io/badge/Release-v1.0.0-success.svg?style=flat-square)](https://github.com/Smart-Paocai/violet_Box/releases/tag/v1.0.0)
