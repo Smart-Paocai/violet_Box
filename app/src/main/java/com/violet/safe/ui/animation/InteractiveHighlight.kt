@@ -1,6 +1,7 @@
 package com.violet.safe.ui.animation
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.graphics.RuntimeShader
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
@@ -33,8 +34,7 @@ class InteractiveHighlight(
     private var startPosition = Offset.Zero
 
     @Language("AGSL")
-    private val shader = RuntimeShader(
-        """
+    private val shaderSource = """
         uniform float2 size;
         layout(color) uniform half4 color;
         uniform float radius;
@@ -45,20 +45,31 @@ class InteractiveHighlight(
             return color * intensity;
         }
         """.trimIndent()
-    )
+
+    private val shader: RuntimeShader? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        try {
+            RuntimeShader(shaderSource)
+        } catch (_: Throwable) {
+            null
+        }
+    } else {
+        null
+    }
 
     val modifier: Modifier = Modifier.drawWithContent {
         val progress = pressProgressAnimation.value
         if (progress > 0f) {
             drawRect(Color.White.copy(0.06f * progress), blendMode = BlendMode.Plus)
-            shader.apply {
+            shader?.apply {
                 val p = position(size, positionAnimation.value)
                 setFloatUniform("size", size.width, size.height)
                 setColorUniform("color", Color.White.copy(0.12f * progress).toArgb())
                 setFloatUniform("radius", size.minDimension * 1.2f)
                 setFloatUniform("position", p.x.fastCoerceIn(0f, size.width), p.y.fastCoerceIn(0f, size.height))
             }
-            drawRect(ShaderBrush(shader), blendMode = BlendMode.Plus)
+            if (shader != null) {
+                drawRect(ShaderBrush(shader), blendMode = BlendMode.Plus)
+            }
         }
         drawContent()
     }
