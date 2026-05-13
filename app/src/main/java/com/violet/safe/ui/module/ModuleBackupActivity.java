@@ -366,6 +366,28 @@ public class ModuleBackupActivity extends AppCompatActivity {
         }
     }
 
+    private void syncSelectAllState() {
+        boolean allSelected = !moduleList.isEmpty();
+        for (ModuleItem item : moduleList) {
+            if (!item.isSelected) {
+                allSelected = false;
+                break;
+            }
+        }
+        if (cbSelectAll.isChecked() != allSelected) {
+            cbSelectAll.setChecked(allSelected);
+        }
+    }
+
+    private String formatAuthorAndVersion(ModuleItem item) {
+        String authorStr = (item.author != null && !item.author.isEmpty()) ? item.author : "未知作者";
+        String versionStr = (item.version != null && !item.version.isEmpty()) ? item.version.trim() : "未知版本";
+        if (!versionStr.isEmpty() && (versionStr.charAt(0) == 'v' || versionStr.charAt(0) == 'V')) {
+            return authorStr + " | " + versionStr;
+        }
+        return authorStr + " | v" + versionStr;
+    }
+
     private class ModuleAdapter extends RecyclerView.Adapter<ModuleAdapter.VH> {
 
         @NonNull
@@ -379,23 +401,21 @@ public class ModuleBackupActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull VH holder, int position) {
             ModuleItem item = moduleList.get(position);
             holder.tvName.setText(item.name);
-            holder.tvDesc.setText(item.description);
-            holder.tvVersion.setText("v" + item.version + (item.author != null && !item.author.isEmpty() ? " | " + item.author : ""));
+            holder.tvDesc.setText(item.description != null && !item.description.isEmpty() ? item.description : "暂无模块介绍");
+            holder.tvVersion.setText(formatAuthorAndVersion(item));
             holder.cbModule.setChecked(item.isSelected);
 
             holder.itemView.setOnClickListener(v -> {
                 item.isSelected = !item.isSelected;
                 holder.cbModule.setChecked(item.isSelected);
                 updateFabState();
-                
-                boolean allSelected = true;
-                for (ModuleItem m : moduleList) {
-                    if (!m.isSelected) {
-                        allSelected = false;
-                        break;
-                    }
-                }
-                cbSelectAll.setChecked(allSelected);
+                syncSelectAllState();
+            });
+
+            holder.cbModule.setOnClickListener(v -> {
+                item.isSelected = holder.cbModule.isChecked();
+                updateFabState();
+                syncSelectAllState();
             });
         }
 
