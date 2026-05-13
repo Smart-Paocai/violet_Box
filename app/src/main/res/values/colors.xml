@@ -69,4 +69,7 @@
     <color name="stitch_pct_low">#A0D8FF</color>
     <color name="stitch_pct_med">#7B61FF</color>
     <color name="stitch_pct_high">#F25C6E</color>
+    
+    <color name="explore_cyan_100">#CFFAFE</color>
+    <color name="explore_cyan_600">#0891B2</color>
 </resources>

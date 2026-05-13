@@ -213,6 +213,11 @@ public class MainActivity extends AppCompatActivity {
             btnModuleManager.setOnClickListener(v ->
                     startActivity(new Intent(this, ModuleManagerActivity.class)));
         }
+        View btnModuleBackup = findViewById(R.id.btnModuleBackup);
+        if (btnModuleBackup != null) {
+            btnModuleBackup.setOnClickListener(v ->
+                    startActivity(new Intent(this, com.violet.safe.ui.module.ModuleBackupActivity.class)));
+        }
         View btnAppManager = findViewById(R.id.btnAppManager);
         if (btnAppManager != null) {
             btnAppManager.setOnClickListener(v -> openSystemAppManagement());

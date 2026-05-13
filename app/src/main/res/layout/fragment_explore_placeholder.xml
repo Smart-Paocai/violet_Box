@@ -357,27 +357,39 @@
                         android:background="@color/explore_slate_100" />
 
                     <LinearLayout
+                        android:id="@+id/btnModuleBackup"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:foreground="?attr/selectableItemBackground"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="20dp"
-                        android:visibility="invisible">
+                        android:visibility="visible">
 
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            app:cardBackgroundColor="@color/explore_slate_100"
+                            app:cardBackgroundColor="@color/explore_cyan_100"
                             app:cardCornerRadius="@dimen/explore_tool_icon_radius"
                             app:cardElevation="0dp"
-                            app:strokeWidth="0dp" />
+                            app:strokeWidth="0dp">
+                            
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:importantForAccessibility="no"
+                                app:srcCompat="@drawable/ic_ms_module_backup"
+                                app:tint="@color/explore_cyan_600" />
+                        </com.google.android.material.card.MaterialCardView>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:text="占位"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="模块备份"
                             android:textColor="@color/explore_slate_800"
                             android:textSize="14sp" />
                     </LinearLayout>

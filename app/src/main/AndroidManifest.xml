@@ -43,6 +43,9 @@
             android:name=".ui.module.ModuleManagerActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.module.ModuleBackupActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.appmanager.AppManagerActivity"
             android:exported="false" />
         <activity
