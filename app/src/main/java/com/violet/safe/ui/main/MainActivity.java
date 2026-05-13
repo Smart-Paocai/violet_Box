@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_AUTO_CHECK_UPDATE = "auto_check_update";
     private static final String UPDATE_JSON_URL = "https://gitee.com/smartpaocai/smart-tool/raw/master/violetbox.json";
     private static final String CURRENT_VERSION_NAME = "1.0.0";
+    private static final long EXPLORE_ROOT_STATUS_CACHE_MS = 5_000L;
 
     private int environmentRiskCount = 0;
     private int totalDetectionRiskCount = 0;
@@ -128,6 +129,19 @@ public class MainActivity extends AppCompatActivity {
     private View nativeContentView;
     private volatile boolean exploreAutoInstallTriggered = false;
     private volatile boolean exploreAutoInstallRunning = false;
+    private volatile ExploreRootStatus cachedExploreRootStatus;
+    private volatile long cachedExploreRootStatusAt;
+    private volatile boolean exploreRootStatusRefreshRunning = false;
+
+    private static final class ExploreRootStatus {
+        final boolean rootGranted;
+        final String manager;
+
+        ExploreRootStatus(boolean rootGranted, String manager) {
+            this.rootGranted = rootGranted;
+            this.manager = manager;
+        }
+    }
 
     @Override
     public <T extends View> T findViewById(int id) {
@@ -314,7 +328,6 @@ public class MainActivity extends AppCompatActivity {
 
         clearLog();
         setupDeviceInfo();
-        updateExploreRootStatus();
         updateExploreUptime();
     }
 
@@ -322,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // 返回前台后刷新首页 Explore 的 ROOT 实时状态
-        updateExploreRootStatus();
+        updateExploreRootStatus(false);
         updateExploreUptime();
     }
 
@@ -1009,10 +1022,14 @@ public class MainActivity extends AppCompatActivity {
         appendLog("启动槽位 = " + bootSlot);
 
         setupRootDetection();
-        updateExploreRootStatus();
+        updateExploreRootStatus(true);
     }
 
     private void updateExploreRootStatus() {
+        updateExploreRootStatus(false);
+    }
+
+    private void updateExploreRootStatus(boolean forceRefresh) {
         TextView tvExploreRootStatus = findViewById(R.id.tvExploreRootStatus);
         TextView tvExploreRootManager = findViewById(R.id.tvExploreRootManager);
         ImageView ivExploreRootStatusIcon = findViewById(R.id.ivExploreRootStatusIcon);
@@ -1021,15 +1038,75 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        ExploreRootStatus cached = cachedExploreRootStatus;
+        long cacheAge = SystemClock.elapsedRealtime() - cachedExploreRootStatusAt;
+        if (cached != null) {
+            renderExploreRootStatus(cached);
+        } else {
+            renderExploreRootStatusLoading();
+        }
+
+        if (!forceRefresh && cached != null && cacheAge < EXPLORE_ROOT_STATUS_CACHE_MS) {
+            return;
+        }
+        if (exploreRootStatusRefreshRunning) {
+            return;
+        }
+
+        exploreRootStatusRefreshRunning = true;
+        new Thread(() -> {
+            ExploreRootStatus resolved = resolveExploreRootStatus();
+            cachedExploreRootStatus = resolved;
+            cachedExploreRootStatusAt = SystemClock.elapsedRealtime();
+            exploreRootStatusRefreshRunning = false;
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) {
+                    return;
+                }
+                renderExploreRootStatus(resolved);
+            });
+        }, "explore-root-status").start();
+    }
+
+    private ExploreRootStatus resolveExploreRootStatus() {
         RootBeer rootBeer = new RootBeer(this);
         RootDetector advancedDetector = new RootDetector(this);
         boolean hasRootArtifacts = rootBeer.isRooted() || advancedDetector.isDeviceRooted();
         boolean rootGranted = hasRootArtifacts && canExecuteSuAsRoot();
-        if (rootGranted) {
-            String manager = detectGrantedRootManagerByAdbFeatures();
+        String manager = rootGranted ? detectGrantedRootManagerByAdbFeatures() : "";
+        return new ExploreRootStatus(rootGranted, manager);
+    }
+
+    private void renderExploreRootStatusLoading() {
+        TextView tvExploreRootStatus = findViewById(R.id.tvExploreRootStatus);
+        TextView tvExploreRootManager = findViewById(R.id.tvExploreRootManager);
+        ImageView ivExploreRootStatusIcon = findViewById(R.id.ivExploreRootStatusIcon);
+        MaterialCardView cardExploreRootStatusIconBg = findViewById(R.id.cardExploreRootStatusIconBg);
+        if (tvExploreRootStatus == null || tvExploreRootManager == null || ivExploreRootStatusIcon == null || cardExploreRootStatusIconBg == null) {
+            return;
+        }
+        tvExploreRootStatus.setText("正在检测ROOT状态...");
+        tvExploreRootStatus.setTextColor(ContextCompat.getColor(this, R.color.explore_slate_500));
+        tvExploreRootManager.setText("检测完成后将自动刷新");
+        tvExploreRootManager.setTextColor(ContextCompat.getColor(this, R.color.explore_slate_500));
+        ivExploreRootStatusIcon.setImageResource(R.drawable.ic_ms_security);
+        ivExploreRootStatusIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.explore_slate_500)));
+        cardExploreRootStatusIconBg.setCardBackgroundColor(ContextCompat.getColor(this, R.color.explore_slate_100));
+    }
+
+    private void renderExploreRootStatus(ExploreRootStatus status) {
+        TextView tvExploreRootStatus = findViewById(R.id.tvExploreRootStatus);
+        TextView tvExploreRootManager = findViewById(R.id.tvExploreRootManager);
+        ImageView ivExploreRootStatusIcon = findViewById(R.id.ivExploreRootStatusIcon);
+        MaterialCardView cardExploreRootStatusIconBg = findViewById(R.id.cardExploreRootStatusIconBg);
+        if (tvExploreRootStatus == null || tvExploreRootManager == null || ivExploreRootStatusIcon == null || cardExploreRootStatusIconBg == null || status == null) {
+            return;
+        }
+
+        if (status.rootGranted) {
             tvExploreRootStatus.setText("已授予ROOT");
             tvExploreRootStatus.setTextColor(colorSemanticSafe());
-            tvExploreRootManager.setText("Root Manager：" + manager);
+            tvExploreRootManager.setText("Root Manager：" + status.manager);
             ivExploreRootStatusIcon.setImageResource(R.drawable.ic_ms_verified_user);
             ivExploreRootStatusIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.explore_emerald_600)));
             cardExploreRootStatusIconBg.setCardBackgroundColor(ContextCompat.getColor(this, R.color.explore_emerald_100));
