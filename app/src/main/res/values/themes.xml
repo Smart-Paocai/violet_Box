@@ -40,6 +40,14 @@
         <item name="android:textSize">17sp</item>
     </style>
 
+    <style name="Widget.Violet.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:thumb">@drawable/switch_ios26_thumb</item>
+        <item name="android:track">@drawable/switch_ios26_track</item>
+        <item name="android:splitTrack">false</item>
+        <item name="android:minHeight">28dp</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
     <!-- 玩机页（stitch code.html） -->
     <!-- stitch_fluent_root_system/code.html：section 标题 slate-500、uppercase -->
     <style name="Widget.IOS.ExploreSectionTitle" parent="TextAppearance.Material3.LabelMedium">

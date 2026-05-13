@@ -106,13 +106,18 @@
                         android:text="开机自动切换"
                         android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/switchAutoSelinux"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
+                        android:minHeight="28dp"
+                        android:padding="0dp"
                         android:text="启用开机自动切换"
-                        android:textAppearance="@style/Widget.IOS.Body" />
+                        android:textAppearance="@style/Widget.IOS.Body"
+                        android:thumb="@drawable/switch_ios26_thumb"
+                        android:track="@drawable/switch_ios26_track"
+                        android:splitTrack="false" />
 
                     <RadioGroup
                         android:id="@+id/radioSelinuxTarget"

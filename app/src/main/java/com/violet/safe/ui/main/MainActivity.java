@@ -36,11 +36,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.graphics.drawable.Drawable;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
@@ -74,6 +69,7 @@ import com.violet.safe.ui.plugin.GlobalDeviceSpoofActivity;
 import com.violet.safe.ui.plugin.DeviceIdModifyActivity;
 import com.violet.safe.ui.plugin.VioletPluginActivity;
 import com.violet.safe.ui.selinux.SelinuxManagerActivity;
+import com.violet.safe.ui.widget.VioletSwitchStyler;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -286,21 +282,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences updatePrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         boolean autoCheckUpdate = updatePrefs.getBoolean(KEY_AUTO_CHECK_UPDATE, true);
         if (switchCheckUpdate != null) {
-            // iOS7/26 风格：thumb/track 固定尺寸（不受素材 intrinsic 大小影响）
-            try {
-                Drawable thumb = getDrawable(R.drawable.switch_ios26_thumb);
-                Drawable track = getDrawable(R.drawable.switch_ios26_track);
-                if (thumb != null) {
-                    // Switch 内部可能给 thumb 非正方形 bounds，这里强制用正方形居中绘制保证“正圆”
-                    switchCheckUpdate.setThumbDrawable(new FixedSizeDrawable(thumb, dpToPx(24), dpToPx(24), true));
-                }
-                if (track != null) {
-                    // iOS 风格常见比例：约 44x28
-                    switchCheckUpdate.setTrackDrawable(new FixedSizeDrawable(track, dpToPx(44), dpToPx(28), false));
-                }
-                switchCheckUpdate.setSplitTrack(false);
-            } catch (Exception ignored) {
-            }
+            VioletSwitchStyler.apply(this, switchCheckUpdate);
             switchCheckUpdate.setChecked(autoCheckUpdate);
             switchCheckUpdate.setOnCheckedChangeListener((buttonView, isChecked) ->
                     updatePrefs.edit().putBoolean(KEY_AUTO_CHECK_UPDATE, isChecked).apply());
@@ -1789,109 +1771,6 @@ public class MainActivity extends AppCompatActivity {
 
     private int dpToPx(int dp) {
         return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
-    }
-
-    private static class FixedSizeDrawable extends Drawable implements Drawable.Callback {
-        private final Drawable wrapped;
-        private final int w;
-        private final int h;
-        private final boolean forceSquareCenter;
-
-        FixedSizeDrawable(Drawable wrapped, int widthPx, int heightPx, boolean forceSquareCenter) {
-            this.wrapped = wrapped;
-            this.w = widthPx;
-            this.h = heightPx;
-            this.forceSquareCenter = forceSquareCenter;
-            // 让内部 drawable 的 invalidate/schedule 能回调到外层
-            this.wrapped.setCallback(this);
-        }
-
-        @Override
-        public void draw(Canvas canvas) {
-            wrapped.draw(canvas);
-        }
-
-        @Override
-        protected void onBoundsChange(Rect bounds) {
-            super.onBoundsChange(bounds);
-            if (!forceSquareCenter) {
-                wrapped.setBounds(bounds);
-                return;
-            }
-            int size = Math.min(bounds.width(), bounds.height());
-            int left = bounds.left + (bounds.width() - size) / 2;
-            int top = bounds.top + (bounds.height() - size) / 2;
-            wrapped.setBounds(left, top, left + size, top + size);
-        }
-
-        @Override
-        public void setAlpha(int alpha) {
-            wrapped.setAlpha(alpha);
-        }
-
-        @Override
-        public void setColorFilter(ColorFilter colorFilter) {
-            wrapped.setColorFilter(colorFilter);
-        }
-
-        @Override
-        public int getOpacity() {
-            return PixelFormat.TRANSLUCENT;
-        }
-
-        @Override
-        public boolean isStateful() {
-            return wrapped.isStateful();
-        }
-
-        @Override
-        protected boolean onStateChange(int[] state) {
-            boolean changed = wrapped.setState(state);
-            if (changed) {
-                invalidateSelf();
-            }
-            return changed;
-        }
-
-        @Override
-        protected boolean onLevelChange(int level) {
-            boolean changed = wrapped.setLevel(level);
-            if (changed) {
-                invalidateSelf();
-            }
-            return changed;
-        }
-
-        @Override
-        public Drawable mutate() {
-            wrapped.mutate();
-            return this;
-        }
-
-        @Override
-        public void invalidateDrawable(Drawable who) {
-            invalidateSelf();
-        }
-
-        @Override
-        public void scheduleDrawable(Drawable who, Runnable what, long when) {
-            scheduleSelf(what, when);
-        }
-
-        @Override
-        public void unscheduleDrawable(Drawable who, Runnable what) {
-            unscheduleSelf(what);
-        }
-
-        @Override
-        public int getIntrinsicWidth() {
-            return w;
-        }
-
-        @Override
-        public int getIntrinsicHeight() {
-            return h;
-        }
     }
 
     private void updateEnvironmentSummary() {

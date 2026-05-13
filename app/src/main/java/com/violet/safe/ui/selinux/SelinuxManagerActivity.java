@@ -8,12 +8,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.violet.safe.R;
 import com.violet.safe.core.util.SelinuxShellUtil;
+import com.violet.safe.ui.widget.VioletSwitchStyler;
 
 public class SelinuxManagerActivity extends AppCompatActivity {
 
@@ -25,7 +26,7 @@ public class SelinuxManagerActivity extends AppCompatActivity {
 
     private TextView tvSelinuxModeValue;
     private MaterialButton btnToggleSelinux;
-    private SwitchMaterial switchAutoSelinux;
+    private SwitchCompat switchAutoSelinux;
     private RadioGroup radioSelinuxTarget;
     private RadioButton radioEnforcing;
     private RadioButton radioPermissive;
@@ -47,6 +48,7 @@ public class SelinuxManagerActivity extends AppCompatActivity {
         tvSelinuxModeValue = findViewById(R.id.tvSelinuxModeValue);
         btnToggleSelinux = findViewById(R.id.btnToggleSelinux);
         switchAutoSelinux = findViewById(R.id.switchAutoSelinux);
+        VioletSwitchStyler.apply(this, switchAutoSelinux);
         radioSelinuxTarget = findViewById(R.id.radioSelinuxTarget);
         radioEnforcing = findViewById(R.id.radioEnforcing);
         radioPermissive = findViewById(R.id.radioPermissive);
