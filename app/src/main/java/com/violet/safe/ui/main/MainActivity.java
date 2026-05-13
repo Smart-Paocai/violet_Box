@@ -11,6 +11,8 @@ import android.animation.ValueAnimator;
 import android.os.SystemClock;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -132,6 +134,17 @@ public class MainActivity extends AppCompatActivity {
     private volatile ExploreRootStatus cachedExploreRootStatus;
     private volatile long cachedExploreRootStatusAt;
     private volatile boolean exploreRootStatusRefreshRunning = false;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final Runnable exploreResumeRefresh = new Runnable() {
+        @Override
+        public void run() {
+            if (isFinishing() || isDestroyed() || currentTab != 2) {
+                return;
+            }
+            updateExploreRootStatus(false);
+            updateExploreUptime();
+        }
+    };
 
     private static final class ExploreRootStatus {
         final boolean rootGranted;
@@ -339,9 +352,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // 返回前台后刷新首页 Explore 的 ROOT 实时状态
-        updateExploreRootStatus(false);
-        updateExploreUptime();
+        mainHandler.removeCallbacks(exploreResumeRefresh);
+        // 返回时先让界面完成首帧绘制，再延后刷新 Explore 状态，降低体感卡顿。
+        if (currentTab == 2) {
+            updateExploreUptime();
+            View exploreView = findViewById(R.id.fragmentExplorePlaceholder);
+            if (exploreView != null) {
+                exploreView.postDelayed(exploreResumeRefresh, 120);
+            } else {
+                mainHandler.postDelayed(exploreResumeRefresh, 120);
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        mainHandler.removeCallbacks(exploreResumeRefresh);
+        super.onPause();
     }
 
     private void selectTab(int tab) {
