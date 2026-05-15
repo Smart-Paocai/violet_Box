@@ -2,12 +2,10 @@ package com.violet.safe.ui.plugin;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
@@ -125,28 +123,10 @@ public class TrickyStoreAppListActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.tricky_store_menu, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             finish();
-            return true;
-        }
-        if (id == R.id.action_open_hide_bl_list) {
-            android.widget.Toast.makeText(this, "已在隐藏BL列表界面", android.widget.Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        if (id == R.id.action_set_security_patch) {
-            startActivity(new Intent(this, TrickyStoreSecurityPatchActivity.class));
-            return true;
-        }
-        if (id == R.id.action_set_hash_value) {
-            startActivity(new Intent(this, TrickyStoreHashActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

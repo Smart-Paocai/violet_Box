@@ -55,6 +55,9 @@
             android:name=".ui.plugin.VioletPluginActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.plugin.TrickyStoreConfigActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.plugin.TrickyStoreAppListActivity"
             android:exported="false" />
         <activity
@@ -65,6 +68,9 @@
             android:exported="false" />
         <activity
             android:name=".ui.plugin.HiddenAppListConfigActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.plugin.SusfsConfigActivity"
             android:exported="false" />
         <activity
             android:name=".ui.plugin.KernelDisguiseActivity"
