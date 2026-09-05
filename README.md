@@ -4,6 +4,7 @@
 [![License: GPL 3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/Smart-Paocai/violet_Box/tree/main?tab=GPL-3.0-1-ov-file)
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-2CA5E0?style=flat-square&logo=telegram)](https://t.me/violet_Box)
 [![Release](https://img.shields.io/badge/Release-v1.0.0-success.svg?style=flat-square)](https://github.com/Smart-Paocai/violet_Box/releases/tag/v1.0.0)
+[![oosmetrics](https://api.oosmetrics.com/api/v1/badge/achievement/fdabb65f-1818-486c-af5a-cf46ac010ee9.svg)](https://oosmetrics.com/repo/Smart-Paocai/violet_Box)
 
 </div>
 
