@@ -31,7 +31,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
-import com.scottyab.rootbeer.RootBeer;
 import com.violet.box.R;
 import com.violet.box.core.util.SelinuxShellUtil;
 import com.violet.box.data.model.InstalledAppRow;
@@ -381,13 +380,18 @@ public class AppManagerActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(send, "分享APK安装包"));
     }
 
+    /** 通过实际执行 su -c id 判断 ROOT 是否可用（替代原 RootBeer 签名检测）。 */
+    private static boolean isRootAvailable() {
+        SelinuxShellUtil.ShellResult r = SelinuxShellUtil.runSu("id", 3_000L);
+        return r.success && (r.stdout + "\n" + r.stderr).contains("uid=0");
+    }
+
     private void uninstallPackage(String pkg) {
         if (pkg.equals(getPackageName())) {
             Toast.makeText(this, "不能卸载本应用", Toast.LENGTH_SHORT).show();
             return;
         }
-        RootBeer rb = new RootBeer(this);
-        if (rb.isRooted() && isSafePackageToken(pkg)) {
+        if (isRootAvailable() && isSafePackageToken(pkg)) {
             if (trySilentUninstall(pkg)) {
                 Toast.makeText(this, "已通过 Root 静默卸载", Toast.LENGTH_SHORT).show();
                 reloadAppsAsync();
@@ -425,8 +429,7 @@ public class AppManagerActivity extends AppCompatActivity {
             Toast.makeText(this, "不能冻结本应用", Toast.LENGTH_SHORT).show();
             return;
         }
-        RootBeer rb = new RootBeer(this);
-        if (!rb.isRooted()) {
+        if (!isRootAvailable()) {
             Toast.makeText(this, "冻结/解冻需要 Root", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -447,8 +450,7 @@ public class AppManagerActivity extends AppCompatActivity {
     }
 
     private void backupAppData(InstalledAppRow row) {
-        RootBeer rb = new RootBeer(this);
-        if (!rb.isRooted()) {
+        if (!isRootAvailable()) {
             Toast.makeText(this, "备份应用数据需要 Root", Toast.LENGTH_SHORT).show();
             return;
         }
