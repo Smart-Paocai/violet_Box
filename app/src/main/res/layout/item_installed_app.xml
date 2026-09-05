@@ -55,7 +55,7 @@
                 android:maxLines="2"
                 android:textColor="@color/ios_text_secondary"
                 android:textSize="11sp"
-                tools:text="com.violet.safe" />
+                tools:text="com.violet.box" />
         </LinearLayout>
 
         <ImageButton

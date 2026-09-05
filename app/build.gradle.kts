@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.violet.safe"
+    namespace = "com.violet.box"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.violet.safe"
+        applicationId = "com.violet.box"
         minSdk = 24
         targetSdk = 36
         versionCode = 2

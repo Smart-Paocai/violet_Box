@@ -16,7 +16,7 @@
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_violet_safe_MainActivity_checkForSuBinaryNative(JNIEnv *env, jobject thiz) {
+Java_com_violet_box_MainActivity_checkForSuBinaryNative(JNIEnv *env, jobject thiz) {
     const char *suPaths[] = {
             "/data/local/su", "/data/local/bin/su", "/data/local/xbin/su",
             "/sbin/su", "/su/bin/su", "/system/bin/su", "/system/bin/.ext/su",
@@ -46,7 +46,7 @@ Java_com_violet_safe_MainActivity_checkForSuBinaryNative(JNIEnv *env, jobject th
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_violet_safe_MainActivity_checkForSuspiciousMountsNative(JNIEnv *env, jobject thiz) {
+Java_com_violet_box_MainActivity_checkForSuspiciousMountsNative(JNIEnv *env, jobject thiz) {
     const char *mountPaths[] = {"/proc/mounts", "/proc/self/mounts"};
     const char *suspiciousKeywords[] = {
             "magisk", "core/mirror", "ksu", "apatch"
@@ -71,7 +71,7 @@ Java_com_violet_safe_MainActivity_checkForSuspiciousMountsNative(JNIEnv *env, jo
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_violet_safe_MainActivity_checkForMagiskFilesNative(JNIEnv *env, jobject thiz) {
+Java_com_violet_box_MainActivity_checkForMagiskFilesNative(JNIEnv *env, jobject thiz) {
     const char *magiskPaths[] = {
             "/sbin/.magisk/", "/sbin/.core/mirror", "/sbin/.core/img",
             "/sbin/.core/db-0/magisk.db", "/data/adb/magisk", "/data/adb/ksu", "/data/adb/ap"
@@ -98,7 +98,7 @@ Java_com_violet_safe_MainActivity_checkForMagiskFilesNative(JNIEnv *env, jobject
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_violet_safe_MainActivity_checkForZygiskNative(JNIEnv *env, jobject thiz) {
+Java_com_violet_box_MainActivity_checkForZygiskNative(JNIEnv *env, jobject thiz) {
     std::ifstream file("/proc/self/maps");
     if (!file.is_open()) return JNI_FALSE;
 
