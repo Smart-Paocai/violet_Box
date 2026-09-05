@@ -23,7 +23,9 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8 代码收缩 + 资源收缩：APK 13.1MB -> 3.4MB
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -32,6 +34,20 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    androidResources {
+        localeFilters += listOf("zh", "en")
+    }
+
+    packaging {
+        resources {
+            // commons-codec 传递依赖带入的语音匹配数据，项目未使用
+            excludes += "org/apache/commons/codec/language/**"
+            // kotlinx-coroutines 调试探针，release 无用
+            excludes += "DebugProbesKt.bin"
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -54,9 +70,6 @@ dependencies {
     implementation(libs.backdrop)
     implementation(libs.capsule)
     implementation(libs.kotlinx.coroutines.android)
-    
-    // 引入 Rootbeer 进行 Root 检测
-    implementation("com.scottyab:rootbeer-lib:0.1.0")
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.apache.commons:commons-compress:1.27.1")

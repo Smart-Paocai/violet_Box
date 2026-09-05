@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+.gradle-local/
+/jadx.zip
+/tools/

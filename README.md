@@ -3,7 +3,7 @@
 ## 紫罗兰Box (VioletBox)
 [![License: GPL 3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/Smart-Paocai/violet_Box/tree/main?tab=GPL-3.0-1-ov-file)
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-2CA5E0?style=flat-square&logo=telegram)](https://t.me/violet_Box)
-[![Release](https://img.shields.io/badge/Release-v1.0.0-success.svg?style=flat-square)](https://github.com/Smart-Paocai/violet_Box/releases/tag/v1.0.0)
+[![Release](https://img.shields.io/badge/Release-v1.1.0-success.svg?style=flat-square)](https://github.com/Smart-Paocai/violet_Box/releases)
 
 </div>
 
@@ -18,11 +18,6 @@
 ### 设备与信息
 - **全面设备识别**：识别设备的创建信息，并支持单击复制到剪切板
 
-### ROOT检测
-- 支持针对主流 Root 框架、Magisk、KernelSU 及各类隐藏模块的深度探查。
-- 检测 Bootloader 锁状态、USB 调试状态、SELinux 状态（Enforcing/Permissive）以及 ro.secure 等核心系统属性。
-- 一键排查设备中存在的敏感或风险应用。
-
 ### 玩机与定制
 紫罗兰Box 提供了极客用户最爱的系统级操作功能，包括但不限于：
 - **SELinux管理**：轻松切换或查看当前系统的 SELinux模式，并支持设置开机自启。
@@ -31,8 +26,8 @@
 - **模块管理**：可以批量刷入Magisk/KernelSU/Apatch的模块。
 - **应用管理**：可以读取设备内的安装包，对安装包进行提取/卸载/冻结/解冻操作。
 - **安卓ID修改**：修改设备的安卓ID
-- **全局机型伪装**：
-- **Payload云提取**
+- **全局机型伪装**：通过 resetprop 全局修改 ro.product.* 与构建指纹，伪装设备机型（需安装核心扩展模块）
+- **Payload云提取**：在线下载 OTA 固件并提取其中的分区镜像（.img）
 
 ### 紫罗兰插件 (Violet Plugins)
 提供一系列进阶的定制与隐藏ROOT功能
@@ -42,7 +37,7 @@
 ### 编译步骤
 1. 克隆本项目到本地：
    ```bash
-   git clone https://github.com/your-username/VioletDetection.git
+   git clone https://github.com/Smart-Paocai/violet_Box.git
    ```
 2. 使用 Android Studio 打开项目。
 3. 等待 Gradle 同步完成。
