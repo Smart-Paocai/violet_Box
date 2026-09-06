@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.紫罗兰盒子" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.紫罗兰检测" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/ios_accent</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSurface">@color/ios_card</item>
@@ -11,7 +11,7 @@
         <item name="android:windowLightNavigationBar">false</item>
     </style>
 
-    <style name="Theme.紫罗兰盒子" parent="Base.Theme.紫罗兰盒子" />
+    <style name="Theme.紫罗兰检测" parent="Base.Theme.紫罗兰检测" />
 
     <style name="Widget.IOS.SectionLabel" parent="TextAppearance.Material3.LabelMedium">
         <item name="android:textColor">@color/ios_text_secondary</item>
@@ -40,6 +40,13 @@
         <item name="android:textSize">17sp</item>
     </style>
 
+    <style name="Widget.Violet.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:thumb">@drawable/switch_ios26_thumb</item>
+        <item name="android:track">@drawable/switch_ios26_track</item>
+        <item name="android:splitTrack">false</item>
+        <item name="android:minHeight">28dp</item>
+        <item name="android:padding">0dp</item>
+    </style>
 
     <!-- 玩机页（stitch code.html） -->
     <!-- stitch_fluent_root_system/code.html：section 标题 slate-500、uppercase -->

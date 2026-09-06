@@ -71,7 +71,7 @@
                             android:text="发现新版本"
                             android:textColor="#D92D20"
                             android:textSize="14sp"
-                            android:fontFamily="sans-serif-medium" />
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <TextView
@@ -91,7 +91,7 @@
                     android:text="下载"
                     android:textColor="#D92D20"
                     android:textSize="13sp"
-                    android:fontFamily="sans-serif-medium" />
+                    android:textStyle="bold" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -139,7 +139,7 @@
                                 android:textAllCaps="true"
                                 android:textColor="@color/fluent_on_surface_variant"
                                 android:textSize="12sp"
-                                android:fontFamily="sans-serif-medium" />
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/tvDeviceName"
@@ -148,7 +148,7 @@
                                 android:layout_marginTop="4dp"
                                 android:textColor="@color/fluent_primary"
                                 android:textSize="15sp"
-                                android:fontFamily="sans-serif-medium"
+                                android:textStyle="bold"
                                 tools:text="OnePlus PJX110" />
 
                             <TextView
@@ -206,7 +206,7 @@
                                     android:layout_weight="1"
                                     android:textColor="@color/fluent_on_surface"
                                     android:textSize="14sp"
-                                    android:fontFamily="sans-serif-medium"
+                                    android:textStyle="bold"
                                     tools:text="Android 16 (API 36)" />
                             </LinearLayout>
                         </LinearLayout>
@@ -233,7 +233,7 @@
                                 android:maxLines="2"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="14sp"
-                                android:fontFamily="sans-serif-medium"
+                                android:textStyle="bold"
                                 tools:text="6.1.118-android15-11" />
                         </LinearLayout>
 
@@ -259,7 +259,7 @@
                                 android:maxLines="2"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="14sp"
-                                android:fontFamily="sans-serif-medium"
+                                android:textStyle="bold"
                                 tools:text="强制模式" />
                         </LinearLayout>
 
@@ -282,7 +282,7 @@
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="14sp"
-                                android:fontFamily="sans-serif-medium"
+                                android:textStyle="bold"
                                 tools:text="Slot B" />
                         </LinearLayout>
                     </GridLayout>
@@ -329,6 +329,7 @@
                                 android:maxLines="3"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="12sp"
+                                android:textStyle="bold"
                                 tools:text="PJX110_15.0.0.300(CN01)" />
                         </LinearLayout>
 
@@ -358,6 +359,7 @@
                                 android:fontFamily="monospace"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="12sp"
+                                android:textStyle="bold"
                                 tools:text="2025-01-05" />
                         </LinearLayout>
 
@@ -387,6 +389,7 @@
                                 android:maxLines="3"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="12sp"
+                                android:textStyle="bold"
                                 tools:text="Q_V1_P14,Q_V1_P14" />
                         </LinearLayout>
 
@@ -417,6 +420,7 @@
                                 android:maxLines="3"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="12sp"
+                                android:textStyle="bold"
                                 tools:text="a1b2c3d4e5f6g7h8" />
                         </LinearLayout>
 
@@ -446,6 +450,7 @@
                                 android:maxLines="3"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="12sp"
+                                android:textStyle="bold"
                                 tools:text="333" />
                         </LinearLayout>
 
@@ -477,6 +482,7 @@
                                 android:maxLines="4"
                                 android:textColor="@color/fluent_on_surface"
                                 android:textSize="12sp"
+                                android:textStyle="bold"
                                 tools:text="google/oriole/oriole:16/BP1A.250405.007/1234567:user/release-keys" />
                         </LinearLayout>
                     </GridLayout>
@@ -486,6 +492,76 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- 系统与网络详情已合并进设备概览卡片 -->
+
+        <!-- CPU 状态：各核 cpufreq，每秒刷新 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/fluent_glass_card"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardMaxElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/fluent_card_stroke"
+            app:cardUseCompatPadding="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:importantForAccessibility="no"
+                        app:srcCompat="@drawable/ic_ms_developer_board"
+                        app:tint="@color/fluent_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.06"
+                        android:text="CPU 状态"
+                        android:textAllCaps="true"
+                        android:textColor="@color/fluent_on_surface_variant"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/fluent_cell_bg"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+
+
+
+
+                    <GridLayout
+                        android:id="@+id/llCpuCoreRings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alignmentMode="alignBounds"
+                        android:clipChildren="false"
+                        android:columnCount="4"
+                        android:orientation="horizontal"
+                        android:useDefaultMargins="false" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

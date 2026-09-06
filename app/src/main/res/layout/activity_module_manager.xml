@@ -122,7 +122,7 @@
                             android:textAllCaps="false"
                             android:textColor="@color/ios_text_primary"
                             app:backgroundTint="@color/ios_background_elevated"
-                            app:cornerRadius="20dp"
+                            app:cornerRadius="14dp"
                             app:strokeColor="@color/ios_separator"
                             app:strokeWidth="1dp" />
 
@@ -136,7 +136,7 @@
                             android:textAllCaps="false"
                             android:textColor="@color/ios_text_primary"
                             app:backgroundTint="@color/ios_background_elevated"
-                            app:cornerRadius="20dp"
+                            app:cornerRadius="14dp"
                             app:strokeColor="@color/ios_separator"
                             app:strokeWidth="1dp" />
                     </LinearLayout>
@@ -184,7 +184,7 @@
                         android:textColor="@color/ios_text_primary"
                         android:visibility="gone"
                         app:backgroundTint="@color/ios_background_elevated"
-                        app:cornerRadius="20dp"
+                        app:cornerRadius="14dp"
                         app:strokeColor="@color/ios_separator"
                         app:strokeWidth="1dp" />
                 </LinearLayout>

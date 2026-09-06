@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,8 +31,10 @@ import androidx.fragment.app.Fragment;
 
 import com.violet.box.R;
 import com.violet.box.core.util.BatterySysFiles;
+import com.violet.box.core.util.CpuSysFiles;
 import com.violet.box.core.util.SelinuxShellUtil;
 import com.violet.box.core.util.SelinuxStatusReader;
+import com.violet.box.ui.widget.CpuRingGaugeView;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -60,14 +63,15 @@ public class DeviceFragment extends Fragment {
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    /** 存储占用、电池瞬时量：每秒刷新（部分机型电量广播极稀疏，仅靠广播电压/电流不更新） */
-    private final Runnable oneSecondTickRunnable = new Runnable() {
+    /** 各核圆环、存储占用、电池瞬时量：每秒刷新（部分机型电量广播极稀疏，仅靠广播电压/电流不更新） */
+    private final Runnable cpuRingTickRunnable = new Runnable() {
         @Override
         public void run() {
             if (!isAdded()) {
                 return;
             }
             refreshBatteryStickyUi();
+            refreshCpuCoreRingsUi();
             mainHandler.postDelayed(this, 1000L);
         }
     };
@@ -83,6 +87,9 @@ public class DeviceFragment extends Fragment {
     };
 
     private ExecutorService gpuExecutor;
+
+    private GridLayout llCpuCoreRings;
+    private final List<CpuCoreRingHolder> cpuCoreRingHolders = new ArrayList<>();
 
     private TextView tvBatteryCycles;
 
@@ -101,6 +108,9 @@ public class DeviceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        llCpuCoreRings = view.findViewById(R.id.llCpuCoreRings);
+        inflateCpuCoreRingsIfNeeded();
 
         TextView tvDeviceName = view.findViewById(R.id.tvDeviceName);
         TextView tvDeviceCode = view.findViewById(R.id.tvDeviceCode);
@@ -192,8 +202,8 @@ public class DeviceFragment extends Fragment {
         applySelinuxSummary();
         refreshAndroidIdUi();
 
-        mainHandler.removeCallbacks(oneSecondTickRunnable);
-        mainHandler.post(oneSecondTickRunnable);
+        mainHandler.removeCallbacks(cpuRingTickRunnable);
+        mainHandler.post(cpuRingTickRunnable);
     }
 
     @Override
@@ -203,7 +213,7 @@ public class DeviceFragment extends Fragment {
             requireContext().unregisterReceiver(batteryReceiver);
         } catch (IllegalArgumentException ignored) {
         }
-        mainHandler.removeCallbacks(oneSecondTickRunnable);
+        mainHandler.removeCallbacks(cpuRingTickRunnable);
     }
 
     @Override
@@ -213,6 +223,8 @@ public class DeviceFragment extends Fragment {
             gpuExecutor.shutdownNow();
             gpuExecutor = null;
         }
+        llCpuCoreRings = null;
+        cpuCoreRingHolders.clear();
         tvBatteryCycles = null;
         tvBuildFingerprint = null;
         tvSelinuxStatus = null;
@@ -501,6 +513,137 @@ public class DeviceFragment extends Fragment {
                 return "过冷";
             default:
                 return "未知";
+        }
+    }
+
+    private void inflateCpuCoreRingsIfNeeded() {
+        if (llCpuCoreRings == null) {
+            return;
+        }
+        llCpuCoreRings.removeAllViews();
+        cpuCoreRingHolders.clear();
+        int n = CpuSysFiles.getSysfsCpuCount();
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+        float density = getResources().getDisplayMetrics().density;
+        int gap = (int) (3 * density);
+        int rowGap = (int) (8 * density);
+        for (int i = 0; i < n; i++) {
+            View item = inflater.inflate(R.layout.item_cpu_core_ring, llCpuCoreRings, false);
+            TextView tvLabel = item.findViewById(R.id.tvCpuCoreLabel);
+            CpuRingGaugeView ring = item.findViewById(R.id.cpuRingGauge);
+            TextView tvPct = item.findViewById(R.id.tvCpuCorePct);
+            TextView tvFreq = item.findViewById(R.id.tvCpuCoreFreq);
+            TextView tvFreqUnit = item.findViewById(R.id.tvCpuCoreFreqUnit);
+            TextView tvFreqRange = item.findViewById(R.id.tvCpuCoreFreqRange);
+            if (tvLabel != null) {
+                tvLabel.setText("核心 " + i);
+            }
+            // 注意：构造函数为 (rowSpec, columnSpec)，勿与行列下标写反
+            GridLayout.LayoutParams glp = new GridLayout.LayoutParams(
+                    GridLayout.spec(i / 4),
+                    GridLayout.spec(i % 4, 1f));
+            glp.width = 0;
+            glp.height = GridLayout.LayoutParams.WRAP_CONTENT;
+            glp.setMargins(gap, i >= 4 ? rowGap : 0, gap, gap);
+            item.setLayoutParams(glp);
+            llCpuCoreRings.addView(item);
+            cpuCoreRingHolders.add(new CpuCoreRingHolder(ring, tvPct, tvFreq, tvFreqUnit, tvFreqRange));
+        }
+    }
+
+    /**
+     * 各核：圆环与环心百分比 = 当前频率 / 该核最大频率（cpufreq）；档位色随该比例变化。
+     */
+    private void refreshCpuCoreRingsUi() {
+        if (llCpuCoreRings == null || cpuCoreRingHolders.isEmpty()) {
+            return;
+        }
+        Context ctx = getContext();
+        if (ctx == null) {
+            return;
+        }
+        int colorVariant = ContextCompat.getColor(ctx, R.color.fluent_on_surface_variant);
+        int colorOnSurface = ContextCompat.getColor(ctx, R.color.fluent_on_surface);
+        Locale loc = Locale.getDefault();
+        for (int i = 0; i < cpuCoreRingHolders.size(); i++) {
+            CpuCoreRingHolder h = cpuCoreRingHolders.get(i);
+            boolean online = CpuSysFiles.isCpuOnline(i);
+            long maxK = online ? CpuSysFiles.readCpuMaxFreqKhz(i) : -1L;
+            long curK = online ? CpuSysFiles.readCpuCurFreqKhz(i) : -1L;
+
+            int pct = 0;
+            boolean haveRatio = online && maxK > 0L && curK > 0L;
+            if (haveRatio) {
+                pct = Math.round(curK * 100f / (float) maxK);
+                if (pct > 100) {
+                    pct = 100;
+                }
+            }
+            if (h.ring != null) {
+                h.ring.setProgress(haveRatio ? (float) pct : 0f);
+            }
+            if (h.tvPct != null) {
+                if (!online) {
+                    h.tvPct.setText("—");
+                    h.tvPct.setTextColor(colorVariant);
+                } else if (!haveRatio) {
+                    h.tvPct.setText("—");
+                    h.tvPct.setTextColor(colorOnSurface);
+                } else {
+                    h.tvPct.setText(pct + "%");
+                    h.tvPct.setTextColor(ContextCompat.getColor(ctx, CpuRingGaugeView.stitchTextColorResForProgress((float) pct)));
+                }
+            }
+            if (h.tvFreq != null) {
+                if (!online) {
+                    h.tvFreq.setText("—");
+                    h.tvFreq.setTextColor(colorVariant);
+                    if (h.tvFreqUnit != null) {
+                        h.tvFreqUnit.setVisibility(View.GONE);
+                    }
+                    if (h.tvFreqRange != null) {
+                        h.tvFreqRange.setText("—");
+                        h.tvFreqRange.setTextColor(colorVariant);
+                    }
+                } else {
+                    if (h.tvFreqUnit != null) {
+                        h.tvFreqUnit.setVisibility(View.VISIBLE);
+                    }
+                    long khz = curK;
+                    if (khz <= 0) {
+                        h.tvFreq.setText("—");
+                        h.tvFreq.setTextColor(colorOnSurface);
+                    } else {
+                        double mhz = khz / 1000.0;
+                        String s = mhz >= 1000d
+                                ? String.format(loc, "%.0f", mhz)
+                                : String.format(loc, "%.1f", mhz);
+                        h.tvFreq.setText(s);
+                        h.tvFreq.setTextColor(colorOnSurface);
+                    }
+                    if (h.tvFreqRange != null) {
+                        h.tvFreqRange.setText(CpuSysFiles.formatCpuFreqRangeMhzShort(i));
+                        h.tvFreqRange.setTextColor(colorVariant);
+                    }
+                }
+            }
+        }
+    }
+
+    private static final class CpuCoreRingHolder {
+        final CpuRingGaugeView ring;
+        final TextView tvPct;
+        final TextView tvFreq;
+        final TextView tvFreqUnit;
+        final TextView tvFreqRange;
+
+        CpuCoreRingHolder(CpuRingGaugeView ring, TextView tvPct, TextView tvFreq, TextView tvFreqUnit,
+                           TextView tvFreqRange) {
+            this.ring = ring;
+            this.tvPct = tvPct;
+            this.tvFreq = tvFreq;
+            this.tvFreqUnit = tvFreqUnit;
+            this.tvFreqRange = tvFreqRange;
         }
     }
 

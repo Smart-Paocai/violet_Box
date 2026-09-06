@@ -1,68 +1,75 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="purple_200">#EFE9FF</color>
-    <!-- 语义状态色（克制版：仅用于状态点/文字，不做大面积铺色） -->
-    <color name="ios_semantic_positive">#2FAE55</color>
-    <color name="ios_semantic_negative">#E5484D</color>
-    <color name="ios_separator">#E8E8E8</color>
-    <color name="ios_background">#F6F6F6</color>
-    <color name="ios_accent">#652FE7</color>
+    <color name="purple_700">#4A148C</color>
+    <color name="purple_200">#CE93D8</color>
+    <color name="purple_500">#9C27B0</color>
+    <color name="ios_semantic_positive">#34C759</color>
+    <color name="ios_semantic_negative">#FF3B30</color>
+    <color name="ios_separator">#E0E0E0</color>
+    <color name="ios_background">#F5F5F5</color>
+    <color name="ios_accent">#4A148C</color>
     <color name="ios_card">#FFFFFF</color>
-    <color name="ios_background_grouped">#F6F6F6</color>
+    <color name="ios_background_grouped">#F2F2F7</color>
     <color name="ios_background_elevated">#FFFFFF</color>
-    <color name="ios_text_primary">#1A1A1C</color>
-    <color name="ios_text_secondary">#6B6B70</color>
-    <color name="ios_glass_surface">#FFFFFF</color>
-    <color name="ios_glass_stroke">#00000000</color>
-    <!-- 探索页灰阶（中性化，去除冷蓝偏色） -->
-    <color name="explore_slate_50">#FAFAFA</color>
-    <color name="explore_slate_100">#F0F0F0</color>
-    <color name="explore_slate_200">#E3E3E6</color>
-    <color name="explore_slate_500">#6B6B70</color>
-    <color name="explore_slate_600">#4A4A4E</color>
-    <color name="explore_slate_700">#333336</color>
-    <color name="explore_slate_800">#262628</color>
-    <color name="explore_slate_900">#1A1A1C</color>
-    <color name="explore_emerald_100">#E3F5E9</color>
-    <color name="explore_emerald_600">#2FAE55</color>
-    <color name="explore_blue_100">#E5EEFB</color>
-    <color name="explore_blue_600">#3B6FE0</color>
-    <color name="explore_purple_100">#EFE9FF</color>
-    <color name="explore_purple_600">#652FE7</color>
-    <color name="explore_amber_100">#FCF2DC</color>
-    <color name="explore_amber_600">#C77E14</color>
-    <color name="explore_rose_100">#FCE9EA</color>
-    <color name="explore_rose_600">#E5484D</color>
-    <!-- 玩机页背景与辅助字色（与全局统一） -->
-    <color name="explore_page_background">#F6F6F6</color>
-    <color name="explore_muted_blue_grey">#6B6B70</color>
-    <color name="nav_tab_active_pill">#EFE9FF</color>
-    <color name="nav_floating_surface">#E6FFFFFF</color>
+    <color name="ios_text_primary">#000000</color>
+    <color name="ios_text_secondary">#6C6C70</color>
+    <color name="ios_glass_surface">#B3FFFFFF</color>
+    <color name="ios_glass_stroke">#33FFFFFF</color>
+    <!-- stitch_fluent / Tailwind (code.html) -->
+    <color name="explore_slate_50">#f8fafc</color>
+    <color name="explore_slate_100">#f1f5f9</color>
+    <color name="explore_slate_200">#e2e8f0</color>
+    <color name="explore_slate_500">#64748b</color>
+    <color name="explore_slate_600">#475569</color>
+    <color name="explore_slate_700">#334155</color>
+    <color name="explore_slate_800">#1e293b</color>
+    <color name="explore_slate_900">#0f172a</color>
+    <color name="explore_emerald_100">#d1fae5</color>
+    <color name="explore_emerald_600">#059669</color>
+    <color name="explore_blue_100">#dbeafe</color>
+    <color name="explore_blue_600">#2563eb</color>
+    <color name="explore_purple_100">#f3e8ff</color>
+    <color name="explore_purple_600">#9333ea</color>
+    <color name="explore_amber_100">#fef3c7</color>
+    <color name="explore_amber_600">#d97706</color>
+    <color name="explore_rose_100">#ffe4e6</color>
+    <color name="explore_rose_600">#e11d48</color>
+    <!-- 玩机页截图：浅紫灰底、区块/快捷字色 -->
+    <color name="explore_page_background">#F3F4F9</color>
+    <color name="explore_muted_blue_grey">#7A869A</color>
+    <color name="nav_tab_active_pill">#F3E5F5</color>
+    <color name="nav_floating_surface">#66FFFFFF</color>
     <color name="nav_floating_stroke">#26FFFFFF</color>
-    <color name="nav_item_text">#1A1A1C</color>
+    <color name="nav_item_text">#1F2937</color>
     <color name="nav_item_accent">#652FE7</color>
-    <!-- 设备页：实心表面 + 中性描边 -->
-    <color name="fluent_background">#F6F6F6</color>
-    <color name="fluent_glass_card">#FFFFFF</color>
-    <color name="fluent_card_stroke">#00000000</color>
-    <color name="fluent_cell_stroke">#ECECEC</color>
-    <color name="fluent_primary">#652FE7</color>
-    <color name="fluent_secondary">#3B6FE0</color>
-    <color name="fluent_on_surface">#1A1A1C</color>
-    <color name="fluent_on_surface_variant">#6B6B70</color>
-    <color name="fluent_surface_container_low">#F0F0F0</color>
-    <color name="fluent_surface_container">#E9E9EB</color>
-    <color name="fluent_primary_container">#EFE9FF</color>
+    <!-- stitch_fluent_root_system / code.html tokens（实心表面 + 描边，避免半透明叠阴影发脏） -->
+    <color name="fluent_background">#f3f4f8</color>
+    <color name="fluent_glass_card">#FFFFFFFF</color>
+    <color name="fluent_card_stroke">#E6E7EF</color>
+    <color name="fluent_cell_stroke">#EBECF2</color>
+    <color name="fluent_primary">#652fe7</color>
+    <color name="fluent_secondary">#00618f</color>
+    <color name="fluent_on_surface">#2d2f32</color>
+    <color name="fluent_on_surface_variant">#5a5b5f</color>
+    <color name="fluent_surface_container_low">#f0f0f5</color>
+    <color name="fluent_surface_container">#e7e8ed</color>
+    <color name="fluent_primary_container">#a98fff</color>
     <color name="fluent_android_green">#3DDC84</color>
-    <color name="fluent_root_badge_bg">#E3F5E9</color>
-    <color name="fluent_root_badge_text">#1E7F3E</color>
-    <color name="fluent_orange">#C77E14</color>
-    <color name="fluent_green_600">#2FAE55</color>
-    <color name="explore_cyan_100">#E0F5F8</color>
-    <color name="explore_cyan_600">#0E7E96</color>
-    <!-- M3 开关（KernelSU 同款）：选中=主色轨道+白滑块+主色勾，未选中=灰轨道+灰滑块+灰叉 -->
-    <color name="ksu_switch_track_off">#E1E1E4</color>
-    <color name="ksu_switch_thumb_on">#FFFFFF</color>
-    <color name="ksu_switch_thumb_off">#8A8A8E</color>
+    <color name="fluent_root_badge_bg">#80DCFCE7</color>
+    <color name="fluent_root_badge_text">#15803d</color>
+    <color name="fluent_orange">#f97316</color>
+    <color name="fluent_green_600">#16a34a</color>
+    <!-- 各核 CPU 仪表（参考 CPU 状态卡片：低/中/高 + 轨道灰） -->
+    <color name="stitch_gauge_track">#E0E2E9</color>
+    <color name="cpu_core_bar_track">#E7E8EE</color>
+    <color name="stitch_gauge_fill_low">#A0D8FF</color>
+    <color name="stitch_gauge_fill_med">#7B61FF</color>
+    <color name="stitch_gauge_fill_high">#F25C6E</color>
+    <color name="stitch_pct_low">#A0D8FF</color>
+    <color name="stitch_pct_med">#7B61FF</color>
+    <color name="stitch_pct_high">#F25C6E</color>
+    
+    <color name="explore_cyan_100">#CFFAFE</color>
+    <color name="explore_cyan_600">#0891B2</color>
 </resources>

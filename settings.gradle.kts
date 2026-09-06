@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "紫罗兰盒子"
+rootProject.name = "紫罗兰检测"
 include(":app")

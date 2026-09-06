@@ -12,13 +12,14 @@
 
     <application
         android:name="com.violet.box.VioletApplication"
-        android:allowBackup="true"        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.紫罗兰盒子">
+        android:theme="@style/Theme.紫罗兰检测">
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true">
@@ -92,14 +93,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
-        <provider
-            android:name="rikka.shizuku.ShizukuProvider"
-            android:authorities="${applicationId}.shizuku"
-            android:multiprocess="false"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <receiver
             android:name=".receiver.BootCompletedReceiver"

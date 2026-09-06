@@ -23,12 +23,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.violet.box.ui.widget.KsuSwitchView;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.violet.box.R;
+import com.violet.box.ui.widget.VioletSwitchStyler;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -62,8 +63,8 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
     private TextView tvFontBackupProgress;
     private ProgressBar progressFontBackup;
     private MaterialButton btnFontBackupExport;
-    private KsuSwitchView switchExcludeSuper;
-    private KsuSwitchView switchCompressPack;
+    private SwitchCompat switchExcludeSuper;
+    private SwitchCompat switchCompressPack;
     private ActivityResultLauncher<Intent> saveArchiveLauncher;
     private ActivityResultLauncher<Uri> openTreeLauncher;
     private boolean busy;
@@ -88,14 +89,16 @@ public class FontLibraryBackupActivity extends AppCompatActivity {
         btnFontBackupExport = findViewById(R.id.btnFontBackupExport);
         switchExcludeSuper = findViewById(R.id.switchExcludeSuper);
         switchCompressPack = findViewById(R.id.switchCompressPack);
+        VioletSwitchStyler.apply(this, switchExcludeSuper);
+        VioletSwitchStyler.apply(this, switchCompressPack);
 
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         switchExcludeSuper.setChecked(prefs.getBoolean(KEY_EXCLUDE_SUPER, true));
-        switchExcludeSuper.setOnCheckedChange(isChecked ->
+        switchExcludeSuper.setOnCheckedChangeListener((buttonView, isChecked) ->
                 prefs.edit().putBoolean(KEY_EXCLUDE_SUPER, isChecked).apply());
 
         switchCompressPack.setChecked(prefs.getBoolean(KEY_COMPRESS_PACK, true));
-        switchCompressPack.setOnCheckedChange(isChecked -> {
+        switchCompressPack.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean(KEY_COMPRESS_PACK, isChecked).apply();
             updateExportButtonLabel();
         });

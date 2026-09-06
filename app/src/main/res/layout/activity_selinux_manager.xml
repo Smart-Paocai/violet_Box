@@ -79,7 +79,7 @@
                         android:textAllCaps="false"
                         android:textColor="@color/ios_text_primary"
                         app:backgroundTint="@color/ios_background_elevated"
-                        app:cornerRadius="20dp"
+                        app:cornerRadius="14dp"
                         app:strokeColor="@color/ios_separator"
                         app:strokeWidth="1dp" />
                 </LinearLayout>
@@ -106,26 +106,18 @@
                         android:text="开机自动切换"
                         android:textAppearance="@style/Widget.IOS.SubsectionTitle" />
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchAutoSelinux"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="启用开机自动切换"
-                            android:textAppearance="@style/Widget.IOS.Body" />
-
-                        <com.violet.box.ui.widget.KsuSwitchView
-                            android:id="@+id/switchAutoSelinux"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp" />
-                    </LinearLayout>
+                        android:minHeight="28dp"
+                        android:padding="0dp"
+                        android:text="启用开机自动切换"
+                        android:textAppearance="@style/Widget.IOS.Body"
+                        android:thumb="@drawable/switch_ios26_thumb"
+                        android:track="@drawable/switch_ios26_track"
+                        android:splitTrack="false" />
 
                     <RadioGroup
                         android:id="@+id/radioSelinuxTarget"
@@ -156,7 +148,7 @@
                         android:textAllCaps="false"
                         android:textColor="@color/ios_text_primary"
                         app:backgroundTint="@color/ios_background_elevated"
-                        app:cornerRadius="20dp"
+                        app:cornerRadius="14dp"
                         app:strokeColor="@color/ios_separator"
                         app:strokeWidth="1dp" />
                 </LinearLayout>

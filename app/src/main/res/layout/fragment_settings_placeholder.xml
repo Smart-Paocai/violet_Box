@@ -48,10 +48,16 @@
                     android:textAppearance="@style/Widget.IOS.SubsectionTitle"
                     android:textColor="@color/ios_text_primary" />
 
-                <com.violet.box.ui.widget.KsuSwitchView
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchCheckUpdate"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:minHeight="28dp"
+                    android:padding="0dp"
+                    android:thumb="@drawable/switch_ios26_thumb"
+                    android:track="@drawable/switch_ios26_track"
+                    android:splitTrack="false"
+                    android:checked="true" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

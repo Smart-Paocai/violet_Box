@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.紫罗兰盒子" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.紫罗兰检测" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/ios_accent</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorSurface">@color/ios_card</item>
@@ -11,5 +11,5 @@
         <item name="android:windowLightNavigationBar">false</item>
     </style>
 
-    <style name="Theme.紫罗兰盒子" parent="Base.Theme.紫罗兰盒子" />
+    <style name="Theme.紫罗兰检测" parent="Base.Theme.紫罗兰检测" />
 </resources>
