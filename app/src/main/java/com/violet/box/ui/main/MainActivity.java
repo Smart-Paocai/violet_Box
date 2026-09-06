@@ -52,8 +52,8 @@ import com.violet.box.ui.payload.PayloadActivity;
 import com.violet.box.ui.plugin.GlobalDeviceSpoofActivity;
 import com.violet.box.ui.plugin.DeviceIdModifyActivity;
 import com.violet.box.ui.plugin.VioletPluginActivity;
+import com.violet.box.ui.safety.SafetyPageController;
 import com.violet.box.ui.selinux.SelinuxManagerActivity;
-import com.violet.box.ui.widget.VioletSwitchStyler;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     private AnimatorSet tabSwitchAnimator;
 
     private View nativeContentView;
+    private SafetyPageController safetyPageController;
     private volatile boolean exploreAutoInstallTriggered = false;
     private volatile boolean exploreAutoInstallRunning = false;
     private volatile ExploreRootStatus cachedExploreRootStatus;
@@ -165,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         overflowMenuScrim = findViewById(R.id.overflowMenuScrim);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("紫罗兰Box");
+            getSupportActionBar().setTitle(getString(R.string.app_name));
         }
         ensureToolbarVisible();
         if (overflowMenuScrim != null) {
@@ -253,14 +254,13 @@ public class MainActivity extends AppCompatActivity {
         if (cardAbout != null) {
             cardAbout.setOnClickListener(v -> startActivity(new Intent(this, AboutActivity.class)));
         }
-        androidx.appcompat.widget.SwitchCompat switchCheckUpdate = findViewById(R.id.switchCheckUpdate);
+        com.violet.box.ui.widget.KsuSwitchView switchCheckUpdate = findViewById(R.id.switchCheckUpdate);
         View cardCheckUpdate = findViewById(R.id.cardCheckUpdate);
         SharedPreferences updatePrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         boolean autoCheckUpdate = updatePrefs.getBoolean(KEY_AUTO_CHECK_UPDATE, true);
         if (switchCheckUpdate != null) {
-            VioletSwitchStyler.apply(this, switchCheckUpdate);
             switchCheckUpdate.setChecked(autoCheckUpdate);
-            switchCheckUpdate.setOnCheckedChangeListener((buttonView, isChecked) ->
+            switchCheckUpdate.setOnCheckedChange(isChecked ->
                     updatePrefs.edit().putBoolean(KEY_AUTO_CHECK_UPDATE, isChecked).apply());
         }
         if (cardCheckUpdate != null) {
@@ -304,11 +304,25 @@ public class MainActivity extends AppCompatActivity {
 
         updateExploreRootStatus(true);
         updateExploreUptime();
+
+        safetyPageController = new SafetyPageController(this);
+        safetyPageController.initialize();
+
+        // 预热一次 Expressive 开关组合：首次组合的类加载/JIT 成本在启动期消化，
+        // 避免首次进入安全页时集中付出（1×1 隐藏视图，首帧绘制后即移除）
+        com.violet.box.ui.widget.KsuSwitchView warmupSwitch = new com.violet.box.ui.widget.KsuSwitchView(this);
+        warmupSwitch.setVisibility(View.INVISIBLE);
+        ViewGroup warmupRoot = findViewById(R.id.main);
+        warmupRoot.addView(warmupSwitch, new ViewGroup.LayoutParams(1, 1));
+        warmupSwitch.post(() -> warmupRoot.removeView(warmupSwitch));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (safetyPageController != null) {
+            safetyPageController.onMaybeShown();
+        }
         mainHandler.removeCallbacks(exploreResumeRefresh);
         // 返回时先让界面完成首帧绘制，再延后刷新 Explore 状态，降低体感卡顿。
         if (currentTab == 2) {
@@ -328,6 +342,15 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onDestroy() {
+        if (safetyPageController != null) {
+            safetyPageController.destroy();
+            safetyPageController = null;
+        }
+        super.onDestroy();
+    }
+
     private void selectTab(int tab) {
         selectTab(tab, true);
     }
@@ -339,9 +362,13 @@ public class MainActivity extends AppCompatActivity {
         }
         currentTab = tab;
         BottomBarState.INSTANCE.setSelectedTab(tab);
+        if (safetyPageController != null && tab == 1) {
+            // 等滑页动画（380ms）结束再刷新/绑定安全页列表，避免行组合创建与动画抢主线程
+            safetyPageController.onMaybeShownDelayed(420);
+        }
         ensureToolbarVisible();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("紫罗兰Box");
+            getSupportActionBar().setTitle(getString(R.string.app_name));
         }
 
         View targetView = getTabContentView(tab);

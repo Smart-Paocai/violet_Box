@@ -42,8 +42,8 @@
                 android:maxLines="1"
                 android:textColor="@color/ios_text_primary"
                 android:textSize="15sp"
-                android:textStyle="bold"
-                tools:text="紫罗兰检测" />
+                android:fontFamily="sans-serif-medium"
+                tools:text="紫罗兰盒子" />
 
             <TextView
                 android:id="@+id/tvAppPackage"

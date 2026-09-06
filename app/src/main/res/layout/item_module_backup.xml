@@ -52,7 +52,7 @@
                 android:text="by Author | v1.0.0"
                 android:textColor="@color/explore_cyan_600"
                 android:textSize="13sp"
-                android:textStyle="bold" />
+                android:fontFamily="sans-serif-medium" />
 
             <TextView
                 android:id="@+id/tvModuleDesc"
