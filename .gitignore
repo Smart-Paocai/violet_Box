@@ -16,3 +16,4 @@ local.properties
 .gradle-local/
 /jadx.zip
 /tools/
+.kotlin/
